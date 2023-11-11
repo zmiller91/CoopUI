@@ -56,13 +56,6 @@ export default class Reservation extends React.Component {
   </form>
 
 
-    <div>
-      Username: {this.state.username}
-      <br/>
-      Password: {this.state.password}
-      <br/>
-      Password: {this.state.message}
-    </div>
 </div>
     );
   }

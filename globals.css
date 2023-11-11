@@ -1,3 +1,80 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+
+
+/* https://goodpalette.io/a13b1a-5b2fe0-c2b9b6 */
+/* primary color #A13B1A */
+
+.header-background {
+    background-color: var(--primary-500);
+}
+
+.primary-text-100 {
+    color: var(--primary-100)
+}
+
+.primary-text-700 {
+    color: var(--primary-700)
+}
+
+.accent-text-700 {
+    color: var(--accent-700)
+}
+
+.neutral-text-700 {
+    color: var(--neutral-700)
+}
+
+.dashboard-section {
+    background-color: var(--neutral-100);
+    border-radius: 25px;
+}
+
+
+.split-bg {
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(
+      to bottom,
+      #A13B1A 0% 15%,
+      #EEEBE8 15% 100%
+    );
+}
+
+
+* {
+    /* Primary: Spill the Beans */
+    --primary-100: #FFF8F2;
+    --primary-200: #FED9BF;
+    --primary-300: #F3AF87;
+    --primary-400: #D7784D;
+    --primary-500: #A13B1A;
+    --primary-600: #822009;
+    --primary-700: #630F02;
+    --primary-800: #450500;
+    --primary-900: #260100;
+
+    /* Accent: Blue Magenta */
+    --accent-100: #F8F2FF;
+    --accent-200: #DCC3FF;
+    --accent-300: #B892FB;
+    --accent-400: #8D60F2;
+    --accent-500: #5B2FE0;
+    --accent-600: #3011B2;
+    --accent-700: #150583;
+    --accent-800: #070155;
+    --accent-900: #010026;
+
+    /* Neutral */
+    --neutral-100: #FCFBFA;
+    --neutral-200: #EEEBE8;
+    --neutral-300: #DFDAD7;
+    --neutral-400: #D0CAC7;
+    --neutral-500: #C2B9B6;
+    --neutral-600: #9B9290;
+    --neutral-700: #746C6B;
+    --neutral-800: #4D4746;
+    --neutral-900: #262222;
+}
