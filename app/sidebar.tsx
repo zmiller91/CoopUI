@@ -1,51 +1,40 @@
 'use client'
 
 import React from "react";
-import ExpandableTab from "../components/sidenav/expandabletab"
+import CoopSelection from "../components/sidenav/coop-selection"
 import SideBarTab from "../components/sidenav/tab"
+import { href } from "../utils/path"
+import { useSearchParams  } from 'next/navigation'
 
-export default class Sidebar extends React.Component {
+export default function SideBar() {
 
-    constructor(props) {
-        super(props)
+    const queryParams = useSearchParams()
 
-        this.state = {
-            coopsCollapsed: true
-        }
-
-        this.collapseCoops = this.collapseCoops.bind(this);
-    }
-    
-    collapseCoops() {
-        this.setState({
-            coopsCollapsed: !this.state.coopsCollapsed
-        });
-    }
-
-
-  render() {
     return (
         <div className="ml-2 relative h-full dashboard-section">
             <div>
                 <div className="ml-[5%] mr-[5%] border-b-2 mb-5">
                     <ul className="mb-5 mt-5">
                         <li>
-                            <ExpandableTab/>
+                            <CoopSelection/>
                         </li>
                     </ul>
                 </div>
                 <ul>
                     <li>
-                        <SideBarTab title="Dashboard" location="/dashboard" />
+                        <SideBarTab title="Dashboard" location={href("/dashboard", {id: queryParams.get("id")})}/>
                     </li>
                     <li>
-                        <SideBarTab title="Schedules" location="/schedules" />
+                        <SideBarTab title="Schedules" location={href("/schedules", {id: queryParams.get("id")})}/>
                     </li>
                     <li>
-                        <SideBarTab title="Components" location="/components" />
+                        <SideBarTab title="Components" location={href("/components", {id: queryParams.get("id")})}/>
                     </li>
                     <li>
-                        <SideBarTab title="Settings" location="/settings" />
+                        <SideBarTab title="Settings" location={href("/settings", {id: queryParams.get("id")})}/>
+                    </li>
+                    <li>
+                        <SideBarTab title="Coops" location={href("/coops", {id: queryParams.get("id")})}/>
                     </li>
                 </ul>
             </div>
@@ -60,5 +49,5 @@ export default class Sidebar extends React.Component {
             </div>
         </div>
     );
-  }
+
 }

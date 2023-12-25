@@ -1,31 +1,31 @@
 import axios from 'axios';
 
+
 class AuthClient {
 
     private readonly domain:string = "http://localhost:8080"
+    private readonly tokenKey:string = "token";
 
-    private authToken:string;
-
-    
-    get(path:string, success: (response:any) => void) {
-
-        const config = {
+    private config() {
+        return {
             headers: {
-                Authorization: "Bearer " + this.authToken,
+                Authorization: "Bearer " + localStorage.getItem(this.tokenKey),
                 "Access-Control-Allow-Origin": "*"
             }
         }
-
-        axios.get(this.domain + path, config).then(success)
-
-
     }
 
+    get(path:string, success: (response:any) => void) {
+        axios.get(this.domain + path, this.config()).then(success)
+    }
 
+    post(path:string, data: any, success: (response:any) => void) {
+        axios.post(this.domain + path, data, this.config()).then(success)
+    }
 
     login(username: string, password: string, success: () => void) {
         axios.post(this.domain + "/login", {username, password}).then(response => {
-            this.authToken = response.data["token"]
+            localStorage.setItem(this.tokenKey, response.data["token"])
             success()
         })
     }

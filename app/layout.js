@@ -8,7 +8,8 @@ export default function RootLayout({ children }) {
       <body className="h-screen">
         <div className="h-full">
         <Header/>
-          <div className="grid grid-cols-[20%_auto] gap-2 h-[calc(100vh-56px)] split-bg">
+          {/* <div className="grid grid-cols-[20%_auto] gap-2 h-[calc(100vh-56px)] split-bg"> */}
+          <div className="grid grid-cols-[20%_auto] gap-2 h-[calc(100vh-56px)]">
 
               <div>
                 <Sidebar/>

@@ -3,7 +3,8 @@
 import React from "react";
 import Chart from "./chart";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faDoorClosed, faDoorOpen } from '@fortawesome/free-solid-svg-icons'
+import {__accent_200, __accent_600} from "../../globals"
 
 export default class Dashboard  extends React.Component {
   static demoUrl = 'https://codesandbox.io/s/simple-line-chart-kec3v';
@@ -102,18 +103,67 @@ export default class Dashboard  extends React.Component {
 
           
           <div className="h-full dashboard-section mr-4">
+
             <div className="m-8">
               <span className="text-lg font-bold neutral-text-700">Activity Log</span>
               <span className="float-right">
 
                 <span className="mr-2 font-bold accent-text-700">Online</span>
                 <span className="fa-layers fa-fw">
-                  <FontAwesomeIcon icon={faCircle} style={{color: "#DCC3FF",}} size="lg"/>
-                  <FontAwesomeIcon icon={faCircle} style={{color: "#3011B2",}} size="xs" />
+                  <FontAwesomeIcon icon={faCircle} style={{color: __accent_200,}} size="lg"/>
+                  <FontAwesomeIcon icon={faCircle} style={{color: __accent_600,}} size="xs" />
 
                 </span>
               </span>
             </div>
+
+            <div>
+
+
+
+
+              <div className="mt-2 mb-8 ml-8 mr-8">
+                <div className="ml-2 mr-2 mb-2 border-t-2"></div>
+                <div>
+                  <div>
+                    <span className="primary-text-700 h-full flex flex-row items-center">
+                      <span className="mr-2">
+                        <FontAwesomeIcon icon={faDoorClosed} style={{color: __accent_200,}} size="2x"/>
+                      </span>
+                      Door closed
+                    </span>
+                  </div>
+                  <div className="float-right neutral-text-500 text-sm">
+                    Oct 11 @ 7:15 AM
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-2 mb-2 ml-8 mr-8">
+                <div className="ml-2 mr-2 mb-2 border-t-2"></div>
+                <div>
+                  <div>
+                    <span className="primary-text-700 h-full flex flex-row items-center">
+                      <span className="mr-2">
+                        <FontAwesomeIcon icon={faDoorClosed} style={{color: __accent_200,}} size="2x"/>
+                      </span>
+                      Door closed
+                    </span>
+                  </div>
+                  <div className="float-right neutral-text-500 text-sm">
+                    Oct 11 @ 7:15 AM
+                  </div>
+                </div>
+              </div>
+
+
+
+
+
+            </div>
+
+
+
           </div>
 
         </div>

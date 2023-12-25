@@ -23,6 +23,11 @@
     color: var(--accent-700)
 }
 
+
+.neutral-text-500 {
+    color: var(--neutral-500)
+}
+
 .neutral-text-700 {
     color: var(--neutral-700)
 }

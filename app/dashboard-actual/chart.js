@@ -3,6 +3,7 @@
 import React, { PureComponent } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import PropTypes from 'prop-types'
+import {__primary_800, __primary_200} from "../../globals"
 
 const data = [
   {
@@ -74,7 +75,7 @@ export default class Chart extends PureComponent {
             { this.props.detailed && <YAxis />}
             { this.props.detailed && <Tooltip />}
             
-            <Area type="monotone" dataKey="uv" stroke="#450500" fill="#FED9BF" />
+            <Area type="monotone" dataKey="uv" stroke={__primary_800} fill={__primary_200} />
           </AreaChart>
         </ResponsiveContainer>
     );
