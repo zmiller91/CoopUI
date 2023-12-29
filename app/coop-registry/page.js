@@ -17,32 +17,9 @@ export default function Coops() {
 
 
     return (
-
-<div className="w-full h-full">
-
-    <div className="pl-4 pt-8 pb-8">
-        <span className="text-4xl font-bold neutral-text-700">Coop Registry</span>
-    </div>
-
-    {registerdCoops.length === 0 && 
-    <div>
-        <CoopRegistry/>
-    </div>
-    }
-
-    {registerdCoops.length > 0 && 
-    <div>
-        <CoopList coops={registerdCoops}/>
-    </div>
-    }
-
-
-
-</div>
-
-
-
-
+        <div className="w-full h-full">
+            <CoopRegistry/>
+        </div>
     )
 
 }

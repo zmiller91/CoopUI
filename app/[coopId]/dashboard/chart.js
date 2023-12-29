@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import PropTypes from 'prop-types'
-import {__primary_800, __primary_200} from "../../globals"
+import {__primary_800, __primary_200} from "../../../globals"
 
 const data = [
   {

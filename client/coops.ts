@@ -13,7 +13,7 @@ class CoopClient {
             name: name
         }
 
-        authClient.post("/coops/register", data, success)
+        authClient.post("/coops/register", data, (response) => success(response.data.coop))
     }
 
     getSettings(coopId: string, success: (response:any) => void) {
@@ -27,6 +27,10 @@ class CoopClient {
             }
         }
         authClient.post("/coops/settings/" + coopId, data, success)
+    }
+
+    getData(coopId: string, metric:string, success: (response:any) => void) {
+        authClient.get("/coops/data/" + coopId + "/" + metric, (response) => success(response.data))
     }
 
 }

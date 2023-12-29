@@ -2,36 +2,54 @@
 
 import coopClient from "../../client/coops"
 import React, {useState, useEffect} from "react";
-import { useSearchParams  } from 'next/navigation'
+import { useParams, useSearchParams  } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
+import { href } from "../../utils/path";
 
 export default function CoopSelection() {
 
     const [coops, setCoops] = useState([])
     const [selectedCoop, setSelectedCoop] = useState(null)
-    const [collapsed, setCollapsed] = useState(false)
-    const queryParams = useSearchParams()
+    const [collapsed, setCollapsed] = useState(true)
+
+    const router = useRouter();
+    const pathName = usePathname();
+    const params = useParams();
 
     useEffect(() => {
         coopClient.list((coops) => {
             setCoops(coops);
             if (coops.length > 0) {
                 for(var idx in coops) {
-                    if (coops[idx].id === queryParams.get("id")) {
+                    if (coops[idx].id === params["coopId"]) {
                         setSelectedCoop(coops[idx])
                     }
                 }
 
             }
         })
-    }, [])
+    }, [params])
 
     function toggleCollapse() {
         setCollapsed(!collapsed)
     }
     
     function select(coop) {
-        setSelectedCoop(coop)
-        toggleCollapse()
+        console.log(pathName)
+        router.push("/" + coop.id + "/dashboard")
+        setCollapsed(true)
+    }
+    
+    function register() {
+        router.push("/coop-registry")
+    }
+
+    function registerButton() {
+        return <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" 
+            type="button" 
+            onClick={register}>
+            Register Coop
+        </button>
     }
 
     return (
@@ -61,13 +79,20 @@ export default function CoopSelection() {
                             <a className="p-2 flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group cursor-pointer" 
                                 onClick={() => select(coop)}>
                                 <div>
-                                    <span className="h-full flex flex-row items-center font-bold">{selectedCoop.name}</span>
+                                    <span className="h-full flex flex-row items-center font-bold">{coop.name}</span>
                                 </div>
                             </a>
                         </li>
                     )})}
+                    <li>
+                        {registerButton()}
+                    </li>
             
                 </ul>
+            </div>}
+
+            {!selectedCoop && <div>
+                {registerButton()}
             </div>}
         </div>
 

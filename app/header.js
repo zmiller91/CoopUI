@@ -12,8 +12,7 @@ export default class Header extends React.Component {
 
             <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
                 <div className=" lg:flex-grow">
-                    <Link href="/login" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">Login</Link>
-                    <Link href="/info" className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">Information</Link>
+                    <Link href="/login" className="primary-text-100 block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4 float-right">Login</Link>
                 </div>
             </div>
 

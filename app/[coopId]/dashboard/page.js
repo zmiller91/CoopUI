@@ -4,7 +4,7 @@ import React from "react";
 import Chart from "./chart";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle, faDoorClosed, faDoorOpen } from '@fortawesome/free-solid-svg-icons'
-import {__accent_200, __accent_600} from "../../globals"
+import {__accent_200, __accent_600} from "../../../globals"
 
 export default class Dashboard  extends React.Component {
   static demoUrl = 'https://codesandbox.io/s/simple-line-chart-kec3v';

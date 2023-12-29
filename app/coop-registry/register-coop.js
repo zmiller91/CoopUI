@@ -1,10 +1,13 @@
 import React, {useState, useEffect} from "react";
 import coopClient from "../../client/coops"
+import { href } from "../../utils/path";
+import { useRouter } from 'next/navigation'
 
 export default function CoopRegistry() {
 
     const [coopId, setCoopId] = useState('') 
     const [name, setName] = useState('') 
+    const router = useRouter();
 
     function handleCoopIdChange(event) {
         setCoopId(event.target.value)
@@ -16,8 +19,8 @@ export default function CoopRegistry() {
 
     
     function register() {
-        coopClient.register(coopId, name, (response) => {
-            console.log(response);
+        coopClient.register(coopId, name, (coop) => {
+            router.push(href("/dashboard", {id: coop.id}))
         });
     }
     

@@ -37,6 +37,10 @@
     border-radius: 25px;
 }
 
+.error-text {
+    color: #cc0000;
+}
+
 
 .split-bg {
     width: 100%;

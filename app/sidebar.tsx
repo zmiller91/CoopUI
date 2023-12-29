@@ -4,11 +4,15 @@ import React from "react";
 import CoopSelection from "../components/sidenav/coop-selection"
 import SideBarTab from "../components/sidenav/tab"
 import { href } from "../utils/path"
-import { useSearchParams  } from 'next/navigation'
+import { useParams, useSearchParams  } from 'next/navigation'
 
 export default function SideBar() {
 
-    const queryParams = useSearchParams()
+    const params = useParams()
+
+    function location(page:string) {
+        return "/" + params["coopId"] + "/" + page;
+    }
 
     return (
         <div className="ml-2 relative h-full dashboard-section">
@@ -22,19 +26,13 @@ export default function SideBar() {
                 </div>
                 <ul>
                     <li>
-                        <SideBarTab title="Dashboard" location={href("/dashboard", {id: queryParams.get("id")})}/>
+                        <SideBarTab title="Dashboard" location={location("dashboard")}/>
                     </li>
                     <li>
-                        <SideBarTab title="Schedules" location={href("/schedules", {id: queryParams.get("id")})}/>
+                        <SideBarTab title="Components" location={location("components")}/>
                     </li>
                     <li>
-                        <SideBarTab title="Components" location={href("/components", {id: queryParams.get("id")})}/>
-                    </li>
-                    <li>
-                        <SideBarTab title="Settings" location={href("/settings", {id: queryParams.get("id")})}/>
-                    </li>
-                    <li>
-                        <SideBarTab title="Coops" location={href("/coops", {id: queryParams.get("id")})}/>
+                        <SideBarTab title="Settings" location={location("settings")}/>
                     </li>
                 </ul>
             </div>
