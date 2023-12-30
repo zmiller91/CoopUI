@@ -16,7 +16,7 @@ class AuthClient {
     }
 
     get(path:string, success: (response:any) => void) {
-        axios.get(this.domain + path, this.config()).then(success)
+        axios.get(this.domain + path, this.config()).then(success).catch()
     }
 
     post(path:string, data: any, success: (response:any) => void) {

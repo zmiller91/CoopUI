@@ -40,10 +40,8 @@ export default function ComponentRegistry() {
                 }
             }
 
-
             return newConfig
         })
-
     }
 
     return (

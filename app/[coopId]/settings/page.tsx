@@ -1,7 +1,6 @@
 'use client'
 
 import React, {useState, useEffect} from "react";
-import { useParams, useSearchParams  } from 'next/navigation';
 import coopClient from "../../../client/coops"
 import Form from "../../../components/form/form";
 import TextInput from "../../../components/form/text-input";

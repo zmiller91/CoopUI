@@ -24,17 +24,49 @@
 }
 
 
+.neutral-text-200 {
+    color: var(--neutral-200)
+}
+
 .neutral-text-500 {
     color: var(--neutral-500)
+}
+
+.neutral-text-600 {
+    color: var(--neutral-600)
 }
 
 .neutral-text-700 {
     color: var(--neutral-700)
 }
 
+.neutral-text-800 {
+    color: var(--neutral-800)
+}
+
+.neutral-text-900 {
+    color: var(--neutral-900)
+}
+
 .dashboard-section {
-    background-color: var(--neutral-100);
-    border-radius: 25px;
+    border-radius: var(--border-radius);
+
+}
+
+.rounded {
+    border-radius: var(--border-radius);
+}
+
+.primary-dark-background {
+    background-color: var(--primary-800);
+}
+
+.shaded-background {
+    background-color: var(--neutral-200)     ;
+}
+
+.light-background {
+    background-color: white;
 }
 
 .error-text {
@@ -54,6 +86,8 @@
 
 
 * {
+    --border-radius: 10px;
+
     /* Primary: Spill the Beans */
     --primary-100: #FFF8F2;
     --primary-200: #FED9BF;
@@ -86,4 +120,5 @@
     --neutral-700: #746C6B;
     --neutral-800: #4D4746;
     --neutral-900: #262222;
+
 }

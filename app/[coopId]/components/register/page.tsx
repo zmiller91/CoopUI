@@ -22,10 +22,12 @@ export default function ComponentRegistry() {
 
     return (
         <div>
-            <Form submitText="Register" onSubmit={register}>
-                <TextInput id="serial" title="Serial Number" value={serialNumber} onChange={setSerialNumber} required={true}/>
-                <TextInput id="name" title="Name" value={name} onChange={setName} required={true}/>
-            </Form>
+            <div>
+                <Form submitText="Register" onSubmit={register}>
+                    <TextInput id="serial" title="Serial Number" value={serialNumber} onChange={setSerialNumber} required={true}/>
+                    <TextInput id="name" title="Name" value={name} onChange={setName} required={true}/>
+                </Form>
+            </div>
         </div>
     )
 }

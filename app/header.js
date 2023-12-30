@@ -7,7 +7,7 @@ export default class Header extends React.Component {
 
   render() {
     return (
-        <nav className="sticky top-0 flex items-center justify-between flex-wrap header-background p-4">
+        <nav className="sticky top-0 flex items-center justify-between flex-wrap header-background p-4 h-[56px]">
 
 
             <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
