@@ -1,9 +1,8 @@
 'use client'
 
 import React, {useState, useEffect} from "react";
-import { useParams} from 'next/navigation'
 import coopClient, { CoopDAO } from "../../client/coops"
-import NavModal, { NavTabProps, NavTab } from "../../components/nav-modal";
+import NavModal, { NavTab } from "../../components/nav-modal";
 import { BottomNav, BottomNavTab } from "../../components/bottom-nav";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChartArea, faCircleNodes, faGear } from '@fortawesome/free-solid-svg-icons'

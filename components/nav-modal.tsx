@@ -1,6 +1,6 @@
 'use client'
 
-import React, {ReactElement, ReactNode} from "react";
+import React, {ReactElement} from "react";
 import Swipeable from "./swipeable";
 import { useRouter } from 'next/navigation'
 
@@ -24,7 +24,7 @@ export function NavTab(props:NavTabProps) {
     }
 
     return (
-        <div className={"h-[48px] neutral-text-900 flex items-center pl-2 pr-2 font-semibold " + selectedClass()} onClick={goTo}>
+        <div className={"h-[48px] text-neutral-900 flex items-center pl-2 pr-2 font-semibold " + selectedClass()} onClick={goTo}>
             {props.title}
         </div>
     )
@@ -63,7 +63,7 @@ export default function NavModal(props:NavModalProps) {
 
                                 <div className="mb-4 pl-2 pr-2">
                                     <div className="h-[36px] text-xl pt-3 font-semibold">Auto Coop</div>
-                                    <div className="h-[20px] text-sm pt-1 neutral-text-700">Taking the worry out of coop management</div>
+                                    <div className="h-[20px] text-sm pt-1 text-neutral-700">Taking the worry out of coop management</div>
                                 </div>
                                 <div className="h-[calc(100%-72px)]">
                                     <div className="min-h-[calc(100%-56px)] border-b-2">
@@ -72,7 +72,7 @@ export default function NavModal(props:NavModalProps) {
 
                                     </div>
                                     
-                                    <div className="h-[48px] neutral-text-900 flex items-center pl-2 pr-2 font-semibold mt-2">
+                                    <div className="h-[48px] text-neutral-900 flex items-center pl-2 pr-2 font-semibold mt-2">
                                         Settings & Account
                                     </div>
                                 </div>

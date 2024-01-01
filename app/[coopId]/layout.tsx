@@ -22,12 +22,12 @@ export default function RootLayout({ children }) {
         <AppBar title="Page Title" onNavToggle={toggleNavBar}/>
         <MobileNav onDismiss={toggleNavBar} visible={navVisible}/>
 
-        <div className="h-[calc(100vh-112px)] w-screen overflow-auto">
+        <div className="h-[calc(100vh-112px)] w-screen overflow-auto pr-2 pl-2">
           {children}
         </div>
 
         <MobileBottomNav/>
-        
+
       </body>
     </html>
   )
