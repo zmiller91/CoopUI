@@ -5,9 +5,12 @@ export default function Form(props:FromProps) {
         <div className="lg:w-1/2">
             <form action={props.onSubmit}>
                 {props.children}
-                <button className="mt-3 float-right bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                <button className="h-[36px] w-full background-accent-500 text-neutral-200 shadow-md rounded-md" 
                         type="submit" >
-                        {props.submitText}
+                            <span className="pr-4 pl-4 flex center-items justify-center">
+                                {props.submitText}
+                            </span>
+                        
                 </button>
             </form>
         </div>

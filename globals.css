@@ -165,6 +165,47 @@
 
 
 
+.background-neutral-100 {
+    background-color: var(--neutral-100);
+}
+
+.background-neutral-200 {
+    background-color: var(--neutral-200);
+}
+
+.background-neutral-300 {
+    background-color: var(--neutral-300);
+}
+
+.background-neutral-400 {
+    background-color: var(--neutral-400);
+}
+
+.background-neutral-500 {
+    background-color: var(--neutral-500);
+}
+
+.background-neutral-600 {
+    background-color: var(--neutral-600);
+}
+
+.background-neutral-700 {
+    background-color: var(--neutral-700);
+}
+
+.background-neutral-800 {
+    background-color: var(--neutral-800);
+}
+
+.background-neutral-900 {
+    background-color: var(--neutral-900);
+}
+
+
+
+
+
+
 
 
 

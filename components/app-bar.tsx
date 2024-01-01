@@ -12,7 +12,7 @@ export function AppBar(props:AppBarProps) {
     return (
         <div>
             
-            <div className='h-[56px] pt-4 pb-4 background-primary-500 neutral-text-200 shadow-lg'>
+            <div className='h-[56px] pt-4 pb-4 background-primary-500 text-neutral-200 shadow-lg'>
                     <span className="pl-4 pr-8 inline-block"><FontAwesomeIcon icon={faBars} className='h-[24px]' onClick={props.onNavToggle}/></span>
                     <span className='text-[31px] leading-6 inline-block'>{props.title}</span>
             </div>
