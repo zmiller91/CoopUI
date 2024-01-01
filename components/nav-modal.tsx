@@ -66,7 +66,7 @@ export default function NavModal(props:NavModalProps) {
                                 <div className="h-[calc(100%-72px)]">
                                     <div className="min-h-[calc(100%-56px)] border-b-2">
                                         {props.tabs.map(tab => {return (
-                                            <NavTab title={tab.title} path={tab.path} selected={tab.selected}/>
+                                            <NavTab key={tab.path} title={tab.title} path={tab.path} selected={tab.selected}/>
                                         )})}
                                     </div>
                                     

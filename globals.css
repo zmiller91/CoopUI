@@ -77,6 +77,34 @@
     color: #cc0000;
 }
 
+.background-primary-300 {
+    background-color: var(--primary-300);
+}
+
+.background-primary-400 {
+    background-color: var(--primary-400);
+}
+
+.background-primary-500 {
+    background-color: var(--primary-500);
+}
+
+.background-primary-600 {
+    background-color: var(--primary-600);
+}
+
+.background-primary-700 {
+    background-color: var(--primary-700);
+}
+
+.background-primary-800 {
+    background-color: var(--primary-800);
+}
+
+.background-primary-900 {
+    background-color: var(--primary-900);
+}
+
 .background-accent-100 {
     background-color: var(--accent-100);
 }
@@ -88,6 +116,45 @@
 .background-accent-300 {
     background-color: var(--accent-300);
 }
+
+.text-primary-100 {
+    color: var(--primary-100)
+}
+
+.text-primary-200 {
+    color: var(--primary-200)
+}
+
+.text-primary-300 {
+    color: var(--primary-300)
+}
+
+.text-primary-400 {
+    color: var(--primary-400)
+}
+
+.text-primary-500 {
+    color: var(--primary-500)
+}
+
+.text-primary-600 {
+    color: var(--primary-600)
+}
+
+.text-primary-700 {
+    color: var(--primary-700)
+}
+
+.text-primary-800 {
+    color: var(--primary-800)
+}
+
+.text-primary-900 {
+    color: var(--primary-900)
+}
+
+
+
 
 .text-accent-500 {
     color: var(--accent-500)

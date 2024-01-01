@@ -4,7 +4,6 @@ import React, {useState} from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
-import {MobileNav} from '../app/[coopId]/navigation'
 
 export function AppBar(props:AppBarProps) {
 
@@ -13,7 +12,7 @@ export function AppBar(props:AppBarProps) {
     return (
         <div>
             
-            <div className='h-[56px] pt-4 pb-4 header-background neutral-text-200 shadow-lg'>
+            <div className='h-[56px] pt-4 pb-4 background-primary-500 neutral-text-200 shadow-lg'>
                     <span className="pl-4 pr-8 inline-block"><FontAwesomeIcon icon={faBars} className='h-[24px]' onClick={props.onNavToggle}/></span>
                     <span className='text-[31px] leading-6 inline-block'>{props.title}</span>
             </div>

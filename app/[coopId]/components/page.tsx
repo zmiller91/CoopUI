@@ -1,10 +1,8 @@
 'use client'
 
-import { Navigate } from "../../../components/navigation"
 import componentClient from "../../../client/component";
 import React, {useState, useEffect} from "react";
 import {currentCoop} from "../coop-context"
-import { PageTitle } from "../../../components/page-title";
 
 
 function ComponentListEntry(props:ComponentListEntryProps) {
@@ -14,7 +12,7 @@ function ComponentListEntry(props:ComponentListEntryProps) {
                 <span className="text-xl neutral-text-900">{props.name}</span>  <span className="text-xs ml-2 neutral-text-600">(SN: {props.serial})</span>
             </span>
             <span className="justify-self-end">
-                <Navigate path={"components/" + props.id} text="Edit" />
+                {/* <Navigate path={"components/" + props.id} text="Edit" /> */}
             </span>
             
         </div>
@@ -49,7 +47,7 @@ export default function Components() {
                     {components.map(c => <ComponentListEntry key={c.id} name={c.name} serial={c.serial} id={c.id}/>)}
                 </div>
                 <div className="float-right">
-                    <Navigate path="components/register" text="Register Component" />
+                    {/* <Navigate path="components/register" text="Register Component" /> */}
                 </div>
             </div>
         </div>
