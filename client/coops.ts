@@ -1,9 +1,15 @@
 
 import authClient from "./auth"
 
+
+export interface CoopDAO {
+    id:string,
+    name:string
+}
+
 class CoopClient {
 
-    list(success: (response:any) => void) {
+    list(success: (response:CoopDAO[]) => void) {
         authClient.get("/coops/list", (response) => success(response.data.coops))
     }
 

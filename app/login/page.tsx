@@ -30,7 +30,7 @@ export default function Login() {
       authClient.login(username, password, () => {
         coopClient.list((coops) => {
           if (coops.length > 0) {
-            router.push(href("/dashboard", {id: coops[0].id}))
+            router.push("/" + coops[0].id + "/dashboard")
           } else {
             router.push(href("/coops"))
           }
