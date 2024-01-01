@@ -2,17 +2,12 @@
 
 import React, {useState, useEffect} from "react";
 import { useParams} from 'next/navigation'
-import coopClient from "../../client/coops"
-import NavModal, { NavTabProps } from "../../components/nav-modal";
+import coopClient, { CoopDAO } from "../../client/coops"
+import NavModal, { NavTabProps, NavTab } from "../../components/nav-modal";
 import { BottomNav, BottomNavTab } from "../../components/bottom-nav";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChartArea, faCircleNodes, faGear } from '@fortawesome/free-solid-svg-icons'
 import { currentCoop } from "./coop-context";
-
-function location(params, page:string) {
-    return "/" + params["coopId"] + "/" + page;
-}
-
 
 export function MobileBottomNav() {
 
@@ -25,65 +20,62 @@ export function MobileBottomNav() {
     return (
         <BottomNav>
             <BottomNavTab path={path("/components")}>
-                <FontAwesomeIcon icon={faCircleNodes} className="h-[24px]"/>
+                <div>
+                    <div className="flex justify-center"><FontAwesomeIcon icon={faCircleNodes} className="h-[18px]"/></div>
+                    <div className="text-xs">Components</div>
+                </div>
             </BottomNavTab>
 
             <BottomNavTab path={path("/dashboard")}>
-                <FontAwesomeIcon icon={faChartArea} className="h-[24px]"/>
+                <div>
+                    <div className="flex justify-center"><FontAwesomeIcon icon={faChartArea} className="h-[18px]"/></div>
+                    <div className="text-xs">Dashboard</div>
+                </div>
             </BottomNavTab>
 
             <BottomNavTab path={path("/settings")}>
-                <FontAwesomeIcon icon={faGear} className="h-[24px]"/>
+                <div>
+                    <div className="flex justify-center"><FontAwesomeIcon icon={faGear} className="h-[18px]"/></div>
+                    <div className="text-xs">Settings</div>
+                </div>
             </BottomNavTab>
         </BottomNav>
-
-
     )
 }
 
-
-
-
-
-
 export interface MobileNavProps {
     onDismiss: () => void;
+    visible:boolean
 }
 
 export function MobileNav(props:MobileNavProps) {
 
-    const [tabs, setTabs] = useState([])
-    const params = useParams();
+    const [coops, setCoops] = useState([] as CoopDAO[])
+    const currentCoopId = currentCoop();
 
     useEffect(() => {
         coopClient.list((coops) => {
-
-            const tabs:NavTabProps[] = [];
-            if (coops.length > 0) {
-                for(var idx in coops) {
-                    tabs.push({
-                        title: coops[idx].name,
-                        path: "/" + coops[idx].id + "/dashboard",
-                        selected: coops[idx].id === params["coopId"]
-                    })
-                }
-            }
-
-            setTabs(tabs);
+            setCoops(coops);
         })
-    }, [params])
+    }, [currentCoopId])
 
     function dismiss() {
         props.onDismiss();
     }
 
-    function goTo() {
-        console.log("GOTO!");
+    function path(coop:CoopDAO) {
+        return "/" + coop.id + "/dashboard"
+    }
+
+    function isSelected(coop:CoopDAO) {
+        return coop.id === currentCoopId;
     }
 
     return (
         <div>
-            <NavModal onDismiss={dismiss} tabs={tabs}/>
+            <NavModal onDismiss={dismiss} visible={props.visible}>
+                {coops.map(coop => <NavTab key={coop.id} title={coop.name} path={path(coop)} selected={isSelected(coop)}/>)}
+            </NavModal>
         </div>
     )
 }

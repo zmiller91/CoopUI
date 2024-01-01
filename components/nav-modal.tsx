@@ -1,6 +1,6 @@
 'use client'
 
-import React, {ReactNode} from "react";
+import React, {ReactElement, ReactNode} from "react";
 import Swipeable from "./swipeable";
 import { useRouter } from 'next/navigation'
 
@@ -11,7 +11,7 @@ export interface NavTabProps {
     selected?:boolean
 }
 
-function NavTab(props:NavTabProps) {
+export function NavTab(props:NavTabProps) {
 
     const router = useRouter();
 
@@ -30,9 +30,11 @@ function NavTab(props:NavTabProps) {
     )
 }
 
+
 export interface NavModalProps {
     onDismiss:() => void,
-    tabs:NavTabProps[]
+    visible:boolean,
+    children:ReactElement<NavTabProps>[]
 }
 
 export default function NavModal(props:NavModalProps) {
@@ -49,7 +51,7 @@ export default function NavModal(props:NavModalProps) {
     }
 
     return (
-        <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div className={"relative z-10 " + (!props.visible ? "hidden" : "")} aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <Swipeable onSwipeLeft={dismiss}>
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
@@ -65,9 +67,9 @@ export default function NavModal(props:NavModalProps) {
                                 </div>
                                 <div className="h-[calc(100%-72px)]">
                                     <div className="min-h-[calc(100%-56px)] border-b-2">
-                                        {props.tabs.map(tab => {return (
-                                            <NavTab key={tab.path} title={tab.title} path={tab.path} selected={tab.selected}/>
-                                        )})}
+                                        
+                                        {props.children}
+
                                     </div>
                                     
                                     <div className="h-[48px] neutral-text-900 flex items-center pl-2 pr-2 font-semibold mt-2">
