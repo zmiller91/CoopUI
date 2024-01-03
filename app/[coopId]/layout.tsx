@@ -1,7 +1,6 @@
 'use client'
 
 import { AppBar } from "../../components/app-bar"
-import { BottomNav } from "../../components/bottom-nav"
 import "../../globals.css"
 import { MobileBottomNav, MobileNav } from "./navigation"
 import React, {useState} from 'react'
