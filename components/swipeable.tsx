@@ -11,11 +11,10 @@ export default function Swipeable(props:SwipeableProps) {
     const [touchStartY, setTouchStartY] = useState(null)
     const [touchEndY, setTouchEndY] = useState(null)
 
-    // the required distance between touchStart and touchEnd to be detected as a swipe
     const minSwipeDistance = 50 
 
     function onTouchStart(e) {
-        setTouchEndX(null) // otherwise the swipe is fired even with usual touch events
+        setTouchEndX(null)
         setTouchStartX(e.targetTouches[0].clientX)
 
         setTouchEndY(null)
@@ -71,7 +70,6 @@ export default function Swipeable(props:SwipeableProps) {
             props.onSwipeUp();
         }
     }
-
 
     return (
         <div onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>

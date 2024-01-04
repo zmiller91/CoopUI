@@ -1,12 +1,10 @@
 'use client'
 
-import { Navigate } from "../../../../components/navigation"
 import componentClient, { Component, ComponentConfig } from "../../../../client/component";
 import React, {useState, useEffect} from "react";
 import { useParams } from "next/navigation";
 import Form from "../../../../components/form/form";
 import TextInput from "../../../../components/form/text-input";
-import { setConfig } from "next/config";
 
 function currentComponent():string {
     return useParams()["componentId"] as string;
@@ -26,7 +24,7 @@ export default function ComponentRegistry() {
     }, [])
 
     function update() {
-        console.log(config);
+        componentClient.post(componentId, config, () => {});
     }
 
     function onChange(value, event) {

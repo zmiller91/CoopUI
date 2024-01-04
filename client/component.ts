@@ -21,6 +21,17 @@ class ComponentClient {
         authClient.get("/component/" + coopId + "/list", (response) => success(response.data.components))
     }
 
+    post(componentId:string, config:ComponentConfig[], success: (response:Component[]) => void) {
+        authClient.post("/component/" + componentId, 
+        {
+            component: {
+                id: componentId,
+                config:config
+            }
+        },
+        (response) => success(response.data.components))
+    }
+
 }
 
 export interface ComponentConfig {

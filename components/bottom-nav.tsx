@@ -18,7 +18,7 @@ export function BottomNavTab(props:BottomNavTabProps) {
     }
 
     function textClass() {
-        return currentPath.startsWith(props.path) ? "neutral-text-200" : "text-primary-500";
+        return currentPath.startsWith(props.path) ? "text-neutral-200" : "text-primary-500";
     }
 
     return (
