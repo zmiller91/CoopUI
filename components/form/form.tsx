@@ -2,7 +2,7 @@ import { Children, ReactNode } from "react";
 
 export default function Form(props:FromProps) {
     return (
-        <div className="lg:w-1/2">
+        <div className="w-full lg:w-1/2">
             <form action={props.onSubmit}>
                 {props.children}
                 <button className="h-[36px] w-full background-accent-500 text-neutral-200 shadow-md rounded-md" 

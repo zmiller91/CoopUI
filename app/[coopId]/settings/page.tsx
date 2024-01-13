@@ -5,6 +5,7 @@ import coopClient from "../../../client/coops"
 import Form from "../../../components/form/form";
 import TextInput from "../../../components/form/text-input";
 import {currentCoop} from "../coop-context"
+import { AppContent } from "../../../components/app-content";
 
 export default function Settings() {
 
@@ -29,10 +30,10 @@ export default function Settings() {
     }
 
     return (
-        <div>
+        <AppContent>
             <Form submitText="Update" onSubmit={update}>
                 <TextInput id="message" title="Message" value={message} onChange={setMessage}/>
             </Form>
-        </div>
+        </AppContent>
     )
 }

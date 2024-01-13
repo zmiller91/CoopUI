@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/navigation'
 import FloatingActionButton from "../../../components/fab";
-
+import { AppContent } from "../../../components/app-content";
 
 function ComponentListEntry(props:ComponentListEntryProps) {
 
@@ -35,6 +35,7 @@ interface ComponentListEntryProps {
 
 export default function Components() {
 
+    const [hasLoaded, setHasLoaded] = useState(false);
     const [components, setComponentes] = useState([]);
     const coopId = currentCoop();
     const router = useRouter();
@@ -42,6 +43,7 @@ export default function Components() {
     useEffect(() => {
         componentClient.list(coopId, (components) => {
             setComponentes(components);
+            setHasLoaded(true);
         })
     }, [])
 
@@ -53,14 +55,15 @@ export default function Components() {
 
 
     return (
-        <div className="light-background dashboard-section h-full">
-
-            <div>
-                {components.map(c => <ComponentListEntry key={c.id} name={c.name} serial={c.serial} id={c.id}/>)}
-                <FloatingActionButton onClick={register}>
-                    <FontAwesomeIcon icon={faPlus} className="h-[16px]"/>
-                </FloatingActionButton>
+        <AppContent hasLoaded={hasLoaded}>
+            <div className="light-background dashboard-section h-full">
+                <div>
+                    {components.map(c => <ComponentListEntry key={c.id} name={c.name} serial={c.serial} id={c.id}/>)}
+                    <FloatingActionButton onClick={register}>
+                        <FontAwesomeIcon icon={faPlus} className="h-[16px]"/>
+                    </FloatingActionButton>
+                </div>
             </div>
-        </div>
+        </AppContent>
     )
 }

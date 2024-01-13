@@ -6,6 +6,7 @@ import Form from "../../../../components/form/form";
 import TextInput from "../../../../components/form/text-input";
 import { currentCoop } from "../../coop-context";
 import { useRouter } from 'next/navigation'
+import { AppContent } from "../../../../components/app-content";
 
 export default function ComponentRegistry() {
 
@@ -22,12 +23,12 @@ export default function ComponentRegistry() {
 
     return (
         <div>
-            <div>
+            <AppContent>
                 <Form submitText="Register" onSubmit={register}>
                     <TextInput id="serial" title="Serial Number" value={serialNumber} onChange={setSerialNumber} required={true}/>
                     <TextInput id="name" title="Name" value={name} onChange={setName} required={true}/>
                 </Form>
-            </div>
+            </AppContent> 
         </div>
     )
 }
