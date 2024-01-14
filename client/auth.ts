@@ -3,7 +3,8 @@ import axios from 'axios';
 
 class AuthClient {
 
-    private readonly domain:string = "http://192.168.50.45:8042"
+    // private readonly domain:string = "http://192.168.50.45:8042"
+    private readonly domain:string = "http://localhost:8042"
     private readonly tokenKey:string = "token";
 
     private config() {

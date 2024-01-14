@@ -1,61 +1,43 @@
 "use client"
 
-
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, ReactNode, Children} from "react";
 import Chart from "./chart";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircle, faDoorClosed, faDoorOpen } from '@fortawesome/free-solid-svg-icons'
+import { StatusInfo, Status } from "./status-info";
 import {__accent_200, __accent_600} from "../../../globals"
 import data, { Datapoint } from "../../../client/data"
 import {currentCoop} from "../coop-context"
 import { AppContent } from "../../../components/app-content";
+import { Card, CardTitle } from "./card";
 
-
-function ChartTab(props:ChartTabProps) {
-
-  return (
-    <div className={"text-center p-1 " + props.className}>
-      <div className="text-xs">{props.label}</div>
-      <div className="text-2xl">{props.value}</div>
-    </div>
-  )
-
-}
-
-interface ChartTabProps{
-  label:string;
-  value:string;
-  className?:string;
-}
-
-
-
-function ChartArea(props:ChartAreaProps) {
-
+function DashCard(props:DashCardProps) {
 
   return (
-    <div>
-      <div className="grid grid-cols-4 gap-0 mb-4">
+    <Card>
+      <div className="grid grid-cols-2">
 
-        <ChartTab label="Temperature" value="100&#8457;" className="border-l-2"/>
-        <ChartTab label="Humidity" value="100%" className="border-l-2"/>
-        <ChartTab label="Food" value="100 lb." className="border-l-2"/>
-        <ChartTab label="Water" value="100%" className="border-l-2 border-r-2"/>
+        <div>
+          <CardTitle title={props.title}/>
+          <div className="text-5xl mb-4">
+            {props.children}
+          </div>
+        </div>
+        
+        <StatusInfo lastCheckin={props.lastCheckin} className="justify-self-end"/>
+      </div>
 
+      <div className="h-[75px]">
+        <Chart detailed={false} data={props.data}/>
       </div>
-      <div className="h-[250px]">
-        <Chart detailed={true} data={props.data}/>
-      </div>
-    </div>
+    </Card>
   )
-
 }
 
-
-interface ChartAreaProps {
-  data: Datapoint[]
+interface DashCardProps {
+  title:string;
+  lastCheckin:number;
+  data: Datapoint[];
+  children:ReactNode;
 }
-
 
 export default function Dashboard(){
 
@@ -76,10 +58,18 @@ export default function Dashboard(){
 }, []);
 
   return (
-      <AppContent>
-        <ChartArea data={humidityData}/>
-      </AppContent>
-      
+    <AppContent className="background-neutral-200">
+
+
+      <DashCard title="Temperature" lastCheckin={5} data={tempData}>
+        5&#8457;
+      </DashCard>
+
+      <DashCard title="Humidity" lastCheckin={10080} data={humidityData}>
+        <span className="text-neutral-500">N/A</span>
+      </DashCard>
+
+    </AppContent>
   );
   
 }
