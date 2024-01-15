@@ -4,70 +4,100 @@ import React, {useState, useEffect, ReactNode, Children} from "react";
 import Chart from "./chart";
 import { StatusInfo, Status } from "./status-info";
 import {__accent_200, __accent_600} from "../../../globals"
-import data, { Datapoint } from "../../../client/data"
+import data, { ComponentData } from "../../../client/data"
 import {currentCoop} from "../coop-context"
 import { AppContent } from "../../../components/app-content";
-import { Card, CardTitle } from "./card";
+import { Card, CardTitle } from "../../../components/card";
+import { useRouter, usePathname } from 'next/navigation'
 
-function DashCard(props:DashCardProps) {
+function WeatherSensorCard(props:WeatherSensorCardProps) {
+
+
+  const router = useRouter();
+  const path = usePathname();
+
+  function latest(metric:string) {
+      if(!props.data.data) {
+        return "N/A"
+      }
+
+      for(var i = props.data.data.length - 1; i >= 0; i--) {
+        const dataPoint = props.data.data[i];
+        if(dataPoint[metric]) {
+          return dataPoint[metric];
+        }
+      }
+
+      return "N/A";
+  }
+
+  function goToDetail() {
+    router.push("./dashboard/" + props.data.componentId);
+  }
 
   return (
-    <Card>
+    <Card onClick={goToDetail}>
       <div className="grid grid-cols-2">
-
-        <div>
-          <CardTitle title={props.title}/>
-          <div className="text-5xl mb-4">
-            {props.children}
-          </div>
-        </div>
-        
+        <CardTitle title={props.title}/>
         <StatusInfo lastCheckin={props.lastCheckin} className="justify-self-end"/>
       </div>
 
+
+      <div className="text-5xl mb-4">
+
+        <div className="grid grid-cols-2 pt-4 pb-4 pr-2 pl-2">
+            <div className="text-5xl justify-self-end pr-5">
+              {latest("TEMPERATURE")}<sup className="text-2xl">&#8457;</sup>
+            </div>
+            <div className="text-5xl pl-5">
+            {latest("HUMIDITY")}<sup className="text-2xl">%RH</sup>
+            </div>
+        </div>
+
+      </div>
+
+
       <div className="h-[75px]">
-        <Chart detailed={false} data={props.data}/>
+        <Chart detailed={false} data={props.data.data} dataKey="TEMPERATURE" dataKey2="HUMIDITY"/>
       </div>
     </Card>
   )
 }
 
-interface DashCardProps {
+
+interface WeatherSensorCardProps {
   title:string;
   lastCheckin:number;
-  data: Datapoint[];
-  children:ReactNode;
+  data: ComponentData;
 }
 
 export default function Dashboard(){
 
-  const [tempData, setTempData] = useState([]);
-  const [humidityData, setHumidityData] = useState([]);
-  const [foodData, setFoodData] = useState([]);
-  const [waterData, setWaterData] = useState([]);
+  const chartsToLoad = 4;
+  var loadedCount = 0;
+
+  const [coopData, setCoopData] = useState([]);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const coopId = currentCoop();
 
   useEffect(() => {
-    
-    data.getData(coopId, "temperature", setTempData)
-    data.getData(coopId, "humidity", setHumidityData)
-    data.getData(coopId, "food", setFoodData)
-    data.getData(coopId, "water", setWaterData)
-
+    data.getCoopData(coopId, (data) => {
+      setCoopData(data);
+      setHasLoaded(true);
+    });
+  
 }, []);
 
   return (
-    <AppContent className="background-neutral-200">
+    <AppContent hasLoaded={hasLoaded}>
 
 
-      <DashCard title="Temperature" lastCheckin={5} data={tempData}>
-        5&#8457;
-      </DashCard>
-
-      <DashCard title="Humidity" lastCheckin={10080} data={humidityData}>
-        <span className="text-neutral-500">N/A</span>
-      </DashCard>
+      {coopData.map(d => {
+        return (
+          <WeatherSensorCard key={d.componentId} title="Weather Sensor" lastCheckin={5} data={d}/>
+        )
+      })}
 
     </AppContent>
   );

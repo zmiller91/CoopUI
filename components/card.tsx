@@ -20,7 +20,7 @@ export function Card(props:CardProps) {
 
     return (
         <div className="p-2">
-            <div className="p-4 rounded-md shadow-md bg-white ">
+            <div className="p-4 rounded-md shadow-md bg-white cursor-pointer" onClick={props.onClick}>
                 {props.children}
             </div>
         </div>
@@ -31,4 +31,5 @@ export function Card(props:CardProps) {
 
 export interface CardProps {
     children:ReactNode;
+    onClick?: () => void;
 }

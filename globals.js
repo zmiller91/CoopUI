@@ -1,3 +1,6 @@
+
+export const __font_family = "Roboto";
+
 /* Primary = "Spill the Beans */
 export const __primary_100 = "#FFF8F2";
 export const __primary_200 = "#FED9BF";

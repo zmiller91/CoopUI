@@ -11,70 +11,8 @@
 /* https://goodpalette.io/a13b1a-5b2fe0-c2b9b6 */
 /* primary color #A13B1A */
 
-.header-background {
-    background-color: var(--primary-500);
-}
-
-.primary-text-100 {
-    color: var(--primary-100)
-}
-
-.primary-text-700 {
-    color: var(--primary-700)
-}
-
-.accent-text-700 {
-    color: var(--accent-700)
-}
-
-
-.neutral-text-200 {
-    color: var(--neutral-200)
-}
-
-.neutral-text-500 {
-    color: var(--neutral-500)
-}
-
-.neutral-text-600 {
-    color: var(--neutral-600)
-}
-
-.neutral-text-700 {
-    color: var(--neutral-700)
-}
-
-.neutral-text-800 {
-    color: var(--neutral-800)
-}
-
-.neutral-text-900 {
-    color: var(--neutral-900)
-}
-
-.dashboard-section {
-    border-radius: var(--border-radius);
-
-}
-
-.rounded {
-    border-radius: var(--border-radius);
-}
-
-.primary-dark-background {
-    background-color: var(--primary-800);
-}
-
-.shaded-background {
-    background-color: var(--neutral-200)     ;
-}
-
 .light-background {
     background-color: white;
-}
-
-.error-text {
-    color: var(--error-500);
 }
 
 
@@ -361,6 +299,21 @@
 }
 
 
+.text-accent-100 {
+    color: var(--accent-100)
+}
+
+.text-accent-200 {
+    color: var(--accent-200)
+}
+
+.text-accent-300 {
+    color: var(--accent-300)
+}
+
+.text-accent-400 {
+    color: var(--accent-400)
+}
 
 .text-accent-500 {
     color: var(--accent-500)
@@ -372,6 +325,88 @@
 
 .text-accent-700 {
     color: var(--accent-700)
+}
+
+.text-accent-800 {
+    color: var(--accent-800)
+}
+
+.text-accent-900 {
+    color: var(--accent-900)
+}
+
+
+.text-error-100 {
+    color: var(--error-100)
+}
+
+.text-error-200 {
+    color: var(--error-200)
+}
+
+.text-error-300 {
+    color: var(--error-300)
+}
+
+.text-error-400 {
+    color: var(--error-400)
+}
+
+.text-error-500 {
+    color: var(--error-500)
+}
+
+.text-error-600 {
+    color: var(--error-600)
+}
+
+.text-error-700 {
+    color: var(--error-700)
+}
+
+.text-error-800 {
+    color: var(--error-800)
+}
+
+.text-error-900 {
+    color: var(--error-900)
+}
+
+
+.text-warn-100 {
+    color: var(--warn-100)
+}
+
+.text-warn-200 {
+    color: var(--warn-200)
+}
+
+.text-warn-300 {
+    color: var(--warn-300)
+}
+
+.text-warn-400 {
+    color: var(--warn-400)
+}
+
+.text-warn-500 {
+    color: var(--warn-500)
+}
+
+.text-warn-600 {
+    color: var(--warn-600)
+}
+
+.text-warn-700 {
+    color: var(--warn-700)
+}
+
+.text-warn-800 {
+    color: var(--warn-800)
+}
+
+.text-warn-900 {
+    color: var(--warn-900)
 }
 
 

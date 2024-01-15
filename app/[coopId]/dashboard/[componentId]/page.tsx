@@ -1,0 +1,86 @@
+'use client'
+
+import React, {useState, useEffect} from "react";
+import Tabs from "../../../../components/tabs";
+import { AppContent } from "../../../../components/app-content";
+import { StatusInfo } from "../status-info";
+import Chart from "../chart";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBatteryFull, faBatteryThreeQuarters, faBatteryHalf, faBatteryQuarter, faBatteryEmpty} from '@fortawesome/free-solid-svg-icons'
+import data, { ComponentData, MetricInterval } from "../../../../client/data"
+import { currentCoop } from "../../coop-context";
+import { currentComponent } from "./component-context";
+
+function BatteryLevel(props:BatteryLevelProps) {
+
+    if(props.level > 87) {
+        return <FontAwesomeIcon icon={faBatteryFull} className="h-[24px] text-neutral-700"/>;
+    }
+
+    if(props.level > 62) {
+        return <FontAwesomeIcon icon={faBatteryThreeQuarters} className="h-[24px] text-neutral-700"/>
+    }
+
+    if(props.level > 37) {
+        return <FontAwesomeIcon icon={faBatteryHalf} className="h-[24px] text-neutral-700"/>
+    }
+
+    if(props.level > 12) {
+        return <FontAwesomeIcon icon={faBatteryQuarter} className="h-[24px] text-warn-500"/>
+    }
+
+    return <FontAwesomeIcon icon={faBatteryEmpty} className="h-[24px] text-error-500"/>
+
+}
+
+interface BatteryLevelProps {
+    level:number;
+}
+
+export default function ComponentDashboard(props:ComponentDashboardProps) {
+  
+    const coopId = currentCoop();
+    const componentId = currentComponent();
+    const [componentData, setComponentData] = useState({} as ComponentData);
+  
+    useEffect(() => {
+        data.getComponentData(coopId, componentId, MetricInterval.DAY, setComponentData);
+    }, []);
+
+    function switchTab(tab:string) {
+        data.getComponentData(coopId, componentId, MetricInterval[tab], setComponentData);
+    }
+
+    return (
+        <div>
+            <AppContent>
+
+                <div className="grid grid-cols-2">
+                    <StatusInfo lastCheckin={5}/>
+                    <div className="justify-self-end">
+                        <BatteryLevel level={98}/>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 pt-4 pb-4 pr-2 pl-2">
+                    <div className="text-5xl justify-self-end pr-5">
+                        66<sup className="text-2xl">&#8457;</sup>
+                    </div>
+                    <div className="text-5xl pl-5">
+                        18<sup className="text-2xl">%RH</sup>
+                    </div>
+                </div>
+
+                <Tabs tabs={[MetricInterval.DAY, MetricInterval.WEEK, MetricInterval.MONTH, MetricInterval.YEAR]} onChange={switchTab}/>
+
+                <div className="pt-4 h-[325px]">
+                    <Chart detailed={true} data={componentData.data} dataKey="TEMPERATURE" dataKey2="HUMIDITY" />
+                </div>
+            </AppContent>
+        </div>
+    )
+}
+
+export interface ComponentDashboardProps {
+    initialData: ComponentData;
+}

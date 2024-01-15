@@ -57,7 +57,7 @@ export default function NavModal(props:NavModalProps) {
 
                 <div className="fixed inset-0 z-10 w-screen overflow-hidden">
                     <div className="flex justify-left" onClick={dismissClick}>
-                        <div className="relative transform overflow-y-auto bg-white shadow-xl transition-all h-[100vh] w-[calc(100vw-56px)]">
+                        <div className="relative transform overflow-y-auto light-background shadow-xl transition-all h-[100vh] w-[calc(100vw-56px)]">
 
                             <div className="h-[100%] pl-2 pr-2">
 

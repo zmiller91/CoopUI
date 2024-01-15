@@ -22,7 +22,7 @@ export function BottomNavTab(props:BottomNavTabProps) {
     }
 
     return (
-        <div className={"pr-3 pl-3 flex items-center justify-center " + textClass()} onClick={() => goTo(props.path)}>
+        <div className={"pr-3 pl-3 flex items-center justify-center cursor-pointer " + textClass()} onClick={() => goTo(props.path)}>
             {props.children}
         </div>
     )

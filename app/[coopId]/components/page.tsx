@@ -56,7 +56,7 @@ export default function Components() {
 
     return (
         <AppContent hasLoaded={hasLoaded}>
-            <div className="light-background dashboard-section h-full">
+            <div className="light-background h-full">
                 <div>
                     {components.map(c => <ComponentListEntry key={c.id} name={c.name} serial={c.serial} id={c.id}/>)}
                     <FloatingActionButton onClick={register}>
