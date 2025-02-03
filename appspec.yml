@@ -4,6 +4,9 @@ files:
   - source: build/
     destination: /home/ec2-user/coopui
 hooks:
+  BeforeInstall:
+    - location: scripts/aws/delete.sh
+      timeout: 300
   AfterInstall:
     - location: scripts/aws/copy-static.sh
       timeout: 300
