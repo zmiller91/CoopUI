@@ -39,6 +39,10 @@ class CoopClient {
         authClient.get("/coops/data/" + coopId + "/" + metric, (response) => success(response.data))
     }
 
+    getInfo(coopId: string, success: (response:any) => void) {
+        authClient.get("/coops/" + coopId, (response) => success(response.data.coop))
+    }
+
 }
 
 export default new CoopClient();

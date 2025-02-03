@@ -49,6 +49,8 @@ class Data {
 export interface ComponentData {
     componentId:string;
     data:{[key:string]:any}[];
+    batteryLevel:number;
+    lastUpdate:number;
 }
 
 export interface Datapoint {

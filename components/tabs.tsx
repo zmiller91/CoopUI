@@ -16,7 +16,7 @@ export default function Tabs(props:TabProps) {
     }
 
     return (
-        <div className={"h-[48px] w-full grid grid-cols-" + props.tabs.length}>
+        <div className={"h-[48px] w-full grid grid-cols-4"}>
             {props.tabs.map(t => {
                 return <div  key={t} className={"block flex items-center justify-center text-sm font-semibold " + 
                 "pl-2 pr-2 pb-3 pt-3 cursor-pointer " + selectedClass(t)} onClick={() => select(t)}>

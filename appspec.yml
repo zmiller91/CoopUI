@@ -1,0 +1,15 @@
+version: 0.0
+os: linux
+files:
+  - source: .next/**/*
+    destination: /home/ec2-user/coopui
+hooks:
+  AfterInstall:
+    - location: scripts/aws/copy-static.sh
+      timeout: 300
+  ApplicationStart:
+    - location: scripts/aws/start.sh
+      timeout: 300
+  ApplicationStop:
+    - location: scripts/aws/shutdown.sh
+      timeout: 300

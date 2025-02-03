@@ -2,8 +2,7 @@
 
 import React  from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import {__primary_800, __primary_200, __accent_800, __accent_200, __font_family} from "../../../globals"
-import { Datapoint } from '../../../client/data';
+import {__primary_500, __primary_200, __accent_700, __accent_300, __font_family} from "../../../globals"
 
 function NoDataChart() {
   return (
@@ -19,8 +18,8 @@ function DetailedChart(props:DetailedChartProps) {
     <ResponsiveContainer width="100%" height="100%">
       <LineChart margin={{ top: 0, left: -30, right: -30, bottom: 0 }} data={props.data}>
 
-        <Line yAxisId="right" type="basis" dataKey={props.dataKey} stroke={__accent_800} strokeWidth="3" dot={false} />
-        {props.dataKey2 && <Line yAxisId="left" type="basis" dataKey={props.dataKey2} stroke={__accent_800} strokeWidth="3"  dot={false} />}
+        <Line yAxisId="right" type="basis" dataKey={props.dataKey} stroke={__accent_700} strokeWidth="3" dot={false} />
+        {props.dataKey2 && <Line yAxisId="left" type="basis" dataKey={props.dataKey2} stroke={__accent_300} strokeWidth="3"  dot={false} />}
 
         <YAxis yAxisId="left" textAnchor='end' axisLine={false} tickLine={false} fontSize="12" fontFamily={__font_family} domain={[0,100]}/>
         { props.dataKey2 && <YAxis yAxisId="right" orientation="right" textAnchor='start' axisLine={false} tickLine={false} fontSize="12" fontFamily={__font_family} domain={[0,100]}/>}
@@ -47,8 +46,8 @@ function PreviewChart(props:PreviewChartProps) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart margin={{ top: 0, left: -115, right: 5, bottom: 0 }} data={props.data}>
-        <Line yAxisId="right" type="basis" dataKey={props.dataKey} stroke={__accent_800} dot={false}/>
-        {props.dataKey2 && <Line yAxisId="left" type="basis" dataKey={props.dataKey2} stroke={__accent_800} dot={false} />}
+        <Line yAxisId="right" type="basis" dataKey={props.dataKey} stroke={__accent_700} dot={false} strokeWidth="3" />
+        {props.dataKey2 && <Line yAxisId="left" type="basis" dataKey={props.dataKey2} stroke={__accent_300} dot={false}  strokeWidth="3" />}
         <YAxis  yAxisId="left" textAnchor='start' tick={false} axisLine={false} tickLine={false} fontSize="12" fontFamily={__font_family} domain={[0,100]}/>
         {props.dataKey2 && <YAxis  yAxisId="right" textAnchor='start' tick={false} axisLine={false} tickLine={false} fontSize="12" fontFamily={__font_family} domain={[0,100]}/>}
       </LineChart>

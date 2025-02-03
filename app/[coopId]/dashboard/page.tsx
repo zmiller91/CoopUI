@@ -16,30 +16,38 @@ function WeatherSensorCard(props:WeatherSensorCardProps) {
   const router = useRouter();
   const path = usePathname();
 
-  function latest(metric:string) {
-      if(!props.data.data) {
-        return "N/A"
-      }
-
-      for(var i = props.data.data.length - 1; i >= 0; i--) {
-        const dataPoint = props.data.data[i];
-        if(dataPoint[metric]) {
-          return dataPoint[metric];
+    function getMostRecentData() {
+        var mostRecent = {};
+        var idx = -1;
+        for(let i in props.data.data ) {
+            if(props.data.data[i].idx > idx) {
+                idx = props.data.data[i].idx;
+                mostRecent = props.data.data[i];
+            }
         }
-      }
 
-      return "N/A";
-  }
+        console.log(mostRecent);
+        return mostRecent;
+    }
 
-  function goToDetail() {
-    router.push("./dashboard/" + props.data.componentId);
-  }
+    function toFahrenheit(celsius) {
+        return Math.round((celsius * 9/5) + 32);
+    }
+
+    function goToDetail() {
+        router.push("./dashboard/" + props.data.componentId);
+    }
+
+    function getLastCheckIn() {
+        // Data sent over in milliseconds, turn it into minutes
+        return Math.round((Date.now() - props.data.lastUpdate) / 1000 / 60);
+    }
 
   return (
     <Card onClick={goToDetail}>
       <div className="grid grid-cols-2">
-        <CardTitle title={props.title}/>
-        <StatusInfo lastCheckin={props.lastCheckin} className="justify-self-end"/>
+        <CardTitle title={props.name} subtitle={props.type}/>
+        <StatusInfo lastCheckin={getLastCheckIn()} className="justify-self-end"/>
       </div>
 
 
@@ -47,10 +55,10 @@ function WeatherSensorCard(props:WeatherSensorCardProps) {
 
         <div className="grid grid-cols-2 pt-4 pb-4 pr-2 pl-2">
             <div className="text-5xl justify-self-end pr-5">
-              {latest("TEMPERATURE")}<sup className="text-2xl">&#8457;</sup>
+              {toFahrenheit(getMostRecentData()["TEMPERATURE"])}<sup className="text-2xl">&#8457;</sup>
             </div>
             <div className="text-5xl pl-5">
-            {latest("HUMIDITY")}<sup className="text-2xl">%RH</sup>
+            {getMostRecentData()["HUMIDITY"]}<sup className="text-2xl">%RH</sup>
             </div>
         </div>
 
@@ -66,9 +74,9 @@ function WeatherSensorCard(props:WeatherSensorCardProps) {
 
 
 interface WeatherSensorCardProps {
-  title:string;
-  lastCheckin:number;
-  data: ComponentData;
+    name:string
+    type:string;
+    data: ComponentData;
 }
 
 export default function Dashboard(){
@@ -95,7 +103,7 @@ export default function Dashboard(){
 
       {coopData.map(d => {
         return (
-          <WeatherSensorCard key={d.componentId} title="Weather Sensor" lastCheckin={5} data={d}/>
+          <WeatherSensorCard key={d.componentId} name={d.componentName} type={d.componentTypeDescription} data={d}/>
         )
       })}
 

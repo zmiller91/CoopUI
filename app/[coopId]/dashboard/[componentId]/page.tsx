@@ -51,30 +51,76 @@ export default function ComponentDashboard(props:ComponentDashboardProps) {
         data.getComponentData(coopId, componentId, MetricInterval[tab], setComponentData);
     }
 
+    function toFahrenheit(celsius) {
+        return Math.round((celsius * 9/5) + 32);
+    }
+
+    function convertComponentData() {
+
+        const converted = [];
+        for(let i in componentData.data ) {
+            const copy = JSON.parse(JSON.stringify(componentData.data[i]));
+            copy["TEMPERATURE"] = toFahrenheit(copy["TEMPERATURE"]);
+            converted.push(copy);
+        }
+
+        return converted;
+    }
+
+    function getMostRecentData() {
+        var mostRecent = {};
+        var idx = -1;
+        for(let i in componentData.data ) {
+            if(componentData.data[i].idx > idx) {
+                idx = componentData.data[i].idx;
+                mostRecent = componentData.data[i];
+            }
+        }
+
+        return mostRecent;
+    }
+
+    function getBatteryLevel() {
+        return componentData.batteryLevel;
+    }
+
+    function getLastCheckIn() {
+        // Data sent over in milliseconds, turn it into minutes
+        return Math.round((Date.now() - componentData.lastUpdate) / 1000 / 60);
+    }
+
+    function getRecentTemp() {
+        return toFahrenheit(getMostRecentData()['TEMPERATURE']);
+    }
+
+    function getRecentHumidity() {
+        return getMostRecentData()['HUMIDITY'];
+    }
+
     return (
         <div>
             <AppContent>
 
                 <div className="grid grid-cols-2">
-                    <StatusInfo lastCheckin={5}/>
+                    <StatusInfo lastCheckin={getLastCheckIn()}/>
                     <div className="justify-self-end">
-                        <BatteryLevel level={98}/>
+                        <BatteryLevel level={getBatteryLevel()}/>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 pt-4 pb-4 pr-2 pl-2">
                     <div className="text-5xl justify-self-end pr-5">
-                        66<sup className="text-2xl">&#8457;</sup>
+                        {getRecentTemp()}<sup className="text-2xl">&#8457;</sup>
                     </div>
                     <div className="text-5xl pl-5">
-                        18<sup className="text-2xl">%RH</sup>
+                        {getRecentHumidity()}<sup className="text-2xl">%RH</sup>
                     </div>
                 </div>
 
                 <Tabs tabs={[MetricInterval.DAY, MetricInterval.WEEK, MetricInterval.MONTH, MetricInterval.YEAR]} onChange={switchTab}/>
 
                 <div className="pt-4 h-[325px]">
-                    <Chart detailed={true} data={componentData.data} dataKey="TEMPERATURE" dataKey2="HUMIDITY" />
+                    <Chart detailed={true} data={convertComponentData()} dataKey="TEMPERATURE" dataKey2="HUMIDITY" />
                 </div>
             </AppContent>
         </div>
@@ -82,5 +128,5 @@ export default function ComponentDashboard(props:ComponentDashboardProps) {
 }
 
 export interface ComponentDashboardProps {
-    initialData: ComponentData;
+//     initialData: ComponentData;
 }
