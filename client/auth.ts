@@ -4,8 +4,8 @@ import axios from 'axios';
 class AuthClient {
 
 //     private readonly domain:string = "http://192.168.50.45:8042"
-    private readonly domain:string = "https://api.pisprout.com"
-//     private readonly domain:string = "http://localhost:8042"
+//     private readonly domain:string = "https://api.pisprout.com"
+    private readonly domain:string = "http://localhost:8042"
     private readonly tokenKey:string = "token";
 
     private config() {
@@ -17,8 +17,8 @@ class AuthClient {
         }
     }
 
-    get(path:string, success: (response:any) => void) {
-        axios.get(this.domain + path, this.config()).then(success).catch()
+    get(path:string, success: (response:any) => void, error?: () => void) {
+        axios.get(this.domain + path, this.config()).then(success).catch(() => error && error())
     }
 
     post(path:string, data: any, success: (response:any) => void) {
@@ -28,6 +28,13 @@ class AuthClient {
     login(username: string, password: string, success: () => void) {
         axios.post(this.domain + "/login", {username, password}).then(response => {
             localStorage.setItem(this.tokenKey, response.data["token"])
+            success()
+        })
+    }
+
+    register(username: string, password: string, success: () => void) {
+        axios.post(this.domain + "/register", {username, password}).then(response => {
+            localStorage.setItem(this.tokenKey, response.data)
             success()
         })
     }

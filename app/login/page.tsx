@@ -28,10 +28,14 @@ export default function Login() {
         if (coops.length > 0) {
           router.push("/" + coops[0].id + "/dashboard")
         } else {
-          router.push(href("/coops"))
+          router.push(href("/coop-registry"))
         }
       })
     })
+  }
+
+  function register() {
+    router.push(href("/register"))
   }
 
   return (
@@ -47,6 +51,12 @@ export default function Login() {
             <TextInput id="password" title="Password" type="password" value={password} onChange={setPassowrd} required={true} />
           </Form>
         </div>
+
+        <button className=" mt-4 h-[36px] w-full background-neutral-200 text-neutral-800 shadow-md rounded-md" type="button" onClick={register}>
+            <span className="pr-4 pl-4 flex center-items justify-center">
+                Register
+            </span>
+        </button>
 
       </AppContent>
 

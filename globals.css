@@ -15,6 +15,10 @@
     background-color: white;
 }
 
+button:disabled {
+    background-color: var(--neutral-300);
+    color: var(--neutral-600);
+}
 
 
 .background-primary-100 {

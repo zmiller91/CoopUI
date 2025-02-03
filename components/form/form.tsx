@@ -6,7 +6,7 @@ export default function Form(props:FromProps) {
             <form action={props.onSubmit}>
                 {props.children}
                 <button className="h-[36px] w-full background-accent-500 text-neutral-200 shadow-md rounded-md" 
-                        type="submit" >
+                        type="submit" disabled={props.disabled}>
                             <span className="pr-4 pl-4 flex center-items justify-center">
                                 {props.submitText}
                             </span>
@@ -21,4 +21,5 @@ export interface FromProps {
     submitText: string;
     onSubmit: () => void;
     children: ReactNode;
+    disabled?: boolean;
 }

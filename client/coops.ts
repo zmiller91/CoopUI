@@ -9,8 +9,8 @@ export interface CoopDAO {
 
 class CoopClient {
 
-    list(success: (response:CoopDAO[]) => void) {
-        authClient.get("/coops/list", (response) => success(response.data.coops))
+    list(success: (response:CoopDAO[]) => void, error?: () => void) {
+        authClient.get("/coops/list", (response) => success(response.data.coops), error)
     }
 
     register(id:string, name:string, success: (response:any) => void) {

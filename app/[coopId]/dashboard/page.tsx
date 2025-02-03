@@ -2,8 +2,7 @@
 
 import React, {useState, useEffect, ReactNode, Children} from "react";
 import Chart from "./chart";
-import { StatusInfo, Status } from "./status-info";
-import {__accent_200, __accent_600} from "../../../globals"
+import { StatusInfo } from "./status-info";
 import data, { ComponentData } from "../../../client/data"
 import {currentCoop} from "../coop-context"
 import { AppContent } from "../../../components/app-content";
@@ -26,7 +25,6 @@ function WeatherSensorCard(props:WeatherSensorCardProps) {
             }
         }
 
-        console.log(mostRecent);
         return mostRecent;
     }
 
