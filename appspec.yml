@@ -3,6 +3,8 @@ os: linux
 files:
   - source: build/
     destination: /home/ec2-user/coopui
+  - source: scripts/aws/
+    destination: /home/ec2-user/coopui
 hooks:
   BeforeInstall:
     - location: scripts/aws/delete.sh

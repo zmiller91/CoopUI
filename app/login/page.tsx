@@ -52,11 +52,13 @@ export default function Login() {
           </Form>
         </div>
 
-        <button className=" mt-4 h-[36px] w-full background-neutral-200 text-neutral-800 shadow-md rounded-md" type="button" onClick={register}>
-            <span className="pr-4 pl-4 flex center-items justify-center">
-                Register
-            </span>
-        </button>
+        <div className="w-full lg:w-1/2">
+          <button className=" mt-4 h-[36px] w-full background-neutral-200 text-neutral-800 shadow-md rounded-md" type="button" onClick={register}>
+              <span className="pr-4 pl-4 flex center-items justify-center">
+                  Register
+              </span>
+          </button>
+        </div>
 
       </AppContent>
 
