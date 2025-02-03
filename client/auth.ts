@@ -1,11 +1,10 @@
 import axios from 'axios';
 
-
 class AuthClient {
 
-//     private readonly domain:string = "http://192.168.50.45:8042"
-//     private readonly domain:string = "https://api.pisprout.com"
-    private readonly domain:string = "http://localhost:8042"
+    // This process.env has to be formatted exactly this way so that nodejs will perform a replacement when it goes to
+    // compile this file: https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#bundling-environment-variables-for-the-browser
+    private readonly domain:string = process.env['NEXT_PUBLIC_API_URL'];
     private readonly tokenKey:string = "token";
 
     private config() {
