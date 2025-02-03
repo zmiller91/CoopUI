@@ -1,1 +1,1 @@
-sudo -rm -rf /home/ec2-user/coopui
+sudo -rm /home/ec2-user/coopui
