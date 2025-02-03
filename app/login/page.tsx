@@ -17,21 +17,28 @@ export default function Login() {
   const router = useRouter();
   const [username, setUserName] = useState("")
   const [password, setPassowrd] = useState("")
+  const [error, setError] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  function login() {
-
-    console.log("Logging in...");
-    setLoading(true);
-    authClient.login(username, password, () => {
-      coopClient.list((coops) => {
-        if (coops.length > 0) {
-          router.push("/" + coops[0].id + "/dashboard")
-        } else {
-          router.push(href("/coop-registry"))
-        }
-      })
+  function loginSuccess() {
+    coopClient.list((coops) => {
+      if (coops.length > 0) {
+        router.push("/" + coops[0].id + "/dashboard")
+      } else {
+        router.push(href("/coop-registry"))
+      }
     })
+  }
+
+  function loginError(error: any) {
+    setLoading(false);
+    setError(true);
+  }
+
+  function login() {
+    setLoading(true);
+    setError(false);
+    authClient.login(username, password, loginSuccess, loginError)
   }
 
   function register() {
@@ -58,6 +65,11 @@ export default function Login() {
                   Register
               </span>
           </button>
+
+          <div className="mt-4 text-center text-error-500">
+            {error && <div>Invalid username or password.</div>}
+          </div>
+
         </div>
 
       </AppContent>

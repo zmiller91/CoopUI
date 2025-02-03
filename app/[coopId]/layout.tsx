@@ -28,17 +28,13 @@ export default function RootLayout({ children }) {
 }, []);
 
   return (
-    <html lang="en">
-      <body className="h-screen">
+        <div>
+            <AppBar title={coop.name} onNavToggle={toggleNavBar}/>
+            <MobileNav onDismiss={toggleNavBar} visible={navVisible}/>
 
-        <AppBar title={coop.name} onNavToggle={toggleNavBar}/>
-        <MobileNav onDismiss={toggleNavBar} visible={navVisible}/>
+            {children}
 
-        {children}
-
-        <MobileBottomNav/>
-
-      </body>
-    </html>
+            <MobileBottomNav/>
+        </div>
   )
 }

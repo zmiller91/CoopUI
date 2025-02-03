@@ -24,11 +24,13 @@ class AuthClient {
         axios.post(this.domain + path, data, this.config()).then(success)
     }
 
-    login(username: string, password: string, success: () => void) {
-        axios.post(this.domain + "/login", {username, password}).then(response => {
-            localStorage.setItem(this.tokenKey, response.data["token"])
-            success()
-        })
+    login(username: string, password: string, success: () => void, error?: (reason:any) => void) {
+        axios.post(this.domain + "/login", {username, password})
+            .then(response => {
+                localStorage.setItem(this.tokenKey, response.data["token"])
+                success()
+            })
+            .catch((reason) => error && error(reason))
     }
 
     register(username: string, password: string, success: () => void) {
