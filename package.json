@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "next dev",
-    "build": "npm install && next build && mv .next/ build/",
+    "build": "npm install && next build",
     "start": "next start",
     "lint": "next lint"
   },
