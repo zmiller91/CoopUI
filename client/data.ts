@@ -51,6 +51,7 @@ export interface ComponentData {
     data:{[key:string]:any}[];
     batteryLevel:number;
     lastUpdate:number;
+    componentType: string;
 }
 
 export interface Datapoint {

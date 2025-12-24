@@ -12,7 +12,7 @@ export function AppContent(props:AppContent) {
     return (
         <div>
             <LoadingIndicator isLoading={props.hasLoaded !== undefined ? !props.hasLoaded : false}/>
-            <div className={"h-[calc(100vh-"+heightAdjustment+"px)] w-screen overflow-auto pr-2 pl-2 pt-4 pb-4 " + props.className}>
+            <div className={"h-[calc(100vh-"+heightAdjustment+"px)] w-screen overflow-auto pr-2 pl-2 pt-4 pb-[56px] " + (props.className || "")}>
                 {(props.hasLoaded == undefined || props.hasLoaded) && props.children}
             </div>
         </div>

@@ -18,11 +18,11 @@ export function BottomNavTab(props:BottomNavTabProps) {
     }
 
     function textClass() {
-        return currentPath.startsWith(props.path) ? "text-neutral-200" : "text-primary-500";
+        return currentPath.startsWith(props.path) ? "text-neutral-100 shadow-inner" : "text-primary-400 hover:text-neutral-100";
     }
 
     return (
-        <div className={"pr-3 pl-3 flex items-center justify-center cursor-pointer " + textClass()} onClick={() => goTo(props.path)}>
+        <div className={"pr-3 pl-3 flex items-center justify-center cursor-pointer transition-all duration-200 " + textClass()} onClick={() => goTo(props.path)}>
             {props.children}
         </div>
     )
@@ -40,7 +40,7 @@ export function BottomNav(props:BottomNavProps) {
     }
 
     return (
-        <div className="fixed bottom-0 background-primary-700 h-[56px] w-[100vw]">
+        <div className="fixed bottom-0 h-[56px] w-[100vw] background-primary-700-glossy">
             <div className="pt-2 pb-3 flex items-center justify-center h-full">
 
                 {Children.map(props.children, child => {return (
