@@ -12,6 +12,16 @@ function NoDataChart() {
     </div>
   )
 }
+const formatTick = (value: string | number | Date) => {
+  const d = new Date(value);
+  return d.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    hour12: true
+  }).replace(" ", " · ");
+};
+
 
 function DetailedChart(props:DetailedChartProps) {
 
@@ -26,7 +36,14 @@ function DetailedChart(props:DetailedChartProps) {
         { props.dataKey2 && <YAxis yAxisId="left" orientation="right" textAnchor='start' axisLine={false} tickLine={false} fontSize="12" fontFamily={__font_family} domain={[0,100]}/>}
         
         <CartesianGrid vertical={false}/>
-        <XAxis dataKey="date" textAnchor='end' axisLine={false} fontSize="12" fontFamily={__font_family}/>
+        <XAxis dataKey="date"
+               tickFormatter={formatTick}
+               angle={-30}
+               textAnchor="end"
+               height={56}
+               fontSize={12}
+               fontFamily={__font_family}
+        />
         <Tooltip />
 
       </LineChart>

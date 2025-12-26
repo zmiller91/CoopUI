@@ -18,7 +18,7 @@ export function BottomNavTab(props:BottomNavTabProps) {
     }
 
     function textClass() {
-        return currentPath.startsWith(props.path) ? "text-neutral-100 shadow-inner" : "text-primary-400 hover:text-neutral-100";
+        return currentPath.startsWith(props.path) ? "text-neutral-100" : "text-primary-400";
     }
 
     return (
@@ -40,7 +40,7 @@ export function BottomNav(props:BottomNavProps) {
     }
 
     return (
-        <div className="fixed bottom-0 h-[56px] w-[100vw] background-primary-700-glossy">
+        <div className="fixed bottom-0 h-[56px] w-[100vw] background-primary-700">
             <div className="pt-2 pb-3 flex items-center justify-center h-full">
 
                 {Children.map(props.children, child => {return (

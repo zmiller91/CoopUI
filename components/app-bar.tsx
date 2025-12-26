@@ -14,7 +14,7 @@ export function AppBar(props:AppBarProps) {
             
             <div className='
             h-[56px] pt-4 pb-4
-            bg-gradient-to-b from-primary-500 via-primary-500 to-primary-600
+            bg-gradient-to-b from-primary-800 via-primary-800 to-primary-900
             text-neutral-200
             shadow-[0_4px_16px_rgba(0,0,0,0.35)]'>
 
