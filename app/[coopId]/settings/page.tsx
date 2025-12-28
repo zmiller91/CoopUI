@@ -14,7 +14,6 @@ export default function Settings() {
 
     useEffect(() => {
         coopClient.getSettings(coopId, (settings) => {
-            console.log(settings);
             setMessage(settings.message)
         })
     }, [])

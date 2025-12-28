@@ -7,7 +7,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className="h-screen">
+      <body className="font-sans h-screen">
 
         {children}
 

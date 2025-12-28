@@ -1,14 +1,17 @@
 'use client'
 
-import React, {useState} from "react";
+import React, { useState} from "react";
 import componentClient from "../../../../client/component"
 import Form from "../../../../components/form/form";
 import TextInput from "../../../../components/form/text-input";
 import { currentCoop } from "../../coop-context";
 import { useRouter } from 'next/navigation'
 import { AppContent } from "../../../../components/app-content";
+import { usePageTitle} from "../../../../components/app-bar";
 
 export default function ComponentRegistry() {
+
+    usePageTitle("Register Component")
 
     const coopId = currentCoop();
     const [serialNumber, setSerialNumber] = useState('')

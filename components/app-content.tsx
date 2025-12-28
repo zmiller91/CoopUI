@@ -7,12 +7,12 @@ export function AppContent(props:AppContent) {
 
     const adjustBottom = props.adjustForBottomNav === undefined ? true : props.adjustForBottomNav;
     const adjustTop = props.adjustForTopNav === undefined ? true : props.adjustForTopNav;
-    const heightAdjustment = (adjustBottom ? 52 : 0) + (adjustTop ? 52 : 0);
-
+    const heightAdjustment = (adjustTop || adjustBottom) ? + "-" + ((adjustBottom ? 52 : 0) + (adjustTop ? 52 : 0)) + "px" : "";
+    const paddingAdjustment = adjustBottom ? "pb-[56px]" : "";
     return (
-        <div>
+        <div className="min-h-screen background-neutral-100">
             <LoadingIndicator isLoading={props.hasLoaded !== undefined ? !props.hasLoaded : false}/>
-            <div className={"h-[calc(100vh-"+heightAdjustment+"px)] w-screen overflow-auto pr-2 pl-2 pt-4 pb-[56px] " + (props.className || "")}>
+            <div className={"h-[calc(100vh"+heightAdjustment+")] w-screen overflow-auto px-4 py-3 " + paddingAdjustment + " " + (props.className || "")}>
                 {(props.hasLoaded == undefined || props.hasLoaded) && props.children}
             </div>
         </div>

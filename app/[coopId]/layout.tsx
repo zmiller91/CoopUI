@@ -1,40 +1,47 @@
 'use client'
 
-import { AppBar } from "../../components/app-bar"
-import "../../globals.css"
-import { MobileBottomNav, MobileNav } from "./navigation"
-import React, {useState, useEffect} from 'react'
-import {currentCoop} from "./coop-context"
-import coops, {CoopDAO} from "../../client/coops"
+import {AppBar, AppBarProvider, useAppBar} from "../../components/app-bar";
+import "../../globals.css";
+import { MobileBottomNav, MobileNav } from "./navigation";
+import React, { useState, useEffect } from 'react';
+import { currentCoop } from "./coop-context";
+import coops, { CoopDAO } from "../../client/coops";
 
-export default function RootLayout({ children }) {
+function LayoutShell({ children }) {
+    const [navVisible, setNavVisible] = useState(false);
+    const [coop, setCoop] = useState({} as CoopDAO);
 
-  const [navVisible, setNavVisible] = useState(false);
-  const [coop, setCoop] = useState({} as CoopDAO);
+    const { title } = useAppBar();
+    const coopId = currentCoop();
 
-  function toggleNavBar() {
-      console.log("click")
-      setNavVisible(!navVisible)
-  }
+    function toggleNavBar() {
+        setNavVisible(!navVisible);
+    }
 
-  const coopId = currentCoop();
+    useEffect(() => {
+        coops.getInfo(coopId, setCoop);
+    }, []);
 
-  useEffect(() => {
-    coops.getInfo(coopId, (data) => {
-      console.log(data);
-      setCoop(data);
-    });
-
-}, []);
-
-  return (
+    return (
         <div>
-            <AppBar title={coop.name} onNavToggle={toggleNavBar}/>
-            <MobileNav onDismiss={toggleNavBar} visible={navVisible}/>
+            <AppBar
+                title={title ?? coop.name}
+                onNavToggle={toggleNavBar}
+            />
+
+            <MobileNav onDismiss={toggleNavBar} visible={navVisible} />
 
             {children}
 
-            <MobileBottomNav/>
+            <MobileBottomNav />
         </div>
-  )
+    );
+}
+
+export default function RootLayout({ children }) {
+    return (
+        <AppBarProvider>
+            <LayoutShell>{children}</LayoutShell>
+        </AppBarProvider>
+    );
 }

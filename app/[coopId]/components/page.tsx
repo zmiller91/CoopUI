@@ -8,6 +8,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/navigation'
 import FloatingActionButton from "../../../components/fab";
 import { AppContent } from "../../../components/app-content";
+import {usePageTitle} from "../../../components/app-bar";
 
 function ComponentListEntry(props:ComponentListEntryProps) {
 
@@ -18,10 +19,13 @@ function ComponentListEntry(props:ComponentListEntryProps) {
     }
 
     return (
-        <div className="min-h-[72px] pl-4 pr-4 pt-4 pb-4 flex items-center border-b-2" onClick={edit}>
-            <div>
-                <div className="text-lg">{props.name}</div>
-                <div className="text-xs text-neutral-700">{props.serial}</div>
+        <div
+            className="background-neutral-50 min-h-[64px] px-4 py-3 flex items-center border-b border-neutral-200 last:border-b-0 cursor-pointer hover:bg-neutral-50 active:bg-neutral-100"
+            onClick={edit}
+        >
+            <div className="min-w-0">
+                <div className="text-base font-medium text-neutral-900 truncate">{props.name}</div>
+                <div className="text-xs text-neutral-600 truncate">{props.serial}</div>
             </div>
         </div>
     )
@@ -34,6 +38,8 @@ interface ComponentListEntryProps {
 }
 
 export default function Components() {
+
+    usePageTitle("Components")
 
     const [hasLoaded, setHasLoaded] = useState(false);
     const [components, setComponentes] = useState([]);
@@ -56,14 +62,17 @@ export default function Components() {
 
     return (
         <AppContent hasLoaded={hasLoaded}>
-            <div className="light-background h-full">
-                <div>
-                    {components.map(c => <ComponentListEntry key={c.id} name={c.name} serial={c.serial} id={c.id}/>)}
-                    <FloatingActionButton onClick={register}>
-                        <FontAwesomeIcon icon={faPlus} className="h-[16px]"/>
-                    </FloatingActionButton>
+            <div>
+                <div className="rounded-2xl bg-white shadow-sm ring-1 ring-neutral-200 overflow-hidden">
+                    {components.map(c => (
+                        <ComponentListEntry key={c.id} name={c.name} serial={c.serial} id={c.id}/>
+                    ))}
                 </div>
             </div>
+
+            <FloatingActionButton onClick={register}>
+                <FontAwesomeIcon icon={faPlus} className="h-[16px]"/>
+            </FloatingActionButton>
         </AppContent>
     )
 }

@@ -20,11 +20,11 @@ export function NavTab(props:NavTabProps) {
     }
 
     function selectedClass() {
-        return props.selected ? "background-accent-200 text-accent-600 rounded-md" : "";
+        return props.selected ? "background-accent-100 text-accent-700 rounded-sm" : "";
     }
 
     return (
-        <div className={"h-[48px] text-neutral-900 flex items-center pl-2 pr-2 font-semibold " + selectedClass()} onClick={goTo}>
+        <div className={"h-[48px] px-4 text-neutral-900 flex items-center font-medium text-sm " + selectedClass()} onClick={goTo}>
             {props.title}
         </div>
     )
@@ -51,7 +51,7 @@ export default function NavModal(props:NavModalProps) {
     }
 
     return (
-        <div className={"relative z-10 " + (!props.visible ? "hidden" : "")} aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div className={"relative z-50 " + (!props.visible ? "hidden" : "")} aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <Swipeable onSwipeLeft={dismiss}>
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
@@ -62,17 +62,17 @@ export default function NavModal(props:NavModalProps) {
                             <div className="h-[100%] pl-2 pr-2">
 
                                 <div className="mb-4 pl-2 pr-2">
-                                    <div className="h-[36px] text-xl pt-3 font-semibold">Auto Coop</div>
-                                    <div className="h-[20px] text-sm pt-1 text-neutral-700">Taking the worry out of coop management</div>
+                                    <div className="h-[36px] text-lg pt-3 font-semibold">Auto Coop</div>
+                                    <div className="h-[20px] pt-1 text-xs text-neutral-600 leading-snug">Taking the worry out of coop management</div>
                                 </div>
                                 <div className="h-[calc(100%-72px)]">
-                                    <div className="min-h-[calc(100%-56px)] border-b-2">
+                                    <div className="min-h-[calc(100%-56px)] border-b border-neutral-200">
                                         
                                         {props.children}
 
                                     </div>
                                     
-                                    <div className="h-[48px] text-neutral-900 flex items-center pl-2 pr-2 font-semibold mt-2">
+                                    <div className="h-[48px] px-4 text-neutral-700 flex items-center text-sm font-medium mt-2">
                                         Settings & Account
                                     </div>
                                 </div>

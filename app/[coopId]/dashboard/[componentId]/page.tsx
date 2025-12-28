@@ -9,6 +9,7 @@ import data, { ComponentData, MetricInterval } from "../../../../client/data"
 import { currentCoop } from "../../coop-context";
 import { currentComponent } from "./component-context";
 import {ChartConfig, DataDimension, CHART_CONFIG} from "../../../../utils/chart-config";
+import {Card} from "../../../../components/card";
 
 export default function ComponentDashboard(props:ComponentDashboardProps) {
   
@@ -82,39 +83,57 @@ export default function ComponentDashboard(props:ComponentDashboardProps) {
     return (
         <div>
             <AppContent>
-                <div className="grid grid-cols-2">
-                    <StatusInfo lastCheckin={getLastCheckIn()}/>
-                </div>
+                <div className="space-y-4">
+                    <Card>
+                        <StatusInfo lastCheckin={getLastCheckIn()}/>
+                    </Card>
 
 
-                <div className="grid grid-cols-2 pt-4 pb-4 pr-2 pl-2">
+                    <div className={"grid gap-3 " + (CHART_CONFIG[componentData.componentType]?.dimension2 ? "grid-cols-2" : "grid-cols-1")}>
 
-                    {CHART_CONFIG[componentData.componentType]?.dimension1 &&
-                        <div className="text-5xl justify-self-end pr-5">
-                            {getRecent(CHART_CONFIG[componentData.componentType].dimension1)}
-                            <sup className="text-2xl">
-                                {CHART_CONFIG[componentData.componentType].dimension1.label}
-                            </sup>
+                        {CHART_CONFIG[componentData.componentType]?.dimension1 &&
+                            <Card>
+                                <div className="flex items-center gap-2 text-xs text-neutral-600 font-medium">
+                                    <span className="inline-block w-2 h-2 rounded-full bg-primary-600" />
+                                    {CHART_CONFIG[componentData.componentType].dimension1.name ?? "Metric"}
+                                </div>
+                                <div className="mt-1 flex items-baseline gap-1">
+                                    <div className="text-4xl font-semibold text-neutral-900 tabular-nums">
+                                        {getRecent(CHART_CONFIG[componentData.componentType].dimension1)}
+                                    </div>
+                                    <div className="text-sm text-neutral-600 font-medium">
+                                        {CHART_CONFIG[componentData.componentType].dimension1.label}
+                                    </div>
+                                </div>
+                            </Card>
+                        }
+
+                        {CHART_CONFIG[componentData.componentType]?.dimension2 &&
+                            <Card>
+                                <div className="flex items-center gap-2 text-xs text-neutral-600 font-medium">
+                                    <span className="inline-block w-2 h-2 rounded-full bg-secondary-600" />
+                                    {CHART_CONFIG[componentData.componentType].dimension1.name ?? "Metric"}
+                                </div>
+                                <div className="mt-1 flex items-baseline gap-1">
+                                    <div className="text-4xl font-semibold text-neutral-900 tabular-nums">
+                                        {getRecent(CHART_CONFIG[componentData.componentType].dimension2)}
+                                    </div>
+                                    <div className="text-sm text-neutral-600 font-medium">
+                                        {CHART_CONFIG[componentData.componentType].dimension2.label}
+                                    </div>
+                                </div>
+                            </Card>
+                        }
+
+                    </div>
+                    <Card>
+                        <Tabs tabs={[MetricInterval.DAY, MetricInterval.WEEK, MetricInterval.MONTH, MetricInterval.YEAR]} onChange={switchTab}/>
+                        <div className="pt-4 h-[250px]">
+                            <Chart detailed={true} data={convertComponentData()}
+                                   dataKey={CHART_CONFIG[componentData.componentType]?.dimension1.key}
+                                   dataKey2={CHART_CONFIG[componentData.componentType]?.dimension2?.key} />
                         </div>
-                    }
-
-                    {CHART_CONFIG[componentData.componentType]?.dimension2 &&
-                        <div className="text-5xl justify-self-end pr-5">
-                            {getRecent(CHART_CONFIG[componentData.componentType].dimension2)}
-                            <sup className="text-2xl">
-                                {CHART_CONFIG[componentData.componentType].dimension2.label}
-                            </sup>
-                        </div>
-                    }
-
-                </div>
-
-                <Tabs tabs={[MetricInterval.DAY, MetricInterval.WEEK, MetricInterval.MONTH, MetricInterval.YEAR]} onChange={switchTab}/>
-
-                <div className="pt-4 h-[325px]">
-                    <Chart detailed={true} data={convertComponentData()}
-                           dataKey={CHART_CONFIG[componentData.componentType]?.dimension1.key}
-                           dataKey2={CHART_CONFIG[componentData.componentType]?.dimension2?.key} />
+                    </Card>
                 </div>
             </AppContent>
         </div>

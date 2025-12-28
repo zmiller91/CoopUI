@@ -2,7 +2,15 @@
 
 import React  from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import {__primary_500, __primary_200, __accent_700, __accent_300, __font_family} from "../../../globals"
+import {
+  __primary_500,
+  __primary_200,
+  __accent_700,
+  __accent_300,
+  __font_family,
+  __primary_600,
+  __accent_600
+} from "../../../globals"
 import {AxisDomain} from "recharts/types/util/types";
 
 function NoDataChart() {
@@ -27,13 +35,13 @@ function DetailedChart(props:DetailedChartProps) {
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <LineChart margin={{ top: 0, left: -30, right: -30, bottom: 0 }} data={props.data}>
+      <LineChart margin={{ top: 4, left: 4, right: 4, bottom: 4 }} data={props.data}>
 
-        <Line yAxisId="right" type="basis" dataKey={props.dataKey} stroke={__accent_700} strokeWidth="3" dot={false} />
-        {props.dataKey2 && <Line yAxisId="left" type="basis" dataKey={props.dataKey2} stroke={__accent_300} strokeWidth="3"  dot={false} />}
+        <Line yAxisId="right" type="basis" dataKey={props.dataKey} stroke={__primary_600} strokeWidth="3" dot={false} />
+        {props.dataKey2 && <Line yAxisId="left" type="basis" dataKey={props.dataKey2} stroke={__accent_600} strokeWidth="3"  dot={false} />}
 
-        <YAxis yAxisId="right" textAnchor='end' axisLine={false} tickLine={false} fontSize="12" fontFamily={__font_family} domain={[0,100]}/>
-        { props.dataKey2 && <YAxis yAxisId="left" orientation="right" textAnchor='start' axisLine={false} tickLine={false} fontSize="12" fontFamily={__font_family} domain={[0,100]}/>}
+        <YAxis hide yAxisId="right" textAnchor='end' axisLine={false} tickLine={false} fontSize="12" fontFamily={__font_family} domain={[0,100]}/>
+        { props.dataKey2 && <YAxis hide yAxisId="left" orientation="right" textAnchor='start' axisLine={false} tickLine={false} fontSize="12" fontFamily={__font_family} domain={[0,100]}/>}
         
         <CartesianGrid vertical={false}/>
         <XAxis dataKey="date"
@@ -58,14 +66,12 @@ interface DetailedChartProps {
 }
 
 function previewAxisDomain(dataKey: string, data: {[key:string]:any}[]): AxisDomain {
-  console.log(data)
   if(!data) {
     return [0, 100]
   }
 
   const max = data.reduce((acc, row) => Math.max(acc, Number(row[dataKey])), -Infinity);
   const min = data.reduce((acc, row) => Math.min(acc, Number(row[dataKey])), Infinity);
-  console.log(min + " " + max)
 
   return [min * 0.9, max * 1.1];
 }
@@ -75,8 +81,8 @@ function PreviewChart(props:PreviewChartProps) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart margin={{ top: 4, left: 4, right: 4, bottom: 4 }} data={props.data}>
-        <Line yAxisId="right" type="basis" dataKey={props.dataKey} stroke={__accent_700} dot={false} strokeWidth="3" />
-        {props.dataKey2 && <Line yAxisId="left" type="basis" dataKey={props.dataKey2} stroke={__accent_300} dot={false}  strokeWidth="3" />}
+        <Line yAxisId="right" type="basis" dataKey={props.dataKey} stroke={__primary_600} dot={false} strokeWidth="3" />
+        {props.dataKey2 && <Line yAxisId="left" type="basis" dataKey={props.dataKey2} stroke={__accent_600} dot={false}  strokeWidth="3" />}
 
         <YAxis  yAxisId="right"
                 textAnchor='start'

@@ -8,6 +8,7 @@ import TextInput from "../../../../components/form/text-input";
 import LoadingIndicator from "../../../../components/loading-indicator";
 import { AppContent } from "../../../../components/app-content";
 import SnackBar from "../../../../components/snack-bar";
+import {usePageTitle} from "../../../../components/app-bar";
 
 function currentComponent():string {
     return useParams()["componentId"] as string;
@@ -16,12 +17,13 @@ function currentComponent():string {
 export default function ComponentRegistry() {
 
     const componentId = currentComponent();
-    const [component, setComponent] = useState({});
+    const [component, setComponent] = useState({} as Component);
     const [config, setConfig] = useState([]);
     const [isSaving, setIsSaving] = useState(false);
     const [hasLoaded, setHasLoaded] = useState(false);
     const [snackBarShowing, setSnackBarShowing] = useState(false);
 
+    usePageTitle(component ? component.name : "Component");
     useEffect(() => {
         componentClient.get(componentId, (c) => {
             setComponent(c);
