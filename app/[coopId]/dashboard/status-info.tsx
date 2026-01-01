@@ -66,8 +66,13 @@ export function StatusInfo(props:StatusInfoProps) {
             <div className="flex items-center gap-2">
                 <span className={"w-3.5 h-3.5 rounded-full inline-block border-2 " + statusColor(getStatus())}></span>
                 <span className="text-sm font-medium text-neutral-800">{statusDisplayname(getStatus())}</span>
-                <span className="mx-2 text-neutral-400">·</span>
-                <span className="text-xs text-neutral-600">{getCheckIn()}</span>
+                {!props.preview &&
+                    <span>
+                        <span className="mx-2 text-neutral-400">·</span>
+                        <span className="text-xs text-neutral-600">{getCheckIn()}</span>
+                    </span>
+                }
+
             </div>
 
         </div>
@@ -77,4 +82,5 @@ export function StatusInfo(props:StatusInfoProps) {
 export interface StatusInfoProps {
     lastCheckin:number;
     className?:string;
+    preview?: boolean;
 }

@@ -44,7 +44,7 @@ export default function ChartCard(props:ChartCardProps) {
         <Card onClick={goToDetail} className="mb-2">
             <div className="grid grid-cols-2">
                 <CardTitle title={props.name} subtitle={props.type}/>
-                <StatusInfo lastCheckin={getLastCheckIn()} className="justify-self-end"/>
+                <StatusInfo lastCheckin={getLastCheckIn()} preview={true} className="justify-self-end"/>
             </div>
 
             <div className="text-5xl mb-4">

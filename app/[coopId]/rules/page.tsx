@@ -20,7 +20,7 @@ export default function Rules() {
     const router = useRouter();
 
     useEffect(() => {
-        ruleClient.list(coopId, (rules) => {
+        ruleClient.listRules(coopId, (rules) => {
             setRules(rules);
             setHasLoaded(true);
         })
