@@ -1,17 +1,20 @@
 'use client'
 
-import "../globals.css"
-import React, {useState} from 'react'
+import React from 'react'
+import '../globals.css'
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import { theme } from './theme'
 
-export default function RootLayout({ children }) {
-
-  return (
-    <html lang="en">
-      <body className="font-sans h-screen">
-
-        {children}
-
-      </body>
-    </html>
-  )
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <html lang="en">
+        <body>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {children}
+        </ThemeProvider>
+        </body>
+        </html>
+    )
 }

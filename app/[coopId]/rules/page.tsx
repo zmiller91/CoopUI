@@ -12,7 +12,7 @@ import {faPlus} from "@fortawesome/free-solid-svg-icons";
 
 export default function Rules() {
 
-    usePageTitle("Rules")
+    usePageTitle("Automations")
 
     const [hasLoaded, setHasLoaded] = useState(false);
     const [rules, setRules] = useState([]);

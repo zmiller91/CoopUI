@@ -1,8 +1,9 @@
 'use client'
 
 import React, {createContext, useContext, useEffect, useState} from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars } from '@fortawesome/free-solid-svg-icons'
+import MuiAppBar from '@mui/material/AppBar'
+import {Box, IconButton, Toolbar, Typography} from "@mui/material"
+import MenuIcon from '@mui/icons-material/Menu'
 
 
 type AppBarState = {
@@ -43,29 +44,42 @@ export function usePageTitle(title?: string) {
 
 export function AppBar(props: AppBarProps) {
     return (
-        <header
-            className="
-            sticky top-0 z-20
-            h-[56px]
-            bg-neutral-50
-             border-b border-neutral-200
-        ">
-            <div className="h-full px-4 flex items-center gap-4">
+        <MuiAppBar
+            position="sticky"
+            color="default"
+            elevation={0}
+            sx={{
+                borderBottom: 1,
+                borderColor: 'divider'
+            }}
+        >
+            <Toolbar
+                disableGutters
+                sx={{
+                    minHeight: 56,
+                    px: 2,
+                    gap: 1.5,
+                }}
+            >
                 {props.onNavToggle && (
-                    <button
+                    <IconButton
+                        edge="start"
                         onClick={props.onNavToggle}
-                        className="text-neutral-600 hover:text-neutral-800"
                         aria-label="Toggle navigation"
+                        sx={{ mr: 0.5 }}
                     >
-                        <FontAwesomeIcon icon={faBars} className="h-[20px]" />
-                    </button>
+                        <MenuIcon />
+                    </IconButton>
                 )}
 
-                <h1 className="text-base font-semibold text-neutral-900">
+                <Typography variant="subtitle1" fontWeight={600} noWrap>
                     {props.title}
-                </h1>
-            </div>
-        </header>
+                </Typography>
+
+                {/* optional: right-side slot later (actions, status, etc.) */}
+                <Box sx={{ flexGrow: 1 }} />
+            </Toolbar>
+        </MuiAppBar>
     )
 }
 

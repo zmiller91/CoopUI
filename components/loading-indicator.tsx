@@ -1,17 +1,31 @@
-"use client"
+'use client'
 
-import "../css/loading-indicator.css"
 import React from 'react'
-
-export default function LoadingIndicator(props:LoadingIndicatorProps) {
-
-    return (
-        <div>
-            {props.isLoading && <progress className="w-screen h-2 pure-material-progress-linear fixed top-[56px]"/>}
-        </div>
-    )
-}
+import LinearProgress from '@mui/material/LinearProgress'
+import Box from '@mui/material/Box'
 
 export interface LoadingIndicatorProps {
-    isLoading:boolean;
+    isLoading: boolean
+}
+
+/**
+ * Shows a linear loading bar directly under the AppBar (56px).
+ * Matches Material behavior and accessibility.
+ */
+export default function LoadingIndicator({ isLoading }: LoadingIndicatorProps) {
+    if (!isLoading) return null
+
+    return (
+        <Box
+            sx={{
+                position: 'fixed',
+                top: 56, // AppBar height on mobile
+                left: 0,
+                right: 0,
+                zIndex: (theme) => theme.zIndex.appBar + 1,
+            }}
+        >
+            <LinearProgress />
+        </Box>
+    )
 }

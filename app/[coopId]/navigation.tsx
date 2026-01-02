@@ -3,42 +3,23 @@
 import React, {useState, useEffect} from "react";
 import coopClient, { CoopDAO } from "../../client/coops"
 import NavModal, { NavTab } from "../../components/nav-modal";
-import { BottomNav, BottomNavTab } from "../../components/bottom-nav";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChartArea, faCircleNodes, faGear } from '@fortawesome/free-solid-svg-icons'
+import { BottomNav } from "../../components/bottom-nav";
+import HomeIcon from '@mui/icons-material/Home'
+import BoltIcon from '@mui/icons-material/Bolt'
+import SensorsIcon from '@mui/icons-material/Sensors'
 import { currentCoop } from "./coop-context";
 
 export function MobileBottomNav() {
 
     const coop = currentCoop();
-
-    function path(p:string) {
-        return "/" + coop + p
-    }
-
     return (
-        <BottomNav>
-            <BottomNavTab path={path("/components")}>
-                <div>
-                    <div className="flex justify-center"><FontAwesomeIcon icon={faCircleNodes} className="h-[18px]"/></div>
-                    <div className="text-xs">Components</div>
-                </div>
-            </BottomNavTab>
-
-            <BottomNavTab path={path("/dashboard")}>
-                <div>
-                    <div className="flex justify-center"><FontAwesomeIcon icon={faChartArea} className="h-[18px]"/></div>
-                    <div className="text-xs">Dashboard</div>
-                </div>
-            </BottomNavTab>
-
-            <BottomNavTab path={path("/settings")}>
-                <div>
-                    <div className="flex justify-center"><FontAwesomeIcon icon={faGear} className="h-[18px]"/></div>
-                    <div className="text-xs">Settings</div>
-                </div>
-            </BottomNavTab>
-        </BottomNav>
+        <BottomNav
+            items={[
+                { path: `/${coop}/components`, label: 'Devices', icon: <SensorsIcon /> },
+                { path: `/${coop}/dashboard`, label: 'Dashboard', icon: <HomeIcon /> },
+                { path: `/${coop}/rules`, label: 'Automations', icon: <BoltIcon /> },
+            ]}
+        />
     )
 }
 

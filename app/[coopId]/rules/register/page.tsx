@@ -12,7 +12,7 @@ import SelectInput, {SelectOption} from "../../../../components/form/select";
 
 export default function Rules() {
 
-    usePageTitle("Rules")
+    usePageTitle("New Automation")
 
     const [name, setName] = useState('');
     const coopId = currentCoop();

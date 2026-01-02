@@ -1,145 +1,232 @@
 'use client'
 
-import React, {useState, useEffect} from "react";
-import Tabs from "../../../../components/tabs";
-import { AppContent } from "../../../../components/app-content";
-import { StatusInfo } from "../status-info";
-import Chart from "../chart";
-import data, { ComponentData, MetricInterval } from "../../../../client/data"
-import { currentCoop } from "../../coop-context";
-import { currentComponent } from "./component-context";
-import {ChartConfig, DataDimension, CHART_CONFIG} from "../../../../utils/chart-config";
-import {Card} from "../../../../components/card";
+import React, { useEffect, useMemo, useState } from 'react'
+import data, { ComponentData, MetricInterval } from '../../../../client/data'
+import { currentCoop } from '../../coop-context'
+import { currentComponent } from './component-context'
+import { CHART_CONFIG, DataDimension } from '../../../../utils/chart-config'
+import { AppContent } from '../../../../components/app-content'
+import { StatusInfo } from '../status-info'
+import Chart from '../chart'
 
-export default function ComponentDashboard(props:ComponentDashboardProps) {
-  
-    const coopId = currentCoop();
-    const componentId = currentComponent();
-    const [componentData, setComponentData] = useState({} as ComponentData);
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import Chip from '@mui/material/Chip'
+import Grid from '@mui/material/Grid'
+import CircularProgress from '@mui/material/CircularProgress'
 
-    useEffect(() => {
-        data.getComponentData(coopId, componentId, MetricInterval.DAY, setComponentData);
-    }, []);
-
-    function switchTab(tab:string) {
-        data.getComponentData(coopId, componentId, MetricInterval[tab], setComponentData);
+function getMostRecentPoint(points: any[]) {
+    if (!points || points.length === 0) return undefined
+    let best = points[0]
+    for (const p of points) {
+        if ((p?.idx ?? -Infinity) > (best?.idx ?? -Infinity)) best = p
     }
-
-    function convertDimension(datum: number, dimension: DataDimension)  {
-        if(dimension.formatter) {
-            return dimension.formatter(datum)
-        }
-
-        return datum
-    }
-
-    function convertComponentData() {
-
-        const props = CHART_CONFIG[componentData.componentType];
-        const converted = [];
-        for(let i in componentData.data ) {
-            const copy = JSON.parse(JSON.stringify(componentData.data[i]));
-
-            if(props.dimension1) {
-                copy[props.dimension1.key] = convertDimension(copy[props.dimension1.key], props.dimension1)
-            }
-
-            if(props.dimension2) {
-                copy[props.dimension2.key] = convertDimension(copy[props.dimension2.key], props.dimension2)
-            }
-
-            converted.push(copy);
-        }
-
-        return converted;
-    }
-
-    function getMostRecentData() {
-        var mostRecent = {};
-        var idx = -1;
-        for(let i in componentData.data ) {
-            if(componentData.data[i].idx > idx) {
-                idx = componentData.data[i].idx;
-                mostRecent = componentData.data[i];
-            }
-        }
-
-        return mostRecent;
-    }
-
-    function getLastCheckIn() {
-        // Data sent over in milliseconds, turn it into minutes
-        return Math.round((Date.now() - componentData.lastUpdate) / 1000 / 60);
-    }
-
-    function getRecent(dimension: DataDimension) {
-        if(dimension.formatter) {
-            return dimension.formatter(getMostRecentData()[dimension.key])
-        }
-
-        return getMostRecentData()[dimension.key];
-    }
-
-    return (
-        <div>
-            <AppContent>
-                <div className="space-y-4">
-                    <Card>
-                        <StatusInfo lastCheckin={getLastCheckIn()}/>
-                    </Card>
-
-
-                    <div className={"grid gap-3 " + (CHART_CONFIG[componentData.componentType]?.dimension2 ? "grid-cols-2" : "grid-cols-1")}>
-
-                        {CHART_CONFIG[componentData.componentType]?.dimension1 &&
-                            <Card>
-                                <div className="flex items-center gap-2 text-xs text-neutral-600 font-medium">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-primary-600" />
-                                    {CHART_CONFIG[componentData.componentType].dimension1.name ?? "Metric"}
-                                </div>
-                                <div className="mt-1 flex items-baseline gap-1">
-                                    <div className="text-4xl font-semibold text-neutral-900 tabular-nums">
-                                        {getRecent(CHART_CONFIG[componentData.componentType].dimension1)}
-                                    </div>
-                                    <div className="text-sm text-neutral-600 font-medium">
-                                        {CHART_CONFIG[componentData.componentType].dimension1.label}
-                                    </div>
-                                </div>
-                            </Card>
-                        }
-
-                        {CHART_CONFIG[componentData.componentType]?.dimension2 &&
-                            <Card>
-                                <div className="flex items-center gap-2 text-xs text-neutral-600 font-medium">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-secondary-600" />
-                                    {CHART_CONFIG[componentData.componentType].dimension1.name ?? "Metric"}
-                                </div>
-                                <div className="mt-1 flex items-baseline gap-1">
-                                    <div className="text-4xl font-semibold text-neutral-900 tabular-nums">
-                                        {getRecent(CHART_CONFIG[componentData.componentType].dimension2)}
-                                    </div>
-                                    <div className="text-sm text-neutral-600 font-medium">
-                                        {CHART_CONFIG[componentData.componentType].dimension2.label}
-                                    </div>
-                                </div>
-                            </Card>
-                        }
-
-                    </div>
-                    <Card>
-                        <Tabs tabs={[MetricInterval.DAY, MetricInterval.WEEK, MetricInterval.MONTH, MetricInterval.YEAR]} onChange={switchTab}/>
-                        <div className="pt-4 h-[250px]">
-                            <Chart detailed={true} data={convertComponentData()}
-                                   dataKey={CHART_CONFIG[componentData.componentType]?.dimension1.key}
-                                   dataKey2={CHART_CONFIG[componentData.componentType]?.dimension2?.key} />
-                        </div>
-                    </Card>
-                </div>
-            </AppContent>
-        </div>
-    )
+    return best
 }
 
-export interface ComponentDashboardProps {
-//     initialData: ComponentData;
+function formatValue(dimension: DataDimension, raw: any) {
+    if (raw === undefined || raw === null) return '—'
+    return dimension.formatter ? dimension.formatter(raw) : raw
+}
+
+export default function ComponentDashboard() {
+    const coopId = currentCoop()
+    const componentId = currentComponent()
+
+    const [componentData, setComponentData] = useState<ComponentData>({} as ComponentData)
+    const [interval, setInterval] = useState<MetricInterval>(MetricInterval.DAY)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        setLoading(true)
+        data.getComponentData(coopId, componentId, MetricInterval.DAY, (d: ComponentData) => {
+            setComponentData(d)
+            setInterval(MetricInterval.DAY)
+            setLoading(false)
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [coopId, componentId])
+
+    const chartConfig = useMemo(() => {
+        return componentData?.componentType ? CHART_CONFIG[componentData.componentType] : undefined
+    }, [componentData?.componentType])
+
+    const mostRecent = useMemo(() => {
+        return getMostRecentPoint(componentData?.data ?? [])
+    }, [componentData?.data])
+
+    const lastCheckinMin = useMemo(() => {
+        const lastUpdate = componentData?.lastUpdate
+        if (!lastUpdate) return 0
+        return Math.max(0, Math.round((Date.now() - lastUpdate) / 1000 / 60))
+    }, [componentData?.lastUpdate])
+
+    function switchInterval(newInterval: MetricInterval) {
+        setLoading(true)
+        setInterval(newInterval)
+        data.getComponentData(coopId, componentId, newInterval, (d: ComponentData) => {
+            setComponentData(d)
+            setLoading(false)
+        })
+    }
+
+    const convertedData = useMemo(() => {
+        const points = componentData?.data ?? []
+        if (!chartConfig || points.length === 0) return points
+
+        return points.map((p: any) => {
+            const copy = { ...p }
+            if (chartConfig.dimension1) {
+                copy[chartConfig.dimension1.key] = formatValue(chartConfig.dimension1, copy[chartConfig.dimension1.key])
+            }
+            if (chartConfig.dimension2) {
+                copy[chartConfig.dimension2.key] = formatValue(chartConfig.dimension2, copy[chartConfig.dimension2.key])
+            }
+            return copy
+        })
+    }, [componentData?.data, chartConfig])
+
+    const hasD1 = !!chartConfig?.dimension1
+    const hasD2 = !!chartConfig?.dimension2
+
+    return (
+        <AppContent>
+            <Stack spacing={2}>
+                {/* Header (optional, but makes it feel like a real detail page) */}
+                <Box sx={{ minWidth: 0 }}>
+                    <Typography variant="h6" fontWeight={700} noWrap>
+                        {componentData?.componentName ?? 'Component'}
+                    </Typography>
+                    <Stack direction="row" spacing={1} sx={{ mt: 0.5 }} alignItems="center">
+                        <Typography variant="body2" color="text.secondary" noWrap>
+                            {componentData?.componentTypeDescription ?? '—'}
+                        </Typography>
+                        {componentData?.serial && <Chip size="small" label={componentData.serial} variant="outlined" />}
+                    </Stack>
+                </Box>
+
+                {/* Status */}
+                <Paper variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+                    <StatusInfo lastCheckin={lastCheckinMin} />
+                </Paper>
+
+                {/* Metric tiles */}
+                {(hasD1 || hasD2) && (
+                    <Grid container spacing={2}>
+                        {hasD1 && chartConfig?.dimension1 && (
+                            <Grid item xs={12} md={hasD2 ? 6 : 12}>
+                                <Paper variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+                                    <Stack spacing={0.5}>
+                                        <Stack direction="row" spacing={1} alignItems="center">
+                                            <Box
+                                                sx={{
+                                                    width: 8,
+                                                    height: 8,
+                                                    borderRadius: '50%',
+                                                    bgcolor: 'primary.main',
+                                                }}
+                                            />
+                                            <Typography variant="caption" color="text.secondary" fontWeight={700}>
+                                                {chartConfig.dimension1.name ?? 'Metric'}
+                                            </Typography>
+                                        </Stack>
+
+                                        <Stack direction="row" spacing={1} alignItems="baseline">
+                                            <Typography variant="h4" fontWeight={800} sx={{ lineHeight: 1.1 }}>
+                                                {mostRecent ? formatValue(chartConfig.dimension1, mostRecent[chartConfig.dimension1.key]) : '—'}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" fontWeight={700}>
+                                                {chartConfig.dimension1.label}
+                                            </Typography>
+                                        </Stack>
+                                    </Stack>
+                                </Paper>
+                            </Grid>
+                        )}
+
+                        {hasD2 && chartConfig?.dimension2 && (
+                            <Grid item xs={12} md={6}>
+                                <Paper variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+                                    <Stack spacing={0.5}>
+                                        <Stack direction="row" spacing={1} alignItems="center">
+                                            <Box
+                                                sx={{
+                                                    width: 8,
+                                                    height: 8,
+                                                    borderRadius: '50%',
+                                                    bgcolor: 'secondary.main',
+                                                }}
+                                            />
+                                            <Typography variant="caption" color="text.secondary" fontWeight={700}>
+                                                {chartConfig.dimension2.name ?? 'Metric'}
+                                            </Typography>
+                                        </Stack>
+
+                                        <Stack direction="row" spacing={1} alignItems="baseline">
+                                            <Typography variant="h4" fontWeight={800} sx={{ lineHeight: 1.1 }}>
+                                                {mostRecent ? formatValue(chartConfig.dimension2, mostRecent[chartConfig.dimension2.key]) : '—'}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" fontWeight={700}>
+                                                {chartConfig.dimension2.label}
+                                            </Typography>
+                                        </Stack>
+                                    </Stack>
+                                </Paper>
+                            </Grid>
+                        )}
+                    </Grid>
+                )}
+
+                {/* Chart card */}
+                <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                    <Box sx={{ px: 2, pt: 1 }}>
+                        <Tabs
+                            value={interval}
+                            onChange={(_, v) => switchInterval(v)}
+                            variant="fullWidth"
+                            indicatorColor="secondary"
+                            textColor="inherit"
+                        >
+                            <Tab value={MetricInterval.DAY} label="Day" />
+                            <Tab value={MetricInterval.WEEK} label="Week" />
+                            <Tab value={MetricInterval.MONTH} label="Month" />
+                            <Tab value={MetricInterval.YEAR} label="Year" />
+                        </Tabs>
+                    </Box>
+
+                    <Divider />
+
+                    <Box sx={{ p: 2, height: 280, position: 'relative' }}>
+                        {/* lightweight loading overlay */}
+                        {loading && (
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    display: 'grid',
+                                    placeItems: 'center',
+                                    bgcolor: 'rgba(255,255,255,0.6)',
+                                    zIndex: 1,
+                                }}
+                            >
+                                <CircularProgress size={28} />
+                            </Box>
+                        )}
+
+                        <Chart
+                            detailed={true}
+                            data={convertedData}
+                            dataKey={chartConfig?.dimension1?.key}
+                            dataKey2={chartConfig?.dimension2?.key}
+                        />
+                    </Box>
+                </Paper>
+            </Stack>
+        </AppContent>
+    )
 }

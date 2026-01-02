@@ -1,34 +1,44 @@
 'use client'
 
-import React, {useState, useEffect} from "react";
+import React from 'react'
+import MuiTabs from '@mui/material/Tabs'
+import MuiTab from '@mui/material/Tab'
+import Box from '@mui/material/Box'
 
-export default function Tabs(props:TabProps) {
+export interface TabProps {
+    tabs: string[]
+    onChange: (tab: string) => void
+}
 
-    const [selected, setSelected] = useState(props.tabs[0]);
+export default function Tabs({ tabs, onChange }: TabProps) {
+    const [value, setValue] = React.useState(0)
 
-    function selectedClass(tab:string) {
-        return tab === selected ? "border-b-2 border-accent-500" : "border-b-2 border-accent-00";
-    }
-
-    function select(tab:string) {
-        setSelected(tab);
-        props.onChange(tab);
+    const handleChange = (_: React.SyntheticEvent, newValue: number) => {
+        setValue(newValue)
+        onChange(tabs[newValue])
     }
 
     return (
-        <div className={"h-[48px] w-full grid grid-cols-4"}>
-            {props.tabs.map(t => {
-                return <div  key={t} className={"block flex items-center justify-center text-sm font-semibold " + 
-                "pl-2 pr-2 pb-3 pt-3 cursor-pointer " + selectedClass(t)} onClick={() => select(t)}>
-                    <span>{t}</span>
-                </div>
-                })
-            }
-        </div>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <MuiTabs
+                value={value}
+                onChange={handleChange}
+                variant="fullWidth"
+                indicatorColor="secondary" // maps to your accent color
+                textColor="inherit"
+            >
+                {tabs.map((tab) => (
+                    <MuiTab
+                        key={tab}
+                        label={tab}
+                        sx={{
+                            fontWeight: 600,
+                            textTransform: 'none', // prevents ALL CAPS
+                            minHeight: 48,
+                        }}
+                    />
+                ))}
+            </MuiTabs>
+        </Box>
     )
-}
-
-export interface TabProps {
-    tabs:string[];
-    onChange:(tab:string)=>void;
 }
