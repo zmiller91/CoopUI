@@ -146,9 +146,9 @@ export default function Dashboard() {
                 </Typography>
               </Paper>
           ) : (
-              <Grid container spacing={2}>
+              <Grid container spacing={2} sx={{ width: "100%" }}>
                 {filtered.map((d) => (
-                    <Grid item key={d.componentId} xs={12} md={6} lg={4}>
+                    <Grid key={d.componentId} size={{ xs: 12, md: 6, lg: 4 }}>
                       <ChartCard
                           name={d.componentName}
                           type={d.componentTypeDescription}

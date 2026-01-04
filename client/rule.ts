@@ -85,8 +85,8 @@ export interface ScheduleTrigger {
 export interface ComponentTrigger {
     id?: string;
     component: RuleComponent;
-    signal: String;
-    threshold: number;
+    signal: string;
+    threshold: string;
     operator: string;
 }
 

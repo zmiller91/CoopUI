@@ -106,7 +106,6 @@ export default function ComponentDashboard() {
                         <Typography variant="body2" color="text.secondary" noWrap>
                             {componentData?.componentTypeDescription ?? '—'}
                         </Typography>
-                        {componentData?.serial && <Chip size="small" label={componentData.serial} variant="outlined" />}
                     </Stack>
                 </Box>
 
@@ -119,7 +118,7 @@ export default function ComponentDashboard() {
                 {(hasD1 || hasD2) && (
                     <Grid container spacing={2}>
                         {hasD1 && chartConfig?.dimension1 && (
-                            <Grid item xs={12} md={hasD2 ? 6 : 12}>
+                            <Grid size={{ xs: 12, md: hasD2 ? 6 : 12 }}>
                                 <Paper variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                                     <Stack spacing={0.5}>
                                         <Stack direction="row" spacing={1} alignItems="center">
@@ -150,7 +149,7 @@ export default function ComponentDashboard() {
                         )}
 
                         {hasD2 && chartConfig?.dimension2 && (
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: hasD2 ? 6 : 12 }}>
                                 <Paper variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
                                     <Stack spacing={0.5}>
                                         <Stack direction="row" spacing={1} alignItems="center">
