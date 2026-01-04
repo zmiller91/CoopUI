@@ -8,7 +8,7 @@ import ruleClient, {
     Source
 } from "../../../client/rule";
 import React, {useState, useEffect} from "react";
-import {Box, Card, CardHeader, Stack} from "@mui/material";
+import {Box, Card, CardHeader, List, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
@@ -18,6 +18,9 @@ import getSourceSentence from "../sentences/get-source-sentence";
 import AddSourceDialog from "./add-source-dialog";
 import getActionSentence from "../sentences/get-action-sentence";
 import AddActionDialog from "./add-action-dialog";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import {ChevronRight} from "@mui/icons-material";
 
 
 export interface RuleEditorProps {
@@ -33,32 +36,105 @@ export default function RuleEditor(props: RuleEditorProps) {
 
     const [name, setName] = useState(props.rule?.name || '');
 
+    // Loading variables
     const [haveSignalsLoaded, setHaveSignalsLoaded] = useState(false);
     const [haveActionsLoaded, setHaveActionsLoaded] = useState(false);
-
     useEffect(() => {
         props.setHasLoaded(haveSignalsLoaded && haveActionsLoaded);
     }, [haveSignalsLoaded, haveActionsLoaded, props]);
 
-    const [actions, setActions] = useState(props.rule?.actions || [] as RuleAction[])
-    const onNewActuationAdded = (action: RuleAction) => {
-        setActions(prev => [...prev, action])
-    }
+    // State variables
+    const [sourceDialogOpen, setSourceDialogOpen] = useState(false);
+    const [editingSourceIndex, setEditingSourceIndex] = useState<number | undefined>(undefined);
+    const [editingSource, setEditingSource] = useState<ComponentTrigger | undefined>(undefined)
 
-    const [signals, setSignals] = useState(props.rule?.componentTriggers || [] as ComponentTrigger[])
-    const onNewSignalAdded = (signal: ComponentTrigger) => {
-        setSignals(prev => [...prev, signal])
-    }
+    const [actionDialogOpen, setActionDialogOpen] = useState(false)
+    const [editingActionIndex, setEditingActionIndex] = useState<number | undefined>(undefined)
+    const [editingAction, setEditingAction] = useState<RuleAction | undefined>(undefined)
 
+    // Variables fetched from the API
     const [sources, setSources] = useState({} as Record<string, Source>)
     const [sourceComponents, setSourceComponents] = useState([] as RuleComponent[])
-
     const [actuators, setActuators] = useState({} as Record<string, Actuator>)
     const [actionComponents, setActionComponents] = useState([] as RuleComponent[])
 
-    useEffect(() => {
+    // Variables to send to the server
+    const [actions, setActions] = useState(props.rule?.actions || [] as RuleAction[])
+    const [signals, setSignals] = useState(props.rule?.componentTriggers || [] as ComponentTrigger[])
 
-        console.log("IM HERE...")
+    // Source dialog callbacks
+    function onSourceAdd() {
+        setEditingSourceIndex(null);
+        setEditingSource(null);
+        setSourceDialogOpen(true);
+    }
+
+    function onSourceClick(trigger: ComponentTrigger, index: number) {
+        setEditingSourceIndex(index);
+        setEditingSource(trigger);
+        setSourceDialogOpen(true);
+    }
+
+    function onSourceDeleted() {
+        setSignals(prev => {
+            if (editingSourceIndex == null) return [...prev];
+            return [
+                ...prev.slice(0, editingSourceIndex),
+                ...prev.slice(editingSourceIndex + 1),
+            ]
+        });
+
+        setSourceDialogOpen(false);
+    }
+
+    const onSourceUpdated = (signal: ComponentTrigger) => {
+        setSignals(prev => {
+            if (editingSourceIndex == null) return [...prev, signal];         // add
+            const next = [...prev];
+            next[editingSourceIndex] = signal;                                 // edit
+            return next;
+        });
+
+        setSourceDialogOpen(false);
+    }
+
+    // Action dialog callbacks
+    function onActionAdd() {
+        setEditingActionIndex(null)
+        setEditingAction(null)
+        setActionDialogOpen(true)
+    }
+
+    function onActionDeleted() {
+        setActions(prev => {
+            if (editingActionIndex == null) return [...prev];
+            return [
+                ...prev.slice(0, editingActionIndex),
+                ...prev.slice(editingActionIndex + 1),
+            ]
+        });
+
+        setActionDialogOpen(false);
+    }
+
+    function onActionClick(action: RuleAction, index: number) {
+        setEditingActionIndex(index)
+        setEditingAction(action)
+        setActionDialogOpen(true)
+    }
+
+    const onActionUpdated = (action: RuleAction) => {
+        setActions(prev => {
+            if (editingActionIndex == null) return [...prev, action];         // add
+            const next = [...prev];
+            next[editingActionIndex] = action;                                 // edit
+            return next;
+        });
+
+        setSourceDialogOpen(false);
+    }
+
+    useEffect(() => {
 
         // start loading
         setHaveSignalsLoaded(false);
@@ -122,19 +198,35 @@ export default function RuleEditor(props: RuleEditorProps) {
                         {(signals && signals.length > 0) &&
                             <Box>
                                 {signals.map((signal, i) => (
-                                    <React.Fragment key={signal.id ?? `${signal.component.id}-${signal.signal}-${i}`}>
+                                    <Box key={signal.id ?? `${signal.component.id}-${signal.signal}-${i}`}
+                                        onClick={()=> onSourceClick(signal, i)}>
                                         {getSourceSentence(signal.component.type, {
                                             sourceComponent: signal.component,
                                             signal: signal.signal,
                                             operator: signal.operator,
-                                            threshold: signal.threshold
+                                            threshold: signal.threshold,
                                         })}
-                                    </React.Fragment>
+                                    </Box>
                                 ))}
                             </Box>
                         }
 
-                        <AddSourceDialog sources={sources} sourceComponents={sourceComponents} handleSubmit={onNewSignalAdded}/>
+                        <Button
+                            variant="outlined"
+                            onClick={onSourceAdd}
+                            fullWidth
+                            color="primary"
+                        >
+                            Add source
+                        </Button>
+
+                        <AddSourceDialog open={sourceDialogOpen}
+                                         sources={sources}
+                                         sourceComponents={sourceComponents}
+                                         handleSubmit={onSourceUpdated}
+                                         handleClose={() => setSourceDialogOpen(false)}
+                                         handleDelete={onSourceDeleted}
+                                         initial={editingSource}/>
                     </Stack>
                 </CardContent>
             </Card>
@@ -155,18 +247,33 @@ export default function RuleEditor(props: RuleEditorProps) {
                         {(actions && actions.length > 0) &&
                             <Box>
                                 {actions.map((action, i) => (
-                                    <React.Fragment key={action.id ?? `${action.component.id}-${action.actionKey}-${i}`}>
+                                    <Box key={action.id ?? `${action.component.id}-${action.actionKey}-${i}`}
+                                         onClick={()=> onActionClick(action, i)}>
                                         {getActionSentence(action.component.type, {
                                             actuator: action.component,
                                             actionKey: action.actionKey,
                                             params: action.params,
                                         })}
-                                    </React.Fragment>
+                                    </Box>
                                 ))}
                             </Box>
                         }
 
-                        <AddActionDialog actuators={actuators} actionComponents={actionComponents} handleSubmit={onNewActuationAdded}/>
+                        <Button
+                            variant="outlined"
+                            onClick={onActionAdd}
+                            fullWidth
+                            color="primary">
+                            Add action
+                        </Button>
+
+                        <AddActionDialog open={actionDialogOpen}
+                                         actuators={actuators}
+                                         actionComponents={actionComponents}
+                                         handleSubmit={onActionUpdated}
+                                         handleClose={() => setActionDialogOpen(false)}
+                                         handleDelete={onActionDeleted}
+                                         initial={editingAction}/>
                     </Stack>
                 </CardContent>
             </Card>

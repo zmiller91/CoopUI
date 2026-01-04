@@ -20,6 +20,7 @@ import SelectInput from "../../../../components/form/select";
 import {useTheme} from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Emphasis from "../../../../components/typography/emphasis";
+import DeleteDialog from "../../../../components/dialog/delete";
 
 
 
@@ -77,46 +78,25 @@ export default function Rule() {
                     Delete Automation
                 </Button>
 
-                <Dialog
-                    fullScreen={fullScreen}
-                    open={openDelete}
-                    onClose={() => setOpenDelete(false)}
-                    aria-labelledby="responsive-dialog-title">
+                <DeleteDialog title="Delete automation?"
+                              onDelete={deleteRule}
+                              onCancel={() => setOpenDelete(false)}
+                              open={openDelete}>
 
-                    <DialogTitle id="responsive-dialog-title">
-                        Delete automation?
-                    </DialogTitle>
+                    <Stack spacing={1.75}>
+                        <Typography variant="body2" color="text.secondary">
+                            This will permanently delete:
+                        </Typography>
 
-                    <DialogContent sx={{ pt: 2 }}>
-                        <Stack spacing={1.75}>
-                            <Typography variant="body2" color="text.secondary">
-                                This will permanently delete:
-                            </Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                            <Emphasis>{rule.name}</Emphasis>
+                        </Typography>
 
-                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                <Emphasis>{rule.name}</Emphasis>
-                            </Typography>
-
-                            <Typography variant="body2" color="text.secondary">
-                                This action cannot be undone.
-                            </Typography>
-                        </Stack>
-                    </DialogContent>
-
-                    <DialogActions>
-                        <Button onClick={() => setOpenDelete(false)}>Cancel</Button>
-                        <Button
-                            variant="text"
-                            color="error"
-                            fullWidth
-                            startIcon={<DeleteOutline />}
-                            onClick={deleteRule}>
-
-                            Delete automation
-
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                        <Typography variant="body2" color="text.secondary">
+                            This action cannot be undone.
+                        </Typography>
+                    </Stack>
+                </DeleteDialog>
 
             </Stack>
         </AppContent>

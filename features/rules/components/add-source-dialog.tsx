@@ -6,30 +6,36 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import {ComponentTrigger, RuleComponent, Source} from "../../../client/rule";
+import {ComponentTrigger, Rule, RuleComponent, Source} from "../../../client/rule";
 import SelectInput, {SelectOption} from "../../../components/form/select";
 import Form from "../../../components/form/form";
-import {ReactNode, useMemo, useState} from "react";
+import {ReactNode, useEffect, useMemo, useState} from "react";
 import { Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CreateSource from "./form-creators/sources/create";
+import DeleteDialog from "../../../components/dialog/delete";
 
 export interface AddSourceDialogProps {
+    open: boolean,
     handleSubmit: (trigger: ComponentTrigger) => void;
+    handleClose: () => void,
+    handleDelete: () => void,
     sourceComponents: RuleComponent[];
     sources: Record<string, Source>;
+    initial?: ComponentTrigger
 }
 
 export default function AddSourceDialog(props: AddSourceDialogProps) {
-    const [open, setOpen] = React.useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    const [sourceComponentId, setSourceComponentId] = useState('');
-    const [sourceComponentDeviceType, setSourceComponentDeviceType] = useState('');
-    const [signal, setSignal] = useState('')
-    const [threshold, setThreshold] = useState('')
-    const [operator, setOperator] = useState('')
+    const [sourceComponentId, setSourceComponentId] = useState(props.initial?.component.id || '');
+    const [sourceComponentDeviceType, setSourceComponentDeviceType] = useState(props.initial?.component.type || '');
+    const [signal, setSignal] = useState(props.initial?.signal || '')
+    const [threshold, setThreshold] = useState(props.initial?.threshold || '')
+    const [operator, setOperator] = useState(props.initial?.operator || '')
+
+    const[showDelete, setShowDelete] = useState(false)
 
     const sourceComponentOptions = useMemo<SelectOption[]>(() =>
         props.sourceComponents?.map(c => ({
@@ -46,11 +52,6 @@ export default function AddSourceDialog(props: AddSourceDialogProps) {
         }
     }
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-
     const sourceComponent = useMemo<RuleComponent | undefined>(() => {
         return props.sourceComponents.find(c => c.id === sourceComponentId);
     }, [props.sourceComponents, sourceComponentId]);
@@ -60,8 +61,17 @@ export default function AddSourceDialog(props: AddSourceDialogProps) {
         setSourceComponentDeviceType('')
         setThreshold('')
         setSignal('')
-        setOpen(false);
+        props.handleClose();
     };
+
+    const onDeleteConfirm = () => {
+        props.handleDelete()
+        setShowDelete(false)
+    }
+
+    const onDeleteCancel = () => {
+        setShowDelete(false)
+    }
 
     const onSubmit = () => {
 
@@ -73,6 +83,16 @@ export default function AddSourceDialog(props: AddSourceDialogProps) {
         })
         handleClose();
     }
+
+    useEffect(() => {
+        if (!props.open) return;
+
+        setSourceComponentId(props.initial?.component?.id || '');
+        setSourceComponentDeviceType(props.initial?.component?.type || '');
+        setSignal(props.initial?.signal || '');
+        setThreshold(props.initial?.threshold || '');
+        setOperator(props.initial?.operator || '');
+    }, [props.open, props.initial]);
 
     const sourceFormElements = useMemo<ReactNode>(() => {
 
@@ -99,32 +119,21 @@ export default function AddSourceDialog(props: AddSourceDialogProps) {
 
     return (
         <React.Fragment>
-            <Button
-                variant="outlined"
-                onClick={(e) => {
-                    (e.currentTarget as HTMLButtonElement).blur();
-                    handleClickOpen();
-                }}
-                fullWidth
-                color="primary"
-            >
-                Add source
-            </Button>
 
             <Dialog
                 fullScreen={fullScreen}
-                open={open}
+                open={props.open}
                 onClose={handleClose}
                 aria-labelledby="responsive-dialog-title"
             >
                 <DialogTitle id="responsive-dialog-title">
-                    New Trigger Condition
+                    {props.initial ? "Update " : "New"} Source Condition
                 </DialogTitle>
 
                 <DialogContent>
                     <Stack spacing={2}>
                         <Typography variant="body2" color="text.secondary">
-                            Choose a trigger condition. When all conditions are met then all actions will be performed.
+                            Choose a source condition. When all conditions are met then all actions will be performed.
                         </Typography>
 
                         <Form>
@@ -138,13 +147,27 @@ export default function AddSourceDialog(props: AddSourceDialogProps) {
                             />
                             {sourceFormElements}
                         </Form>
+
+                        {props.initial && <Button
+                            variant="text"
+                            onClick={() => setShowDelete(true)}
+                            fullWidth
+                            color="error">
+                            Delete source condition
+                        </Button>}
+
+                        <DeleteDialog title="Delete source condition?"
+                                      onDelete={onDeleteConfirm}
+                                      onCancel={onDeleteCancel}
+                                      open={showDelete}/>
+
                     </Stack>
                 </DialogContent>
 
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button onClick={onSubmit} autoFocus>
-                        Add
+                        {props.initial ? "Save" : "Add"}
                     </Button>
                 </DialogActions>
             </Dialog>

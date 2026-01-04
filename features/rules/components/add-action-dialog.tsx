@@ -11,48 +11,68 @@ import {Actuator, RuleAction, RuleComponent} from "../../../client/rule";
 import SelectInput, {SelectOption} from "../../../components/form/select";
 import Form from "../../../components/form/form";
 import TextInput from "../../../components/form/text-input";
-import {ReactNode, useMemo, useState} from "react";
+import {ReactNode, useEffect, useMemo, useState} from "react";
 import { Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CreateValveAction from "./form-creators/actions/valve-create";
+import DeleteDialog from "../../../components/dialog/delete";
 
 export interface AddActuatorDialogProps {
+    open: boolean,
     handleSubmit: (action: RuleAction) => void;
+    handleClose: () => void,
+    handleDelete: () => void,
     actionComponents: RuleComponent[];
     actuators: Record<string, Actuator>;
+    initial?: RuleAction
 }
 
 export default function AddActionDialog(props: AddActuatorDialogProps) {
-    const [open, setOpen] = React.useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    const [actionComponentId, setActionComponentId] = useState('');
-    const [actionComponentDeviceType, setActionComponentDeviceType] = useState('');
-    const [actionKey, setActionKey] = useState("");
-    const [actionParams, setActionParams] = useState<Record<string, any>>({});
+    const [actionComponentId, setActionComponentId] = useState(props.initial?.component.id || '');
+    const [actionComponentDeviceType, setActionComponentDeviceType] = useState(props.initial?.component.type || '');
+    const [actionKey, setActionKey] = useState(props.initial?.actionKey || '');
+    const [actionParams, setActionParams] = useState<Record<string, any>>(props.initial?.params || {});
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+    const[showDelete, setShowDelete] = useState(false)
 
     const handleClose = () => {
         setActionComponentId('')
         setActionComponentDeviceType('')
         setActionKey('')
         setActionParams({})
-        setOpen(false);
+        props.handleClose()
     };
 
-    const onSubmit = () => {
+    const onDeleteConfirm = () => {
+        props.handleDelete()
+        setShowDelete(false)
+    }
 
+    const onDeleteCancel = () => {
+        setShowDelete(false)
+    }
+
+    const onSubmit = () => {
         props.handleSubmit(                {
             component: actionComponent,
             actionKey: actionKey,
             params: actionParams
         })
+
         handleClose();
     }
+
+    useEffect(() => {
+        if (!props.open) return;
+
+        setActionComponentId(props.initial?.component.id || '')
+        setActionComponentDeviceType(props.initial?.component.type || '')
+        setActionKey(props.initial?.actionKey || '')
+        setActionParams(props.initial?.params || {})
+    }, [props.open, props.initial]);
 
     const onActionComponentChanged = (value: string) => {
         const component = props.actionComponents.filter(c => c.id == value)[0]
@@ -86,26 +106,15 @@ export default function AddActionDialog(props: AddActuatorDialogProps) {
 
     return (
         <React.Fragment>
-            <Button
-                variant="outlined"
-                onClick={(e) => {
-                    (e.currentTarget as HTMLButtonElement).blur();
-                    handleClickOpen();
-                }}
-                fullWidth
-                color="primary"
-            >
-                Add action
-            </Button>
 
             <Dialog
                 fullScreen={fullScreen}
-                open={open}
+                open={props.open}
                 onClose={handleClose}
                 aria-labelledby="responsive-dialog-title"
             >
                 <DialogTitle id="responsive-dialog-title">
-                    New Action
+                    {props.initial ? "Update " : "New"}  Action
                 </DialogTitle>
 
                 <DialogContent>
@@ -126,13 +135,26 @@ export default function AddActionDialog(props: AddActuatorDialogProps) {
                             />
                             {actionFormElements}
                         </Form>
+
+                        {props.initial && <Button
+                            variant="text"
+                            onClick={() => setShowDelete(true)}
+                            fullWidth
+                            color="error">
+                            Delete action
+                        </Button>}
+
+                        <DeleteDialog title="Delete action?"
+                                      onDelete={onDeleteConfirm}
+                                      onCancel={onDeleteCancel}
+                                      open={showDelete}/>
                     </Stack>
                 </DialogContent>
 
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button onClick={onSubmit} autoFocus>
-                        Add
+                        {props.initial ? "Save" : "Add"}
                     </Button>
                 </DialogActions>
             </Dialog>
