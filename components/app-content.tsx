@@ -12,12 +12,6 @@ export interface AppContentProps {
     className?: string
 }
 
-/**
- * Assumptions:
- * - Top AppBar is 56px (MUI default for mobile)
- * - BottomNav is 56px
- * If your top is 64px on desktop, you can make this responsive later.
- */
 const TOP_NAV_PX = 56
 const BOTTOM_NAV_PX = 56
 
@@ -28,37 +22,51 @@ export function AppContent(props: AppContentProps) {
     const topOffset = adjustTop ? TOP_NAV_PX : 0
     const bottomOffset = adjustBottom ? BOTTOM_NAV_PX : 0
 
-    // Height available for the scroll container
     const height = useMemo(() => {
-        // safe-area is handled as padding at the bottom (like you had)
         return `calc(100vh - ${topOffset + bottomOffset}px)`
     }, [topOffset, bottomOffset])
 
-    const showChildren = props.hasLoaded === undefined || props.hasLoaded
     const isLoading = props.hasLoaded !== undefined ? !props.hasLoaded : false
 
     return (
         <Box
             sx={{
                 minHeight: '100vh',
-                bgcolor: 'background.default', // set this in your theme (or use grey.100)
+                bgcolor: 'background.default',
             }}
             className={props.className}
         >
-            <LoadingIndicator isLoading={isLoading} />
-
             <Box
                 sx={{
+                    position: 'relative',
                     height,
                     width: '100vw',
                     overflow: 'auto',
-                    px: 2, // ~16px like px-4
-                    py: 1.5, // ~12px like py-3
-                    // Keep content from being hidden behind bottom nav + iOS safe area
+                    px: 2,
+                    py: 1.5,
                     pb: adjustBottom ? `calc(${BOTTOM_NAV_PX}px + env(safe-area-inset-bottom))` : undefined,
                 }}
             >
-                {showChildren && props.children}
+                {/* ✅ Always mount children so their effects can run */}
+                {props.children}
+
+                {/* ✅ Overlay loading indicator without blocking mount */}
+                {isLoading && (
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            bgcolor: 'background.default',
+                            opacity: 0.85,
+                            zIndex: 10,
+                        }}
+                    >
+                        <LoadingIndicator isLoading />
+                    </Box>
+                )}
             </Box>
         </Box>
     )

@@ -21,6 +21,10 @@ class RuleClient {
     listRules(coopId:string, success: (response:Rule[]) => void) {
         authClient.get("/rule/" + coopId + "/list", (response) => success(response.data.rules))
     }
+
+    getRule(coopId:string, ruleId:string, success: (response:Rule) => void) {
+        authClient.get("/rule/" + coopId + "/" + ruleId, (response) => success(response.data.rule))
+    }
 }
 
 export interface ActuatorActions {
