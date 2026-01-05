@@ -75,7 +75,8 @@ export default function AddSourceDialog(props: AddSourceDialogProps) {
 
     const onSubmit = () => {
 
-        props.handleSubmit(                {
+        props.handleSubmit({
+            id: props.initial?.id,
             component: sourceComponent,
             signal: signal,
             threshold: threshold,

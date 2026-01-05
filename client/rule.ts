@@ -25,6 +25,18 @@ class RuleClient {
     getRule(coopId:string, ruleId:string, success: (response:Rule) => void) {
         authClient.get("/rule/" + coopId + "/" + ruleId, (response) => success(response.data.rule))
     }
+
+    updateRule(coopId:string, ruleId:string, request: UpdateRuleRequest, success: () => void) {
+        authClient.put("/rule/" + coopId + "/" + ruleId, request, () => success())
+    }
+
+    deleteRule(coopId:string, ruleId:string, success: () => void) {
+        authClient.delete("/rule/" + coopId + "/" + ruleId, () => success())
+    }
+}
+
+export interface UpdateRuleRequest{
+    rule: Rule
 }
 
 export interface ActuatorActions {

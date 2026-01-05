@@ -18,10 +18,6 @@ import getSourceSentence from "../sentences/get-source-sentence";
 import AddSourceDialog from "./add-source-dialog";
 import getActionSentence from "../sentences/get-action-sentence";
 import AddActionDialog from "./add-action-dialog";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import {ChevronRight} from "@mui/icons-material";
-
 
 export interface RuleEditorProps {
     setHasLoaded: (hasLoaded: boolean) => void
@@ -163,6 +159,7 @@ export default function RuleEditor(props: RuleEditorProps) {
     const submit = () => {
 
         const rule: Rule = {
+            id: props.rule?.id,
             name: name,
             componentTriggers: signals,
             actions: actions

@@ -45,12 +45,15 @@ export default function Rule() {
     const [openDelete, setOpenDelete] = useState(false);
 
     const submit = (rule: Rule) => {
-        console.log("User wants to update rule")
-        console.log(rule)
+        ruleClient.updateRule(coopId, ruleId, {rule}, () => {
+            router.push(`/${coopId}/rules`);
+        })
     }
 
     const deleteRule = () => {
-        console.log("Deleting...")
+        ruleClient.deleteRule(coopId, ruleId, () => {
+            router.push(`/${coopId}/rules`);
+        })
         setOpenDelete(false)
     }
 

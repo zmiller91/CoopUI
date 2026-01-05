@@ -56,7 +56,8 @@ export default function AddActionDialog(props: AddActuatorDialogProps) {
     }
 
     const onSubmit = () => {
-        props.handleSubmit(                {
+        props.handleSubmit({
+            id: props.initial?.id,
             component: actionComponent,
             actionKey: actionKey,
             params: actionParams
