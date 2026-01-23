@@ -5,6 +5,8 @@ files:
     destination: /home/ec2-user/coopui
   - source: scripts/aws/
     destination: /home/ec2-user/coopui
+  - source: public/
+    destination: /home/ec2-user/coopui/standalone
 hooks:
   BeforeInstall:
     - location: scripts/aws/delete.sh
