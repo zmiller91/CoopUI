@@ -36,7 +36,8 @@ export const CHART_CONFIG: Record<string, ChartConfig> = {
         dimension1: {
             key: "WEIGHT",
             name: "WEIGHT",
-            label: "g",
+            label: "lbs",
+            formatter: (grams) => Math.round((grams * 10) / 453.592) / 10,
         },
     },
 };
