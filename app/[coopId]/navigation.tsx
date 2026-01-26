@@ -8,6 +8,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import BoltIcon from '@mui/icons-material/Bolt'
 import SensorsIcon from '@mui/icons-material/Sensors'
 import { currentCoop } from "./coop-context";
+import {Settings} from "@mui/icons-material";
 
 export function MobileBottomNav() {
 
@@ -18,6 +19,7 @@ export function MobileBottomNav() {
                 { path: `/${coop}/components`, label: 'Devices', icon: <SensorsIcon /> },
                 { path: `/${coop}/dashboard`, label: 'Dashboard', icon: <HomeIcon /> },
                 { path: `/${coop}/rules`, label: 'Automations', icon: <BoltIcon /> },
+                { path: `/${coop}/settings`, label: 'Settings', icon: <Settings /> },
             ]}
         />
     )

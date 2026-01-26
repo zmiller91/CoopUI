@@ -4,7 +4,7 @@ import ruleClient, {
     ComponentTrigger,
     Rule,
     RuleAction,
-    RuleComponent,
+    RuleComponent, RuleNotification,
     Source
 } from "../../../client/rule";
 import React, {useState, useEffect} from "react";
@@ -18,6 +18,9 @@ import getSourceSentence from "../sentences/get-source-sentence";
 import AddSourceDialog from "./add-source-dialog";
 import getActionSentence from "../sentences/get-action-sentence";
 import AddActionDialog from "./add-action-dialog";
+import AddNotificationDialog from "./add-notification-dialog";
+import getNotificationSentence from "../sentences/get-notification-sentence";
+import contactClient, {Contact} from "../../../client/contact";
 
 export interface RuleEditorProps {
     setHasLoaded: (hasLoaded: boolean) => void
@@ -35,9 +38,10 @@ export default function RuleEditor(props: RuleEditorProps) {
     // Loading variables
     const [haveSignalsLoaded, setHaveSignalsLoaded] = useState(false);
     const [haveActionsLoaded, setHaveActionsLoaded] = useState(false);
+    const [haveContactsLoaded, setHaveContactsLoaded] = useState(false);
     useEffect(() => {
-        props.setHasLoaded(haveSignalsLoaded && haveActionsLoaded);
-    }, [haveSignalsLoaded, haveActionsLoaded, props]);
+        props.setHasLoaded(haveSignalsLoaded && haveActionsLoaded && haveContactsLoaded);
+    }, [haveSignalsLoaded, haveActionsLoaded, haveContactsLoaded, props]);
 
     // State variables
     const [sourceDialogOpen, setSourceDialogOpen] = useState(false);
@@ -48,15 +52,21 @@ export default function RuleEditor(props: RuleEditorProps) {
     const [editingActionIndex, setEditingActionIndex] = useState<number | undefined>(undefined)
     const [editingAction, setEditingAction] = useState<RuleAction | undefined>(undefined)
 
+    const [notificationDialogOpen, setNotificationDialogOpen] = useState(false);
+    const [editingNotificationIndex, setEditingNotificationIndex] = useState<number | undefined>(undefined);
+    const [editingNotification, setEditingNotification] = useState<RuleNotification | undefined>(undefined);
+
     // Variables fetched from the API
     const [sources, setSources] = useState({} as Record<string, Source>)
     const [sourceComponents, setSourceComponents] = useState([] as RuleComponent[])
     const [actuators, setActuators] = useState({} as Record<string, Actuator>)
     const [actionComponents, setActionComponents] = useState([] as RuleComponent[])
+    const [contacts, setContacts] = useState([] as Contact[]);
 
     // Variables to send to the server
     const [actions, setActions] = useState(props.rule?.actions || [] as RuleAction[])
     const [signals, setSignals] = useState(props.rule?.componentTriggers || [] as ComponentTrigger[])
+    const [notifications, setNotifications] = useState(props.rule?.notifications || [] as RuleNotification[])
 
     // Source dialog callbacks
     function onSourceAdd() {
@@ -127,7 +137,43 @@ export default function RuleEditor(props: RuleEditorProps) {
             return next;
         });
 
-        setSourceDialogOpen(false);
+        setActionDialogOpen(false);
+    }
+
+    // Notification dialog callbacks
+    function onNotificationAdd() {
+        setEditingNotificationIndex(null)
+        setEditingNotification(null)
+        setNotificationDialogOpen(true)
+    }
+
+    function onNotificationDeleted() {
+        setNotifications(prev => {
+            if (editingNotificationIndex == null) return [...prev];
+            return [
+                ...prev.slice(0, editingNotificationIndex),
+                ...prev.slice(editingNotificationIndex + 1),
+            ]
+        });
+
+        setNotificationDialogOpen(false);
+    }
+
+    function onNotificationClick(notification: RuleNotification, index: number) {
+        setEditingNotificationIndex(index)
+        setEditingNotification(notification)
+        setNotificationDialogOpen(true)
+    }
+
+    const onNotificationUpdated = (notification: RuleNotification) => {
+        setNotifications(prev => {
+            if (editingNotificationIndex == null) return [...prev, notification];         // add
+            const next = [...prev];
+            next[editingNotificationIndex] = notification;                                 // edit
+            return next;
+        });
+
+        setNotificationDialogOpen(false);
     }
 
     useEffect(() => {
@@ -135,6 +181,7 @@ export default function RuleEditor(props: RuleEditorProps) {
         // start loading
         setHaveSignalsLoaded(false);
         setHaveActionsLoaded(false);
+        setHaveContactsLoaded(false);
         props.setHasLoaded(false);
 
         ruleClient.listRuleSources(props.coopId, result => {
@@ -148,12 +195,19 @@ export default function RuleEditor(props: RuleEditorProps) {
             setActuators(result.actions || {});
             setHaveActionsLoaded(true);
         });
+
+        contactClient.list(props.coopId, response => {
+            setContacts(response.contacts);
+            setHaveContactsLoaded(true);
+        })
+
     }, [props.coopId]);
 
     useEffect(() => {
         setName(props.rule?.name || '');
         setActions(props.rule?.actions || []);
         setSignals(props.rule?.componentTriggers || []);
+        setNotifications(props.rule?.notifications || []);
     }, [props.rule]);
 
     const submit = () => {
@@ -162,7 +216,8 @@ export default function RuleEditor(props: RuleEditorProps) {
             id: props.rule?.id,
             name: name,
             componentTriggers: signals,
-            actions: actions
+            actions: actions,
+            notifications: notifications
         }
 
         props.onSubmit(rule)
@@ -271,6 +326,48 @@ export default function RuleEditor(props: RuleEditorProps) {
                                          handleClose={() => setActionDialogOpen(false)}
                                          handleDelete={onActionDeleted}
                                          initial={editingAction}/>
+                    </Stack>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader sx={{ pb: 1 }} title={
+                    <Typography variant="subtitle1" fontWeight={600}>
+                        Send notification...
+                    </Typography>
+                }/>
+                <CardContent>
+                    <Stack spacing={1.25}>
+
+                        {(!notifications || notifications.length == 0) &&
+                            <EmptyState message="No notifications yet."/>
+                        }
+
+                        {(notifications && notifications.length > 0) &&
+                            <Box>
+                                {notifications.map((notification, i) => (
+                                    <Box key={notification.id ?? `${notification.type}-${notification.level}-${i}`}
+                                         onClick={()=> onNotificationClick(notification, i)}>
+                                        {getNotificationSentence(notification)}
+                                    </Box>
+                                ))}
+                            </Box>
+                        }
+
+                        <Button
+                            variant="outlined"
+                            onClick={onNotificationAdd}
+                            fullWidth
+                            color="primary">
+                            Add notification
+                        </Button>
+
+                        <AddNotificationDialog open={notificationDialogOpen}
+                                         contacts={contacts}
+                                         handleSubmit={onNotificationUpdated}
+                                         handleClose={() => setNotificationDialogOpen(false)}
+                                         handleDelete={onNotificationDeleted}
+                                         initial={editingNotification}/>
                     </Stack>
                 </CardContent>
             </Card>

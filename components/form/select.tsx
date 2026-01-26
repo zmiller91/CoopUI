@@ -63,7 +63,6 @@ export default function SelectInput(props: SelectInputProps) {
         >
             <InputLabel
                 id={`${props.id}-label`}
-                // ✅ This prevents "Select" from overlapping the placeholder
                 shrink={hasPlaceholder || selectValue !== emptyValue}
             >
                 {props.title}

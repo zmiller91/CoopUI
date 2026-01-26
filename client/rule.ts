@@ -1,4 +1,5 @@
 import authClient from "./auth";
+import {Contact} from "./contact";
 
 class RuleClient {
 
@@ -106,6 +107,15 @@ export interface ComponentTrigger {
     operator: string;
 }
 
+export interface RuleNotification {
+    id?: string;
+    type: string;
+    level: string;
+    channel: string
+    message?: string;
+    recipients?: Contact[]
+}
+
 export interface Rule {
     id?: string;
     name: string;
@@ -113,6 +123,7 @@ export interface Rule {
     componentTriggers?: ComponentTrigger[];
     scheduleTriggers?: ScheduleTrigger[];
     actions: RuleAction[];
+    notifications: RuleNotification[];
 }
 
 export default new RuleClient();
