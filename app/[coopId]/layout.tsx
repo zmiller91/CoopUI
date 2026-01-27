@@ -6,6 +6,7 @@ import { MobileBottomNav, MobileNav } from "./navigation";
 import React, { useState, useEffect } from 'react';
 import { currentCoop } from "./coop-context";
 import coops, { CoopDAO } from "../../client/coops";
+import {InboxProvider} from "../../components/InboxContext";
 
 function LayoutShell({ children }) {
     const [navVisible, setNavVisible] = useState(false);
@@ -20,7 +21,7 @@ function LayoutShell({ children }) {
 
     useEffect(() => {
         coops.getInfo(coopId, setCoop);
-    }, []);
+    }, [coopId]);
 
     return (
         <div>
@@ -41,7 +42,9 @@ function LayoutShell({ children }) {
 export default function RootLayout({ children }) {
     return (
         <AppBarProvider>
-            <LayoutShell>{children}</LayoutShell>
+            <InboxProvider>
+                <LayoutShell>{children}</LayoutShell>
+            </InboxProvider>
         </AppBarProvider>
     );
 }

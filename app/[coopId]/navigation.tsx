@@ -8,18 +8,29 @@ import HomeIcon from '@mui/icons-material/Home'
 import BoltIcon from '@mui/icons-material/Bolt'
 import SensorsIcon from '@mui/icons-material/Sensors'
 import { currentCoop } from "./coop-context";
-import {Settings} from "@mui/icons-material";
+import {Notifications, NotificationsNone, Settings} from "@mui/icons-material";
+import {Badge} from "@mui/material";
+import {useInbox} from "../../components/InboxContext";
 
 export function MobileBottomNav() {
 
     const coop = currentCoop();
+    const inbox = useInbox();
+
     return (
         <BottomNav
             items={[
                 { path: `/${coop}/components`, label: 'Devices', icon: <SensorsIcon /> },
-                { path: `/${coop}/dashboard`, label: 'Dashboard', icon: <HomeIcon /> },
                 { path: `/${coop}/rules`, label: 'Automations', icon: <BoltIcon /> },
+                { path: `/${coop}/dashboard`, label: 'Dashboard', icon: <HomeIcon /> },
                 { path: `/${coop}/settings`, label: 'Settings', icon: <Settings /> },
+                { path: `/${coop}/inbox`, label: 'Notifications', icon:   <Badge
+                        badgeContent={inbox.inboxNewCount}
+                        color="error"
+                        overlap="circular"
+                    >
+                        <Notifications />
+                    </Badge> },
             ]}
         />
     )

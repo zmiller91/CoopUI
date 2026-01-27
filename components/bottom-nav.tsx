@@ -41,15 +41,25 @@ export function BottomNav({ items }: { items: BottomNavItem[] }) {
                 value={value}
                 onChange={(_, newValue: number) => router.push(items[newValue].path)}
                 sx={{
-                    minWidth: 0,
-                    px: 0.5,
+                    height: 56,
+                    px: 0.25,
+                    '& .MuiBottomNavigationAction-root': {
+                        minWidth: 0,
+                        paddingTop: 0.75,
+                        paddingBottom: 0.5,
+                    },
                     '& .MuiBottomNavigationAction-label': {
-                        fontSize: '0.7rem',
-                        lineHeight: 1.1,
-                        whiteSpace: 'nowrap',
+                        fontSize: '0.65rem',
+                        lineHeight: 1,
+                        marginTop: '2px',
+                        transition: 'all 150ms ease',
+                    },
+                    '& .Mui-selected .MuiBottomNavigationAction-label': {
+                        fontSize: '0.65rem',
+                        fontWeight: 500,
                     },
                     '& .MuiSvgIcon-root': {
-                        fontSize: 24, // keep standard
+                        fontSize: 22,
                     },
                 }}
             >

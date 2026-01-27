@@ -95,9 +95,6 @@ export default function Contacts() {
         })
     }, [contacts, query])
 
-    const createPath = `/${coopId}/contacts/new`
-    const editPath = (id: string) => `/${coopId}/contacts/${id}`
-
 
     const onContactDialogClosed = () => {
         requestAnimationFrame(() => {
@@ -168,9 +165,6 @@ export default function Contacts() {
                 {/* Header */}
                 <Stack direction="row" alignItems="flex-end" justifyContent="space-between" spacing={2}>
                     <Box sx={{ minWidth: 0 }}>
-                        <Typography variant="h6" fontWeight={700} noWrap>
-                            Contacts
-                        </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
                             People associated with your account, used across the app.
                         </Typography>
