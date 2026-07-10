@@ -22,8 +22,15 @@ export default ({
         { label: "Close valve", value: "TURN_OFF" },
     ];
 
+    const zoneOptions: SelectOption[] = useMemo(() =>
+        Array.from({ length: 8 }, (_, i) => i + 1).map((n) => ({
+            label: `Zone ${n}`,
+            value: String(n - 1),
+        })), []);
+
     const needsDuration = useMemo(() => actionKey === "TURN_ON", [actionKey]);
     const duration = params.duration ?? "";
+    const zone = params.zone ?? "";
 
     return (
         <Stack spacing={2}>
@@ -35,9 +42,19 @@ export default ({
                 value={actionKey}
                 onChange={(k) => {
                     setActionKey(k);
-                    if (k !== "TURN_ON") setParams({ duration: undefined });
+                    if (k !== "TURN_ON") setParams({ ...params, duration: undefined });
                 }}
                 options={options}
+                required
+            />
+
+            <SelectInput
+                id="zone"
+                title="Zone"
+                placeholder="Select zone..."
+                value={zone}
+                onChange={(v) => setParams({ ...params, zone: v })}
+                options={zoneOptions}
                 required
             />
 
@@ -47,7 +64,7 @@ export default ({
                     title="Duration (minutes)"
                     type="number"
                     value={duration}
-                    onChange={(v) => setParams({ duration: v })}
+                    onChange={(v) => setParams({ ...params, duration: v })}
                     required
                 />
             )}

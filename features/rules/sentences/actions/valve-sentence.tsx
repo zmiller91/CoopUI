@@ -10,7 +10,9 @@ export default function ValveActionSentence(props: ActionSentenceProps) {
 
     const isOn = props.actionKey === "TURN_ON";
     const hasDuration = isOn && props.params?.duration;
+    const hasZone = !!props.params?.zone;
 
+    if (!hasZone) return null;
     if (isOn && !hasDuration) return null;
 
     return (
@@ -31,6 +33,8 @@ export default function ValveActionSentence(props: ActionSentenceProps) {
                     <Typography variant="body2" color="text.secondary">
                         {"Turn on "}
                         <Emphasis>{props.actuator.name}</Emphasis>
+                        {" zone "}
+                        <Emphasis>{props.params.zone}</Emphasis>
                         {" for "}
                         <Emphasis>{props.params.duration}</Emphasis>
                         {" minutes"}
@@ -41,6 +45,8 @@ export default function ValveActionSentence(props: ActionSentenceProps) {
                     <Typography variant="body2" color="text.secondary">
                         {"Turn off "}
                         <Emphasis>{props.actuator.name}</Emphasis>
+                        {" zone "}
+                        <Emphasis>{props.params.zone}</Emphasis>
                     </Typography>
                 }
             </Stack>
