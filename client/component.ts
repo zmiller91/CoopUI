@@ -22,7 +22,7 @@ class ComponentClient {
     }
 
     post(componentId:string, config:ComponentConfig[], success: (response:Component[]) => void) {
-        authClient.post("/component/" + componentId, 
+        authClient.post("/component/" + componentId,
         {
             component: {
                 id: componentId,
@@ -30,6 +30,28 @@ class ComponentClient {
             }
         },
         (response) => success(response.data.components))
+    }
+
+    manual(componentId: string, actionKey: string, zone: string, success: (response: any) => void) {
+        authClient.post("/component/" + componentId + "/manual",
+            {
+                actionKey: actionKey,
+                zone: zone
+            },
+            (response) => success(response.data))
+    }
+
+    savePorts(componentId: string, ports: ComponentPort[], success: (response: any) => void) {
+        authClient.post("/component/" + componentId + "/ports",
+            {
+                ports: ports
+            },
+            (response) => success(response.data))
+    }
+
+    portLog(componentId: string, index: number, success: (entries: PortLogEntry[]) => void) {
+        authClient.get("/component/" + componentId + "/ports/" + index + "/log",
+            (response) => success(response.data.entries))
     }
 
 }
@@ -40,11 +62,27 @@ export interface ComponentConfig {
     name:string;
 }
 
+export interface ComponentPort {
+    index:number;
+    name:string;
+    config?:ComponentConfig[];
+    state?:"ON" | "OFF" | null;
+}
+
+export interface PortLogEntry {
+    actionKey:string;
+    source:string | null;
+    status:string;
+    createdAt:number;
+}
+
 export interface Component {
     id:string;
     name:string;
     serial:string;
+    type:string;
     config:ComponentConfig[];
+    ports:ComponentPort[];
 }
 
 export default new ComponentClient();

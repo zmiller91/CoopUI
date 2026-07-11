@@ -9,6 +9,13 @@ import LoadingIndicator from "../../../../components/loading-indicator";
 import { AppContent } from "../../../../components/app-content";
 import SnackBar from "../../../../components/snack-bar";
 import {usePageTitle} from "../../../../components/app-bar";
+import ValveConfigFields from "../../../../features/devices/valve/valve-config-fields";
+import ValveZoneControls from "../../../../features/devices/valve/valve-zone-controls";
+
+import Stack from "@mui/material/Stack";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 function currentComponent():string {
     return useParams()["componentId"] as string;
@@ -55,15 +62,49 @@ export default function ComponentRegistry() {
         })
     }
 
+    const configEditors: Record<string, React.ReactNode> = {
+        "VALVE": <ValveConfigFields config={config} setConfig={setConfig} />,
+    };
+
+    const deviceControls: Record<string, React.ReactNode> = {
+        "VALVE": <ValveZoneControls
+            componentId={componentId}
+            ports={component.ports ?? []}
+            onPortsChange={(ports) => setComponent((previous) => ({ ...previous, ports }))}
+        />,
+    };
+
     return (
         <div>
             <LoadingIndicator isLoading={isSaving}/>
             <AppContent hasLoaded={hasLoaded}>
-                <Form submitText="Save" onSubmit={update}>
-                    {config?.map((c, idx) => {
-                        return <TextInput key={idx} id={c.key} title={c.name} value={config[idx].value} onChange={onChange} required={true}/>
-                    })}
-                </Form>
+                <Stack spacing={2}>
+                    <Box>
+                        <Typography variant="h6" fontWeight={700} noWrap>
+                            {component.name || "Component"}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+                            {component.type ? `${component.serial} • ${component.type}` : component.serial}
+                        </Typography>
+                    </Box>
+
+                    <Paper variant="outlined" sx={{ borderRadius: 2, p: 2 }}>
+                        <Typography variant="subtitle1" fontWeight={700}>
+                            Configuration
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            Settings this device uses to decide how to behave.
+                        </Typography>
+
+                        <Form submitText="Save" onSubmit={update}>
+                            {configEditors[component.type] ?? config?.map((c, idx) => {
+                                return <TextInput key={idx} id={c.key} title={c.name} value={config[idx].value} onChange={onChange} required={true}/>
+                            })}
+                        </Form>
+                    </Paper>
+
+                    {deviceControls[component.type]}
+                </Stack>
             </AppContent>
             <SnackBar message="Component updated." display={snackBarShowing} callback={setSnackBarShowing}/>
         </div>

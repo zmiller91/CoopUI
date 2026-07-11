@@ -15,6 +15,8 @@ export default function ValveActionSentence(props: ActionSentenceProps) {
     if (!hasZone) return null;
     if (isOn && !hasDuration) return null;
 
+    const zoneLabel = props.zoneLabel ?? props.params.zone;
+
     return (
         <Box
             sx={{
@@ -33,8 +35,8 @@ export default function ValveActionSentence(props: ActionSentenceProps) {
                     <Typography variant="body2" color="text.secondary">
                         {"Turn on "}
                         <Emphasis>{props.actuator.name}</Emphasis>
-                        {" zone "}
-                        <Emphasis>{props.params.zone}</Emphasis>
+                        {" "}
+                        <Emphasis>{zoneLabel}</Emphasis>
                         {" for "}
                         <Emphasis>{props.params.duration}</Emphasis>
                         {" minutes"}
@@ -45,8 +47,8 @@ export default function ValveActionSentence(props: ActionSentenceProps) {
                     <Typography variant="body2" color="text.secondary">
                         {"Turn off "}
                         <Emphasis>{props.actuator.name}</Emphasis>
-                        {" zone "}
-                        <Emphasis>{props.params.zone}</Emphasis>
+                        {" "}
+                        <Emphasis>{zoneLabel}</Emphasis>
                     </Typography>
                 }
             </Stack>

@@ -181,5 +181,14 @@ export const theme = createTheme({
                 },
             },
         },
+
+        MuiAlert: {
+            styleOverrides: {
+                filledInfo: {
+                    backgroundColor: tokens.primary[600],
+                    color: '#fff',
+                },
+            },
+        },
     },
 })

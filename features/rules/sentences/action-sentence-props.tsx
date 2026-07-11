@@ -4,4 +4,5 @@ export interface ActionSentenceProps{
     actuator?: RuleComponent
     actionKey: string;
     params: Record<string, any>;
+    zoneLabel?: string;
 }

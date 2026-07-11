@@ -50,7 +50,7 @@ export default function Login() {
 
   return (
     <div>
-      <LoadingIndicator isLoading={loading}/>
+      <LoadingIndicator isLoading={loading} hasAppBar={false}/>
       <AppContent adjustForBottomNav={false} adjustForTopNav={false}>
         <div className="min-h-full flex flex-col py-4 px-4">
           <div className="flex items-center justify-center">
