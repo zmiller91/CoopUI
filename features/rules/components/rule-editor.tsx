@@ -5,10 +5,11 @@ import ruleClient, {
     Rule,
     RuleAction,
     RuleComponent, RuleNotification,
+    ScheduleTrigger,
     Source
 } from "../../../client/rule";
 import React, {useState, useEffect} from "react";
-import {Box, Card, CardHeader, List, Stack} from "@mui/material";
+import {Box, Card, CardHeader, List, Stack, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
@@ -21,6 +22,9 @@ import AddActionDialog from "./add-action-dialog";
 import AddNotificationDialog from "./add-notification-dialog";
 import getNotificationSentence from "../sentences/get-notification-sentence";
 import contactClient, {Contact} from "../../../client/contact";
+import AddScheduleDialog from "./add-schedule-dialog";
+import ScheduleSentence from "../sentences/schedule-sentence";
+import componentClient, {ComponentPort} from "../../../client/component";
 
 export interface RuleEditorProps {
     setHasLoaded: (hasLoaded: boolean) => void
@@ -43,10 +47,19 @@ export default function RuleEditor(props: RuleEditorProps) {
         props.setHasLoaded(haveSignalsLoaded && haveActionsLoaded && haveContactsLoaded);
     }, [haveSignalsLoaded, haveActionsLoaded, haveContactsLoaded, props]);
 
+    // Trigger type - a rule is either condition-triggered or schedule-triggered, never both
+    const [triggerType, setTriggerType] = useState<'CONDITION' | 'SCHEDULE'>(
+        (props.rule?.scheduleTriggers?.length ?? 0) > 0 ? 'SCHEDULE' : 'CONDITION'
+    );
+
     // State variables
     const [sourceDialogOpen, setSourceDialogOpen] = useState(false);
     const [editingSourceIndex, setEditingSourceIndex] = useState<number | undefined>(undefined);
     const [editingSource, setEditingSource] = useState<ComponentTrigger | undefined>(undefined)
+
+    const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+    const [editingScheduleIndex, setEditingScheduleIndex] = useState<number | undefined>(undefined);
+    const [editingSchedule, setEditingSchedule] = useState<ScheduleTrigger | undefined>(undefined)
 
     const [actionDialogOpen, setActionDialogOpen] = useState(false)
     const [editingActionIndex, setEditingActionIndex] = useState<number | undefined>(undefined)
@@ -62,11 +75,21 @@ export default function RuleEditor(props: RuleEditorProps) {
     const [actuators, setActuators] = useState({} as Record<string, Actuator>)
     const [actionComponents, setActionComponents] = useState([] as RuleComponent[])
     const [contacts, setContacts] = useState([] as Contact[]);
+    const [portsByComponent, setPortsByComponent] = useState({} as Record<string, ComponentPort[]>)
 
     // Variables to send to the server
     const [actions, setActions] = useState(props.rule?.actions || [] as RuleAction[])
     const [signals, setSignals] = useState(props.rule?.componentTriggers || [] as ComponentTrigger[])
+    const [scheduleTriggers, setScheduleTriggers] = useState(props.rule?.scheduleTriggers || [] as ScheduleTrigger[])
     const [notifications, setNotifications] = useState(props.rule?.notifications || [] as RuleNotification[])
+
+    // Switching trigger type only changes which card is shown - the inactive list is kept around so toggling
+    // back and forth doesn't discard in-progress edits. submit() below drops whichever list isn't active, so
+    // the exclusivity is still enforced at save time.
+    function onTriggerTypeChange(next: 'CONDITION' | 'SCHEDULE' | null) {
+        if (!next || next === triggerType) return;
+        setTriggerType(next);
+    }
 
     // Source dialog callbacks
     function onSourceAdd() {
@@ -102,6 +125,42 @@ export default function RuleEditor(props: RuleEditorProps) {
         });
 
         setSourceDialogOpen(false);
+    }
+
+    // Schedule dialog callbacks
+    function onScheduleAdd() {
+        setEditingScheduleIndex(null);
+        setEditingSchedule(null);
+        setScheduleDialogOpen(true);
+    }
+
+    function onScheduleClick(trigger: ScheduleTrigger, index: number) {
+        setEditingScheduleIndex(index);
+        setEditingSchedule(trigger);
+        setScheduleDialogOpen(true);
+    }
+
+    function onScheduleDeleted() {
+        setScheduleTriggers(prev => {
+            if (editingScheduleIndex == null) return [...prev];
+            return [
+                ...prev.slice(0, editingScheduleIndex),
+                ...prev.slice(editingScheduleIndex + 1),
+            ]
+        });
+
+        setScheduleDialogOpen(false);
+    }
+
+    const onScheduleUpdated = (trigger: ScheduleTrigger) => {
+        setScheduleTriggers(prev => {
+            if (editingScheduleIndex == null) return [...prev, trigger];         // add
+            const next = [...prev];
+            next[editingScheduleIndex] = trigger;                                 // edit
+            return next;
+        });
+
+        setScheduleDialogOpen(false);
     }
 
     // Action dialog callbacks
@@ -207,15 +266,40 @@ export default function RuleEditor(props: RuleEditorProps) {
         setName(props.rule?.name || '');
         setActions(props.rule?.actions || []);
         setSignals(props.rule?.componentTriggers || []);
+        setScheduleTriggers(props.rule?.scheduleTriggers || []);
+        setTriggerType((props.rule?.scheduleTriggers?.length ?? 0) > 0 ? 'SCHEDULE' : 'CONDITION');
         setNotifications(props.rule?.notifications || []);
     }, [props.rule]);
+
+    // Ports carry the friendly zone names shown in action sentences (e.g. "Turn on Garden beds" instead of
+    // "Turn on 0") - fetch them for any action's component we haven't already cached.
+    useEffect(() => {
+        const missingComponentIds = Array.from(new Set(
+            actions
+                .map(a => a.component?.id)
+                .filter((id): id is string => !!id && !(id in portsByComponent))
+        ));
+
+        missingComponentIds.forEach(id => {
+            componentClient.get(id, (c) => {
+                setPortsByComponent(prev => ({ ...prev, [id]: c.ports ?? [] }));
+            });
+        });
+    }, [actions]);
+
+    function getZoneLabel(action: RuleAction): string | undefined {
+        const ports = action.component?.id ? portsByComponent[action.component.id] : undefined;
+        const port = ports?.find(p => String(p.index) === action.params?.zone);
+        return port?.name;
+    }
 
     const submit = () => {
 
         const rule: Rule = {
             id: props.rule?.id,
             name: name,
-            componentTriggers: signals,
+            componentTriggers: triggerType === 'CONDITION' ? signals : [],
+            scheduleTriggers: triggerType === 'SCHEDULE' ? scheduleTriggers : [],
             actions: actions,
             notifications: notifications
         }
@@ -232,56 +316,116 @@ export default function RuleEditor(props: RuleEditorProps) {
                 Define what to watch for, then choose what happens automatically.
             </Typography>
 
-            <Card>
+            <ToggleButtonGroup
+                value={triggerType}
+                exclusive
+                onChange={(_, next) => onTriggerTypeChange(next)}
+                fullWidth
+                color="primary"
+                size="small"
+            >
+                <ToggleButton value="CONDITION">Condition</ToggleButton>
+                <ToggleButton value="SCHEDULE">Schedule</ToggleButton>
+            </ToggleButtonGroup>
 
-                <CardHeader sx={{ pb: 1 }} title={
-                    <Typography variant="subtitle1" fontWeight={600}>
-                        When this happens...
-                    </Typography>
-                }/>
+            {triggerType === 'CONDITION' && (
+                <Card>
 
-                <CardContent>
-                    <Stack spacing={1.25}>
+                    <CardHeader sx={{ pb: 1 }} title={
+                        <Typography variant="subtitle1" fontWeight={600}>
+                            When this happens...
+                        </Typography>
+                    }/>
 
-                        {(!signals || signals.length == 0) &&
-                            <EmptyState message="No sources yet."/>
-                        }
+                    <CardContent>
+                        <Stack spacing={1.25}>
 
-                        {(signals && signals.length > 0) &&
-                            <Box>
-                                {signals.map((signal, i) => (
-                                    <Box key={signal.id ?? `${signal.component.id}-${signal.signal}-${i}`}
-                                        onClick={()=> onSourceClick(signal, i)}>
-                                        {getSourceSentence(signal.component.type, {
-                                            sourceComponent: signal.component,
-                                            signal: signal.signal,
-                                            operator: signal.operator,
-                                            threshold: signal.threshold,
-                                        })}
-                                    </Box>
-                                ))}
-                            </Box>
-                        }
+                            {(!signals || signals.length == 0) &&
+                                <EmptyState message="No sources yet."/>
+                            }
 
-                        <Button
-                            variant="outlined"
-                            onClick={onSourceAdd}
-                            fullWidth
-                            color="primary"
-                        >
-                            Add source
-                        </Button>
+                            {(signals && signals.length > 0) &&
+                                <Box>
+                                    {signals.map((signal, i) => (
+                                        <Box key={signal.id ?? `${signal.component.id}-${signal.signal}-${i}`}
+                                            onClick={()=> onSourceClick(signal, i)}>
+                                            {getSourceSentence(signal.component.type, {
+                                                sourceComponent: signal.component,
+                                                signal: signal.signal,
+                                                operator: signal.operator,
+                                                threshold: signal.threshold,
+                                            })}
+                                        </Box>
+                                    ))}
+                                </Box>
+                            }
 
-                        <AddSourceDialog open={sourceDialogOpen}
-                                         sources={sources}
-                                         sourceComponents={sourceComponents}
-                                         handleSubmit={onSourceUpdated}
-                                         handleClose={() => setSourceDialogOpen(false)}
-                                         handleDelete={onSourceDeleted}
-                                         initial={editingSource}/>
-                    </Stack>
-                </CardContent>
-            </Card>
+                            <Button
+                                variant="outlined"
+                                onClick={onSourceAdd}
+                                fullWidth
+                                color="primary"
+                            >
+                                Add source
+                            </Button>
+
+                            <AddSourceDialog open={sourceDialogOpen}
+                                             sources={sources}
+                                             sourceComponents={sourceComponents}
+                                             handleSubmit={onSourceUpdated}
+                                             handleClose={() => setSourceDialogOpen(false)}
+                                             handleDelete={onSourceDeleted}
+                                             initial={editingSource}/>
+                        </Stack>
+                    </CardContent>
+                </Card>
+            )}
+
+            {triggerType === 'SCHEDULE' && (
+                <Card>
+
+                    <CardHeader sx={{ pb: 1 }} title={
+                        <Typography variant="subtitle1" fontWeight={600}>
+                            On a schedule...
+                        </Typography>
+                    }/>
+
+                    <CardContent>
+                        <Stack spacing={1.25}>
+
+                            {(!scheduleTriggers || scheduleTriggers.length == 0) &&
+                                <EmptyState message="No schedules yet."/>
+                            }
+
+                            {(scheduleTriggers && scheduleTriggers.length > 0) &&
+                                <Box>
+                                    {scheduleTriggers.map((trigger, i) => (
+                                        <Box key={trigger.id ?? `${trigger.frequency}-${trigger.hour}-${trigger.minute}-${i}`}
+                                            onClick={()=> onScheduleClick(trigger, i)}>
+                                            <ScheduleSentence trigger={trigger}/>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            }
+
+                            <Button
+                                variant="outlined"
+                                onClick={onScheduleAdd}
+                                fullWidth
+                                color="primary"
+                            >
+                                Add schedule
+                            </Button>
+
+                            <AddScheduleDialog open={scheduleDialogOpen}
+                                             handleSubmit={onScheduleUpdated}
+                                             handleClose={() => setScheduleDialogOpen(false)}
+                                             handleDelete={onScheduleDeleted}
+                                             initial={editingSchedule}/>
+                        </Stack>
+                    </CardContent>
+                </Card>
+            )}
 
             <Card>
                 <CardHeader sx={{ pb: 1 }} title={
@@ -305,6 +449,7 @@ export default function RuleEditor(props: RuleEditorProps) {
                                             actuator: action.component,
                                             actionKey: action.actionKey,
                                             params: action.params,
+                                            zoneLabel: getZoneLabel(action),
                                         })}
                                     </Box>
                                 ))}
