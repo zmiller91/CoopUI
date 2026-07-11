@@ -34,6 +34,11 @@ class RuleClient {
     deleteRule(coopId:string, ruleId:string, success: () => void) {
         authClient.delete("/rule/" + coopId + "/" + ruleId, () => success())
     }
+
+    executionLog(coopId: string, ruleId: string, success: (entries: RuleExecutionLogEntry[]) => void) {
+        authClient.get("/rule/" + coopId + "/" + ruleId + "/log",
+            (response) => success(response.data.entries))
+    }
 }
 
 export interface UpdateRuleRequest{
@@ -99,6 +104,13 @@ export interface ScheduleTrigger {
     gap: number;
 }
 
+export interface TimeTrigger {
+    id?: string;
+    hour: number;
+    minute: number;
+    operator: string;
+}
+
 export interface ComponentTrigger {
     id?: string;
     component: RuleComponent;
@@ -116,12 +128,17 @@ export interface RuleNotification {
     recipients?: Contact[]
 }
 
+export interface RuleExecutionLogEntry {
+    createdAt: number;
+}
+
 export interface Rule {
     id?: string;
     name: string;
     status?: string;
     componentTriggers?: ComponentTrigger[];
     scheduleTriggers?: ScheduleTrigger[];
+    timeTriggers?: TimeTrigger[];
     actions: RuleAction[];
     notifications: RuleNotification[];
 }

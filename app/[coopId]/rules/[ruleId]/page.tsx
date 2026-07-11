@@ -7,6 +7,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import ruleClient, {Rule} from "../../../../client/rule";
 import {AppContent} from "../../../../components/app-content";
 import RuleEditor from "../../../../features/rules/components/rule-editor";
+import RuleActivity from "../../../../features/rules/components/rule-activity";
 import Button from "@mui/material/Button";
 import { Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
@@ -65,6 +66,8 @@ export default function Rule() {
                             rule={rule}
                             onSubmit={submit}
                             submitText="Update automation"/>
+
+                <RuleActivity coopId={coopId} ruleId={ruleId}/>
 
                 <Button
                     variant="text"

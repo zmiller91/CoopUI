@@ -6,7 +6,8 @@ import ruleClient, {
     RuleAction,
     RuleComponent, RuleNotification,
     ScheduleTrigger,
-    Source
+    Source,
+    TimeTrigger
 } from "../../../client/rule";
 import React, {useState, useEffect} from "react";
 import {Box, Card, CardHeader, List, Stack, ToggleButton, ToggleButtonGroup} from "@mui/material";
@@ -25,6 +26,8 @@ import contactClient, {Contact} from "../../../client/contact";
 import AddScheduleDialog from "./add-schedule-dialog";
 import ScheduleSentence from "../sentences/schedule-sentence";
 import componentClient, {ComponentPort} from "../../../client/component";
+import AddTimeConditionDialog from "./add-time-condition-dialog";
+import TimeConditionSentence from "../sentences/time-condition-sentence";
 
 export interface RuleEditorProps {
     setHasLoaded: (hasLoaded: boolean) => void
@@ -61,6 +64,10 @@ export default function RuleEditor(props: RuleEditorProps) {
     const [editingScheduleIndex, setEditingScheduleIndex] = useState<number | undefined>(undefined);
     const [editingSchedule, setEditingSchedule] = useState<ScheduleTrigger | undefined>(undefined)
 
+    const [timeConditionDialogOpen, setTimeConditionDialogOpen] = useState(false);
+    const [editingTimeConditionIndex, setEditingTimeConditionIndex] = useState<number | undefined>(undefined);
+    const [editingTimeCondition, setEditingTimeCondition] = useState<TimeTrigger | undefined>(undefined)
+
     const [actionDialogOpen, setActionDialogOpen] = useState(false)
     const [editingActionIndex, setEditingActionIndex] = useState<number | undefined>(undefined)
     const [editingAction, setEditingAction] = useState<RuleAction | undefined>(undefined)
@@ -81,6 +88,7 @@ export default function RuleEditor(props: RuleEditorProps) {
     const [actions, setActions] = useState(props.rule?.actions || [] as RuleAction[])
     const [signals, setSignals] = useState(props.rule?.componentTriggers || [] as ComponentTrigger[])
     const [scheduleTriggers, setScheduleTriggers] = useState(props.rule?.scheduleTriggers || [] as ScheduleTrigger[])
+    const [timeTriggers, setTimeTriggers] = useState(props.rule?.timeTriggers || [] as TimeTrigger[])
     const [notifications, setNotifications] = useState(props.rule?.notifications || [] as RuleNotification[])
 
     // Switching trigger type only changes which card is shown - the inactive list is kept around so toggling
@@ -161,6 +169,42 @@ export default function RuleEditor(props: RuleEditorProps) {
         });
 
         setScheduleDialogOpen(false);
+    }
+
+    // Time condition dialog callbacks
+    function onTimeConditionAdd() {
+        setEditingTimeConditionIndex(null);
+        setEditingTimeCondition(null);
+        setTimeConditionDialogOpen(true);
+    }
+
+    function onTimeConditionClick(trigger: TimeTrigger, index: number) {
+        setEditingTimeConditionIndex(index);
+        setEditingTimeCondition(trigger);
+        setTimeConditionDialogOpen(true);
+    }
+
+    function onTimeConditionDeleted() {
+        setTimeTriggers(prev => {
+            if (editingTimeConditionIndex == null) return [...prev];
+            return [
+                ...prev.slice(0, editingTimeConditionIndex),
+                ...prev.slice(editingTimeConditionIndex + 1),
+            ]
+        });
+
+        setTimeConditionDialogOpen(false);
+    }
+
+    const onTimeConditionUpdated = (trigger: TimeTrigger) => {
+        setTimeTriggers(prev => {
+            if (editingTimeConditionIndex == null) return [...prev, trigger];         // add
+            const next = [...prev];
+            next[editingTimeConditionIndex] = trigger;                                 // edit
+            return next;
+        });
+
+        setTimeConditionDialogOpen(false);
     }
 
     // Action dialog callbacks
@@ -267,6 +311,7 @@ export default function RuleEditor(props: RuleEditorProps) {
         setActions(props.rule?.actions || []);
         setSignals(props.rule?.componentTriggers || []);
         setScheduleTriggers(props.rule?.scheduleTriggers || []);
+        setTimeTriggers(props.rule?.timeTriggers || []);
         setTriggerType((props.rule?.scheduleTriggers?.length ?? 0) > 0 ? 'SCHEDULE' : 'CONDITION');
         setNotifications(props.rule?.notifications || []);
     }, [props.rule]);
@@ -300,6 +345,7 @@ export default function RuleEditor(props: RuleEditorProps) {
             name: name,
             componentTriggers: triggerType === 'CONDITION' ? signals : [],
             scheduleTriggers: triggerType === 'SCHEDULE' ? scheduleTriggers : [],
+            timeTriggers: triggerType === 'CONDITION' ? timeTriggers : [],
             actions: actions,
             notifications: notifications
         }
@@ -340,8 +386,8 @@ export default function RuleEditor(props: RuleEditorProps) {
                     <CardContent>
                         <Stack spacing={1.25}>
 
-                            {(!signals || signals.length == 0) &&
-                                <EmptyState message="No sources yet."/>
+                            {(!signals || signals.length == 0) && (!timeTriggers || timeTriggers.length == 0) &&
+                                <EmptyState message="No conditions yet."/>
                             }
 
                             {(signals && signals.length > 0) &&
@@ -360,6 +406,17 @@ export default function RuleEditor(props: RuleEditorProps) {
                                 </Box>
                             }
 
+                            {(timeTriggers && timeTriggers.length > 0) &&
+                                <Box>
+                                    {timeTriggers.map((trigger, i) => (
+                                        <Box key={trigger.id ?? `${trigger.operator}-${trigger.hour}-${trigger.minute}-${i}`}
+                                            onClick={()=> onTimeConditionClick(trigger, i)}>
+                                            <TimeConditionSentence trigger={trigger}/>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            }
+
                             <Button
                                 variant="outlined"
                                 onClick={onSourceAdd}
@@ -369,6 +426,15 @@ export default function RuleEditor(props: RuleEditorProps) {
                                 Add source
                             </Button>
 
+                            <Button
+                                variant="outlined"
+                                onClick={onTimeConditionAdd}
+                                fullWidth
+                                color="primary"
+                            >
+                                Add time condition
+                            </Button>
+
                             <AddSourceDialog open={sourceDialogOpen}
                                              sources={sources}
                                              sourceComponents={sourceComponents}
@@ -376,6 +442,12 @@ export default function RuleEditor(props: RuleEditorProps) {
                                              handleClose={() => setSourceDialogOpen(false)}
                                              handleDelete={onSourceDeleted}
                                              initial={editingSource}/>
+
+                            <AddTimeConditionDialog open={timeConditionDialogOpen}
+                                             handleSubmit={onTimeConditionUpdated}
+                                             handleClose={() => setTimeConditionDialogOpen(false)}
+                                             handleDelete={onTimeConditionDeleted}
+                                             initial={editingTimeCondition}/>
                         </Stack>
                     </CardContent>
                 </Card>
