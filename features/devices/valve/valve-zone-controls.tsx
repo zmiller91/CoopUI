@@ -80,9 +80,10 @@ export default function ValveZoneControls({ componentId, ports, onPortsChange }:
                                     px: 2,
                                     minHeight: 64,
                                     display: "flex",
-                                    alignItems: "center",
+                                    flexDirection: { xs: "column", sm: "row" },
+                                    alignItems: { xs: "stretch", sm: "center" },
                                     justifyContent: "space-between",
-                                    gap: 2,
+                                    gap: { xs: 1.25, sm: 2 },
                                 }}
                             >
                                 <Stack direction="row" alignItems="center" spacing={2} sx={{ minWidth: 0, flex: 1 }}>
@@ -121,13 +122,14 @@ export default function ValveZoneControls({ componentId, ports, onPortsChange }:
                                     />
                                 </Stack>
 
-                                <Stack direction="row" spacing={1} flexShrink={0}>
+                                <Stack direction="row" spacing={1} flexShrink={0} sx={{ width: { xs: "100%", sm: "auto" } }}>
                                     <Button
                                         size="small"
                                         variant="outlined"
                                         color="primary"
                                         disabled={pending === zoneOption.value + "TURN_ON"}
                                         onClick={(e) => send(e, zoneOption.value, "TURN_ON")}
+                                        sx={{ flex: { xs: 1, sm: "initial" } }}
                                     >
                                         Turn On
                                     </Button>
@@ -135,7 +137,7 @@ export default function ValveZoneControls({ componentId, ports, onPortsChange }:
                                         size="small"
                                         variant="outlined"
                                         color="inherit"
-                                        sx={{ borderColor: "divider", color: "text.secondary" }}
+                                        sx={{ borderColor: "divider", color: "text.secondary", flex: { xs: 1, sm: "initial" } }}
                                         disabled={pending === zoneOption.value + "TURN_OFF"}
                                         onClick={(e) => send(e, zoneOption.value, "TURN_OFF")}
                                     >
