@@ -13,8 +13,7 @@ import Avatar from "@mui/material/Avatar";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import CircleIcon from "@mui/icons-material/Circle";
+import Chip from "@mui/material/Chip";
 import componentClient, { ComponentPort } from "../../../client/component";
 import { VALVE_ZONE_OPTIONS } from "../../../utils/valve";
 import SnackBar from "../../../components/snack-bar";
@@ -31,7 +30,7 @@ function zoneName(ports: ComponentPort[], index: number, fallback: string) {
 }
 
 function zoneState(ports: ComponentPort[], index: number) {
-    return ports.find((p) => p.index === index)?.state ?? null;
+    return ports.find((p) => p.index === index)?.state === "ON" ? "ON" : "OFF";
 }
 
 export default function ValveZoneControls({ componentId, ports, onPortsChange }: ValveZoneControlsProps) {
@@ -108,16 +107,18 @@ export default function ValveZoneControls({ componentId, ports, onPortsChange }:
                                         sx={{ m: 0, minWidth: 0 }}
                                     />
 
-                                    <Tooltip title={state === "ON" ? "On" : state === "OFF" ? "Off" : "Unknown"}>
-                                        <CircleIcon
-                                            sx={{
-                                                flexShrink: 0,
-                                                fontSize: 12,
-                                                color: state === "ON" ? "success.main" : state === "OFF" ? "text.disabled" : "action.disabled",
-                                                opacity: state ? 1 : 0.5,
-                                            }}
-                                        />
-                                    </Tooltip>
+                                    <Chip
+                                        label={state === "ON" ? "On" : "Off"}
+                                        size="small"
+                                        variant={state === "ON" ? "filled" : "outlined"}
+                                        sx={{
+                                            flexShrink: 0,
+                                            fontWeight: 700,
+                                            ...(state === "ON"
+                                                ? { bgcolor: "success.main", color: "success.contrastText" }
+                                                : { borderColor: "divider", color: "text.secondary" }),
+                                        }}
+                                    />
                                 </Stack>
 
                                 <Stack direction="row" spacing={1} flexShrink={0}>
