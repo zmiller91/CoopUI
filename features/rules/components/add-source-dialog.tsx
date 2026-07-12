@@ -112,6 +112,12 @@ export default function AddSourceDialog(props: AddSourceDialogProps) {
                                      { label: "Temperature", value: "TEMPERATURE" }
                                  ]}
             />,
+            WEATHER_FORECAST: <CreateSource {...baseProps}
+                                 options={[
+                                     { label: "Chance of Rain, next 24h (%)", value: "RAIN_PROBABILITY_24H" },
+                                     { label: "Rain Amount, next 24h (mm)", value: "RAIN_AMOUNT_24H" }
+                                 ]}
+            />,
         };
 
         return sourceComponentOptions && sourceComponentDeviceType ? formElements[sourceComponentDeviceType] : null;

@@ -13,6 +13,10 @@ class ComponentClient {
         authClient.post("/component/register", data, (response) => success(response.data))
     }
 
+    registerWeatherForecast(coopId: string, success: (response:any) => void) {
+        authClient.post("/component/" + coopId + "/weather-forecast", {}, (response) => success(response.data))
+    }
+
     get(componentId:string, success: (response:Component) => void) {
         authClient.get("/component/" + componentId, (response) => success(response.data.component))
     }

@@ -30,6 +30,7 @@ import ClearIcon from "@mui/icons-material/Clear"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import AddIcon from "@mui/icons-material/Add"
 import SensorsIcon from "@mui/icons-material/Sensors"
+import WaterDropOutlinedIcon from "@mui/icons-material/WaterDropOutlined"
 
 type ComponentDto = {
     id: string
@@ -61,13 +62,27 @@ export default function Components() {
     const [hasLoaded, setHasLoaded] = useState(false)
     const [components, setComponents] = useState<ComponentDto[]>([])
     const [query, setQuery] = useState("")
+    const [addingWeatherForecast, setAddingWeatherForecast] = useState(false)
 
-    useEffect(() => {
+    const refresh = () => {
         componentClient.list(coopId, (result: ComponentDto[]) => {
             setComponents(result ?? [])
             setHasLoaded(true)
         })
-    }, [coopId])
+    }
+
+    useEffect(refresh, [coopId])
+
+    const hasWeatherForecast = components.some((c) => c.type === "WEATHER_FORECAST")
+
+    function addWeatherForecast() {
+        if (addingWeatherForecast || hasWeatherForecast) return
+        setAddingWeatherForecast(true)
+        componentClient.registerWeatherForecast(coopId, () => {
+            setAddingWeatherForecast(false)
+            refresh()
+        })
+    }
 
     const filtered = useMemo(() => {
         const q = normalize(query)
@@ -101,6 +116,19 @@ export default function Components() {
                         sx={{ flexShrink: 0 }}
                     />
                 </Stack>
+
+                {!hasWeatherForecast && (
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<WaterDropOutlinedIcon />}
+                        onClick={addWeatherForecast}
+                        disabled={addingWeatherForecast}
+                        sx={{ alignSelf: "flex-start" }}
+                    >
+                        Add weather forecast
+                    </Button>
+                )}
 
                 {/* Search */}
                 <TextField

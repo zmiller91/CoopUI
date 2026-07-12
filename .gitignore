@@ -4,3 +4,4 @@ CoopUI.git/
 package-lock.json
 .idea/
 /build
+tsconfig.tsbuildinfo

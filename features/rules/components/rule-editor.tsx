@@ -10,7 +10,7 @@ import ruleClient, {
     TimeTrigger
 } from "../../../client/rule";
 import React, {useState, useEffect} from "react";
-import {Box, Card, CardHeader, List, Stack, ToggleButton, ToggleButtonGroup} from "@mui/material";
+import {Box, Card, CardHeader, List, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
@@ -50,11 +50,6 @@ export default function RuleEditor(props: RuleEditorProps) {
         props.setHasLoaded(haveSignalsLoaded && haveActionsLoaded && haveContactsLoaded);
     }, [haveSignalsLoaded, haveActionsLoaded, haveContactsLoaded, props]);
 
-    // Trigger type - a rule is either condition-triggered or schedule-triggered, never both
-    const [triggerType, setTriggerType] = useState<'CONDITION' | 'SCHEDULE'>(
-        (props.rule?.scheduleTriggers?.length ?? 0) > 0 ? 'SCHEDULE' : 'CONDITION'
-    );
-
     // State variables
     const [sourceDialogOpen, setSourceDialogOpen] = useState(false);
     const [editingSourceIndex, setEditingSourceIndex] = useState<number | undefined>(undefined);
@@ -90,14 +85,6 @@ export default function RuleEditor(props: RuleEditorProps) {
     const [scheduleTriggers, setScheduleTriggers] = useState(props.rule?.scheduleTriggers || [] as ScheduleTrigger[])
     const [timeTriggers, setTimeTriggers] = useState(props.rule?.timeTriggers || [] as TimeTrigger[])
     const [notifications, setNotifications] = useState(props.rule?.notifications || [] as RuleNotification[])
-
-    // Switching trigger type only changes which card is shown - the inactive list is kept around so toggling
-    // back and forth doesn't discard in-progress edits. submit() below drops whichever list isn't active, so
-    // the exclusivity is still enforced at save time.
-    function onTriggerTypeChange(next: 'CONDITION' | 'SCHEDULE' | null) {
-        if (!next || next === triggerType) return;
-        setTriggerType(next);
-    }
 
     // Source dialog callbacks
     function onSourceAdd() {
@@ -312,7 +299,6 @@ export default function RuleEditor(props: RuleEditorProps) {
         setSignals(props.rule?.componentTriggers || []);
         setScheduleTriggers(props.rule?.scheduleTriggers || []);
         setTimeTriggers(props.rule?.timeTriggers || []);
-        setTriggerType((props.rule?.scheduleTriggers?.length ?? 0) > 0 ? 'SCHEDULE' : 'CONDITION');
         setNotifications(props.rule?.notifications || []);
     }, [props.rule]);
 
@@ -343,9 +329,9 @@ export default function RuleEditor(props: RuleEditorProps) {
         const rule: Rule = {
             id: props.rule?.id,
             name: name,
-            componentTriggers: triggerType === 'CONDITION' ? signals : [],
-            scheduleTriggers: triggerType === 'SCHEDULE' ? scheduleTriggers : [],
-            timeTriggers: triggerType === 'CONDITION' ? timeTriggers : [],
+            componentTriggers: signals,
+            scheduleTriggers: scheduleTriggers,
+            timeTriggers: timeTriggers,
             actions: actions,
             notifications: notifications
         }
@@ -362,142 +348,126 @@ export default function RuleEditor(props: RuleEditorProps) {
                 Define what to watch for, then choose what happens automatically.
             </Typography>
 
-            <ToggleButtonGroup
-                value={triggerType}
-                exclusive
-                onChange={(_, next) => onTriggerTypeChange(next)}
-                fullWidth
-                color="primary"
-                size="small"
-            >
-                <ToggleButton value="CONDITION">Condition</ToggleButton>
-                <ToggleButton value="SCHEDULE">Schedule</ToggleButton>
-            </ToggleButtonGroup>
+            <Card>
 
-            {triggerType === 'CONDITION' && (
-                <Card>
+                <CardHeader sx={{ pb: 1 }} title={
+                    <Typography variant="subtitle1" fontWeight={600}>
+                        When this happens...
+                    </Typography>
+                }/>
 
-                    <CardHeader sx={{ pb: 1 }} title={
-                        <Typography variant="subtitle1" fontWeight={600}>
-                            When this happens...
-                        </Typography>
-                    }/>
+                <CardContent>
+                    <Stack spacing={1.25}>
 
-                    <CardContent>
-                        <Stack spacing={1.25}>
+                        {(!signals || signals.length == 0) && (!timeTriggers || timeTriggers.length == 0) &&
+                            <EmptyState message="No conditions yet."/>
+                        }
 
-                            {(!signals || signals.length == 0) && (!timeTriggers || timeTriggers.length == 0) &&
-                                <EmptyState message="No conditions yet."/>
-                            }
+                        {(signals && signals.length > 0) &&
+                            <Box>
+                                {signals.map((signal, i) => (
+                                    <Box key={signal.id ?? `${signal.component.id}-${signal.signal}-${i}`}
+                                        onClick={()=> onSourceClick(signal, i)}>
+                                        {getSourceSentence(signal.component.type, {
+                                            sourceComponent: signal.component,
+                                            signal: signal.signal,
+                                            operator: signal.operator,
+                                            threshold: signal.threshold,
+                                        })}
+                                    </Box>
+                                ))}
+                            </Box>
+                        }
 
-                            {(signals && signals.length > 0) &&
-                                <Box>
-                                    {signals.map((signal, i) => (
-                                        <Box key={signal.id ?? `${signal.component.id}-${signal.signal}-${i}`}
-                                            onClick={()=> onSourceClick(signal, i)}>
-                                            {getSourceSentence(signal.component.type, {
-                                                sourceComponent: signal.component,
-                                                signal: signal.signal,
-                                                operator: signal.operator,
-                                                threshold: signal.threshold,
-                                            })}
-                                        </Box>
-                                    ))}
-                                </Box>
-                            }
+                        {(timeTriggers && timeTriggers.length > 0) &&
+                            <Box>
+                                {timeTriggers.map((trigger, i) => (
+                                    <Box key={trigger.id ?? `${trigger.operator}-${trigger.hour}-${trigger.minute}-${i}`}
+                                        onClick={()=> onTimeConditionClick(trigger, i)}>
+                                        <TimeConditionSentence trigger={trigger}/>
+                                    </Box>
+                                ))}
+                            </Box>
+                        }
 
-                            {(timeTriggers && timeTriggers.length > 0) &&
-                                <Box>
-                                    {timeTriggers.map((trigger, i) => (
-                                        <Box key={trigger.id ?? `${trigger.operator}-${trigger.hour}-${trigger.minute}-${i}`}
-                                            onClick={()=> onTimeConditionClick(trigger, i)}>
-                                            <TimeConditionSentence trigger={trigger}/>
-                                        </Box>
-                                    ))}
-                                </Box>
-                            }
+                        <Button
+                            variant="outlined"
+                            onClick={onSourceAdd}
+                            fullWidth
+                            color="primary"
+                        >
+                            Add source
+                        </Button>
 
-                            <Button
-                                variant="outlined"
-                                onClick={onSourceAdd}
-                                fullWidth
-                                color="primary"
-                            >
-                                Add source
-                            </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={onTimeConditionAdd}
+                            fullWidth
+                            color="primary"
+                        >
+                            Add time condition
+                        </Button>
 
-                            <Button
-                                variant="outlined"
-                                onClick={onTimeConditionAdd}
-                                fullWidth
-                                color="primary"
-                            >
-                                Add time condition
-                            </Button>
+                        <AddSourceDialog open={sourceDialogOpen}
+                                         sources={sources}
+                                         sourceComponents={sourceComponents}
+                                         handleSubmit={onSourceUpdated}
+                                         handleClose={() => setSourceDialogOpen(false)}
+                                         handleDelete={onSourceDeleted}
+                                         initial={editingSource}/>
 
-                            <AddSourceDialog open={sourceDialogOpen}
-                                             sources={sources}
-                                             sourceComponents={sourceComponents}
-                                             handleSubmit={onSourceUpdated}
-                                             handleClose={() => setSourceDialogOpen(false)}
-                                             handleDelete={onSourceDeleted}
-                                             initial={editingSource}/>
+                        <AddTimeConditionDialog open={timeConditionDialogOpen}
+                                         handleSubmit={onTimeConditionUpdated}
+                                         handleClose={() => setTimeConditionDialogOpen(false)}
+                                         handleDelete={onTimeConditionDeleted}
+                                         initial={editingTimeCondition}/>
+                    </Stack>
+                </CardContent>
+            </Card>
 
-                            <AddTimeConditionDialog open={timeConditionDialogOpen}
-                                             handleSubmit={onTimeConditionUpdated}
-                                             handleClose={() => setTimeConditionDialogOpen(false)}
-                                             handleDelete={onTimeConditionDeleted}
-                                             initial={editingTimeCondition}/>
-                        </Stack>
-                    </CardContent>
-                </Card>
-            )}
+            <Card>
 
-            {triggerType === 'SCHEDULE' && (
-                <Card>
+                <CardHeader sx={{ pb: 1 }} title={
+                    <Typography variant="subtitle1" fontWeight={600}>
+                        On a schedule...
+                    </Typography>
+                }/>
 
-                    <CardHeader sx={{ pb: 1 }} title={
-                        <Typography variant="subtitle1" fontWeight={600}>
-                            On a schedule...
-                        </Typography>
-                    }/>
+                <CardContent>
+                    <Stack spacing={1.25}>
 
-                    <CardContent>
-                        <Stack spacing={1.25}>
+                        {(!scheduleTriggers || scheduleTriggers.length == 0) &&
+                            <EmptyState message="No schedules yet."/>
+                        }
 
-                            {(!scheduleTriggers || scheduleTriggers.length == 0) &&
-                                <EmptyState message="No schedules yet."/>
-                            }
+                        {(scheduleTriggers && scheduleTriggers.length > 0) &&
+                            <Box>
+                                {scheduleTriggers.map((trigger, i) => (
+                                    <Box key={trigger.id ?? `${trigger.frequency}-${trigger.hour}-${trigger.minute}-${i}`}
+                                        onClick={()=> onScheduleClick(trigger, i)}>
+                                        <ScheduleSentence trigger={trigger}/>
+                                    </Box>
+                                ))}
+                            </Box>
+                        }
 
-                            {(scheduleTriggers && scheduleTriggers.length > 0) &&
-                                <Box>
-                                    {scheduleTriggers.map((trigger, i) => (
-                                        <Box key={trigger.id ?? `${trigger.frequency}-${trigger.hour}-${trigger.minute}-${i}`}
-                                            onClick={()=> onScheduleClick(trigger, i)}>
-                                            <ScheduleSentence trigger={trigger}/>
-                                        </Box>
-                                    ))}
-                                </Box>
-                            }
+                        <Button
+                            variant="outlined"
+                            onClick={onScheduleAdd}
+                            fullWidth
+                            color="primary"
+                        >
+                            Add schedule
+                        </Button>
 
-                            <Button
-                                variant="outlined"
-                                onClick={onScheduleAdd}
-                                fullWidth
-                                color="primary"
-                            >
-                                Add schedule
-                            </Button>
-
-                            <AddScheduleDialog open={scheduleDialogOpen}
-                                             handleSubmit={onScheduleUpdated}
-                                             handleClose={() => setScheduleDialogOpen(false)}
-                                             handleDelete={onScheduleDeleted}
-                                             initial={editingSchedule}/>
-                        </Stack>
-                    </CardContent>
-                </Card>
-            )}
+                        <AddScheduleDialog open={scheduleDialogOpen}
+                                         handleSubmit={onScheduleUpdated}
+                                         handleClose={() => setScheduleDialogOpen(false)}
+                                         handleDelete={onScheduleDeleted}
+                                         initial={editingSchedule}/>
+                    </Stack>
+                </CardContent>
+            </Card>
 
             <Card>
                 <CardHeader sx={{ pb: 1 }} title={
