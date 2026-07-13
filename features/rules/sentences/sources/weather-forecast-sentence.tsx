@@ -7,23 +7,30 @@ import Stack from "@mui/material/Stack";
 import WaterDropOutlined from "@mui/icons-material/WaterDropOutlined";
 import Emphasis from "../../../../components/typography/emphasis";
 
+const SIGNAL_INFO: Record<string, { fragment: string; unit: string }> = {
+    RAIN_PROBABILITY_24H: { fragment: "The chance of rain in the next 24h at ", unit: "%" },
+    RAIN_AMOUNT_24H: { fragment: "The amount of rain forecast in the next 24h at ", unit: "mm" },
+    TEMPERATURE: { fragment: "The forecasted temperature at ", unit: "°F" },
+    HUMIDITY: { fragment: "The forecasted humidity at ", unit: "%" },
+    WIND_SPEED: { fragment: "The forecasted wind speed at ", unit: "mph" },
+    CLOUD_COVER: { fragment: "The forecasted cloud cover at ", unit: "%" },
+    EVAPOTRANSPIRATION: { fragment: "The forecasted evapotranspiration at ", unit: "mm" },
+    DEW_POINT: { fragment: "The forecasted dew point at ", unit: "°F" },
+    UV_INDEX: { fragment: "The forecasted UV index at ", unit: "" },
+};
+
 export default function WeatherForecastSentence(props: SourceSentenceProps) {
 
     if (!(props.signal && props.operator && props.threshold)) {
         return null;
     }
 
-    if (props.signal != "RAIN_PROBABILITY_24H" && props.signal != "RAIN_AMOUNT_24H") {
+    const info = SIGNAL_INFO[props.signal];
+    if (!info) {
         return null;
     }
 
-    const fragment = props.signal == "RAIN_PROBABILITY_24H" ?
-        "The chance of rain in the next 24h at " :
-        "The amount of rain forecast in the next 24h at ";
-
-    const label = props.signal == "RAIN_PROBABILITY_24H" ?
-        "%" :
-        "mm";
+    const {fragment, unit: label} = info;
 
     return (
         <Box

@@ -115,7 +115,14 @@ export default function AddSourceDialog(props: AddSourceDialogProps) {
             WEATHER_FORECAST: <CreateSource {...baseProps}
                                  options={[
                                      { label: "Chance of Rain, next 24h (%)", value: "RAIN_PROBABILITY_24H" },
-                                     { label: "Rain Amount, next 24h (mm)", value: "RAIN_AMOUNT_24H" }
+                                     { label: "Rain Amount, next 24h (mm)", value: "RAIN_AMOUNT_24H" },
+                                     { label: "Temperature (°F)", value: "TEMPERATURE" },
+                                     { label: "Humidity (%)", value: "HUMIDITY" },
+                                     { label: "Wind Speed (mph)", value: "WIND_SPEED" },
+                                     { label: "Cloud Cover (%)", value: "CLOUD_COVER" },
+                                     { label: "Evapotranspiration (mm)", value: "EVAPOTRANSPIRATION" },
+                                     { label: "Dew Point (°F)", value: "DEW_POINT" },
+                                     { label: "UV Index", value: "UV_INDEX" }
                                  ]}
             />,
         };
