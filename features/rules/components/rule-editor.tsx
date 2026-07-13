@@ -10,7 +10,7 @@ import ruleClient, {
     TimeTrigger
 } from "../../../client/rule";
 import React, {useState, useEffect} from "react";
-import {Box, Card, CardHeader, List, Stack} from "@mui/material";
+import {Box, Card, CardHeader, List, Stack, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
@@ -49,6 +49,20 @@ export default function RuleEditor(props: RuleEditorProps) {
     useEffect(() => {
         props.setHasLoaded(haveSignalsLoaded && haveActionsLoaded && haveContactsLoaded);
     }, [haveSignalsLoaded, haveActionsLoaded, haveContactsLoaded, props]);
+
+    // Trigger type - purely a display/authoring mode now, not a data constraint: a SCHEDULE-authored rule can
+    // still carry component/time triggers (shown there as "Except when..." gating conditions, same underlying
+    // signals/timeTriggers state as the CONDITION tab's "When this happens..."), since the backend now allows
+    // a schedule trigger and condition triggers to coexist on one rule. submit() below always sends whatever
+    // is present in every array regardless of which tab is active.
+    const [triggerType, setTriggerType] = useState<'CONDITION' | 'SCHEDULE'>(
+        (props.rule?.scheduleTriggers?.length ?? 0) > 0 ? 'SCHEDULE' : 'CONDITION'
+    );
+
+    function onTriggerTypeChange(next: 'CONDITION' | 'SCHEDULE' | null) {
+        if (!next || next === triggerType) return;
+        setTriggerType(next);
+    }
 
     // State variables
     const [sourceDialogOpen, setSourceDialogOpen] = useState(false);
@@ -299,6 +313,7 @@ export default function RuleEditor(props: RuleEditorProps) {
         setSignals(props.rule?.componentTriggers || []);
         setScheduleTriggers(props.rule?.scheduleTriggers || []);
         setTimeTriggers(props.rule?.timeTriggers || []);
+        setTriggerType((props.rule?.scheduleTriggers?.length ?? 0) > 0 ? 'SCHEDULE' : 'CONDITION');
         setNotifications(props.rule?.notifications || []);
     }, [props.rule]);
 
@@ -339,28 +354,30 @@ export default function RuleEditor(props: RuleEditorProps) {
         props.onSubmit(rule)
     }
 
-    return (
-
-        <Stack spacing={2}>
-
-            <TextInput id="name" title="Automation name" value={name} onChange={setName} required={true}/>
-            <Typography variant="body2" color="text.secondary">
-                Define what to watch for, then choose what happens automatically.
-            </Typography>
-
+    // Shared by both tabs - same underlying signals/timeTriggers state and dialogs either way, just a
+    // different heading/subtitle depending on whether it's the primary trigger (CONDITION tab) or a gate on a
+    // schedule (SCHEDULE tab's "Except when...").
+    function renderConditionsCard(title: string, subtitle?: string, emptyMessage: string = "No conditions yet.") {
+        return (
             <Card>
 
                 <CardHeader sx={{ pb: 1 }} title={
                     <Typography variant="subtitle1" fontWeight={600}>
-                        When this happens...
+                        {title}
                     </Typography>
                 }/>
 
                 <CardContent>
                     <Stack spacing={1.25}>
 
+                        {subtitle &&
+                            <Typography variant="body2" color="text.secondary">
+                                {subtitle}
+                            </Typography>
+                        }
+
                         {(!signals || signals.length == 0) && (!timeTriggers || timeTriggers.length == 0) &&
-                            <EmptyState message="No conditions yet."/>
+                            <EmptyState message={emptyMessage}/>
                         }
 
                         {(signals && signals.length > 0) &&
@@ -424,7 +441,10 @@ export default function RuleEditor(props: RuleEditorProps) {
                     </Stack>
                 </CardContent>
             </Card>
+        );
+    }
 
+    const scheduleCard = (
             <Card>
 
                 <CardHeader sx={{ pb: 1 }} title={
@@ -468,7 +488,9 @@ export default function RuleEditor(props: RuleEditorProps) {
                     </Stack>
                 </CardContent>
             </Card>
+    );
 
+    const actionsCard = (
             <Card>
                 <CardHeader sx={{ pb: 1 }} title={
                     <Typography variant="subtitle1" fontWeight={600}>
@@ -516,7 +538,9 @@ export default function RuleEditor(props: RuleEditorProps) {
                     </Stack>
                 </CardContent>
             </Card>
+    );
 
+    const notificationsCard = (
             <Card>
                 <CardHeader sx={{ pb: 1 }} title={
                     <Typography variant="subtitle1" fontWeight={600}>
@@ -558,6 +582,48 @@ export default function RuleEditor(props: RuleEditorProps) {
                     </Stack>
                 </CardContent>
             </Card>
+    );
+
+    return (
+
+        <Stack spacing={2}>
+
+            <TextInput id="name" title="Automation name" value={name} onChange={setName} required={true}/>
+            <Typography variant="body2" color="text.secondary">
+                Define what to watch for, then choose what happens automatically.
+            </Typography>
+
+            <ToggleButtonGroup
+                value={triggerType}
+                exclusive
+                onChange={(_, next) => onTriggerTypeChange(next)}
+                fullWidth
+                color="primary"
+                size="small"
+            >
+                <ToggleButton value="CONDITION">Condition</ToggleButton>
+                <ToggleButton value="SCHEDULE">Schedule</ToggleButton>
+            </ToggleButtonGroup>
+
+            {triggerType === 'CONDITION' ? (
+                <>
+                    {renderConditionsCard("When this happens...")}
+                    {actionsCard}
+                </>
+            ) : (
+                <>
+                    {scheduleCard}
+                    {actionsCard}
+                    {renderConditionsCard(
+                        "Except when...",
+                        "This schedule only runs if all of these are also true.",
+                        "No exceptions yet - this schedule always runs when due."
+                    )}
+                </>
+            )}
+
+            {notificationsCard}
+
             <Button
                 variant="contained"
                 onClick={submit}
