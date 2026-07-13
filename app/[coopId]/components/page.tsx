@@ -117,19 +117,6 @@ export default function Components() {
                     />
                 </Stack>
 
-                {!hasWeatherForecast && (
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        startIcon={<WaterDropOutlinedIcon />}
-                        onClick={addWeatherForecast}
-                        disabled={addingWeatherForecast}
-                        sx={{ alignSelf: "flex-start" }}
-                    >
-                        Add weather forecast
-                    </Button>
-                )}
-
                 {/* Search */}
                 <TextField
                     value={query}
@@ -256,6 +243,19 @@ export default function Components() {
                             ))}
                         </List>
                     </Paper>
+                )}
+
+                {!hasWeatherForecast && (
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<WaterDropOutlinedIcon />}
+                        onClick={addWeatherForecast}
+                        disabled={addingWeatherForecast}
+                        fullWidth
+                    >
+                        Add weather forecast
+                    </Button>
                 )}
             </Stack>
 
