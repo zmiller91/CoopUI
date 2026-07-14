@@ -1,6 +1,6 @@
 'use client'
 
-import React from "react"
+import React, { ReactNode } from "react"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import Box from "@mui/material/Box"
@@ -62,6 +62,9 @@ export function HeroStat(props: HeroStatProps) {
 export interface PreviewStatProps {
     value: string;
     unit?: string;
+    // Caller-supplied and pre-styled (e.g. an MUI icon with its own fontSize/color) - PreviewStat just
+    // places it before the value, so it stays agnostic of which icon (if any) a given stat wants.
+    icon?: ReactNode;
     // Same color mapping as HeroStat, so a compact preview-line stat and a card's hero stat always agree.
     color?: "primary" | "accent";
 }
@@ -69,13 +72,22 @@ export interface PreviewStatProps {
 // Compact single-line variant of HeroStat, for list/preview rows where the big centered block doesn't fit.
 export function PreviewStat(props: PreviewStatProps) {
     return (
-        <Typography
-            variant="body2"
-            fontWeight={700}
+        <Stack
+            direction="row"
+            spacing={0.25}
+            alignItems="center"
             component="span"
-            sx={{ color: HERO_COLOR_VAR[props.color ?? "primary"], whiteSpace: "nowrap" }}
+            sx={{ display: "inline-flex", whiteSpace: "nowrap" }}
         >
-            {props.value}{props.unit}
-        </Typography>
+            {props.icon}
+            <Typography
+                variant="body2"
+                fontWeight={700}
+                component="span"
+                sx={{ color: HERO_COLOR_VAR[props.color ?? "primary"] }}
+            >
+                {props.value}{props.unit}
+            </Typography>
+        </Stack>
     )
 }

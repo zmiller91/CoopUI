@@ -1,6 +1,7 @@
 'use client'
 
 import React from "react"
+import WaterDropIcon from "@mui/icons-material/WaterDrop"
 import GenericAreaPreviewLine from "../generic-area-preview-line"
 import { PreviewStat } from "../card-stats"
 import { AreaPreviewLineProps } from "../registry"
@@ -32,7 +33,12 @@ export default function GardenBedPreviewLine(props: AreaPreviewLineProps) {
     return (
         <GenericAreaPreviewLine {...props}>
             {moisture !== undefined && (
-                <PreviewStat value={`${Math.round(moisture)}`} unit="% moisture" color="primary" />
+                <PreviewStat
+                    icon={<WaterDropIcon fontSize="small" sx={{ color: "var(--primary-700)" }} />}
+                    value={`${Math.round(moisture)}`}
+                    unit="%"
+                    color="primary"
+                />
             )}
         </GenericAreaPreviewLine>
     )
