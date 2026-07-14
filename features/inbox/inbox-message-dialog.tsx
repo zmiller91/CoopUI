@@ -10,7 +10,8 @@ import {useEffect, useState} from "react";
 import {Box, IconButton, Stack, Typography} from "@mui/material";
 import {InboxMessage} from "../../client/inbox";
 import Paper from "@mui/material/Paper";
-import DeleteDialog from "../../components/dialog/delete";
+import ConfirmDialog from "../../components/dialog/confirm";
+import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import Chip from "@mui/material/Chip";
 import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
 import {formatDateToFriendlyString} from "../../utils/date";
@@ -132,8 +133,11 @@ export default function InboxMessageDialog(props: InboxMessageDialogProps) {
                             Delete message
                         </Button>
 
-                        <DeleteDialog title="Delete message?"
-                                      onDelete={onDeleteConfirm}
+                        <ConfirmDialog title="Delete message?"
+                                      confirmLabel="Delete"
+                                      confirmIcon={<DeleteOutline />}
+                                      confirmColor="error"
+                                      onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>
 

@@ -13,7 +13,8 @@ import {ReactNode, useEffect, useMemo, useState} from "react";
 import { Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CreateSource from "./form-creators/sources/create";
-import DeleteDialog from "../../../components/dialog/delete";
+import ConfirmDialog from "../../../components/dialog/confirm";
+import DeleteOutline from "@mui/icons-material/DeleteOutline";
 
 export interface AddSourceDialogProps {
     open: boolean,
@@ -170,8 +171,11 @@ export default function AddSourceDialog(props: AddSourceDialogProps) {
                             Delete source condition
                         </Button>}
 
-                        <DeleteDialog title="Delete source condition?"
-                                      onDelete={onDeleteConfirm}
+                        <ConfirmDialog title="Delete source condition?"
+                                      confirmLabel="Delete"
+                                      confirmIcon={<DeleteOutline />}
+                                      confirmColor="error"
+                                      onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>
 

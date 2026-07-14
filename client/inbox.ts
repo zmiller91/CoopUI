@@ -18,6 +18,10 @@ class InboxClient {
     markRead(coopId: string, messageId: string, success:() => void) {
         authClient.post("/inbox/" + coopId + "/" + messageId + "/read", {}, () => success())
     }
+
+    markAllRead(coopId: string, success:() => void) {
+        authClient.post("/inbox/" + coopId + "/read-all", {}, () => success())
+    }
 }
 
 export interface ListInboxResponse {

@@ -12,7 +12,8 @@ import { useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CreateTimeCondition from "./form-creators/time-condition/create";
-import DeleteDialog from "../../../components/dialog/delete";
+import ConfirmDialog from "../../../components/dialog/confirm";
+import DeleteOutline from "@mui/icons-material/DeleteOutline";
 
 export interface AddTimeConditionDialogProps {
     open: boolean,
@@ -109,8 +110,11 @@ export default function AddTimeConditionDialog(props: AddTimeConditionDialogProp
                             Delete time condition
                         </Button>}
 
-                        <DeleteDialog title="Delete time condition?"
-                                      onDelete={onDeleteConfirm}
+                        <ConfirmDialog title="Delete time condition?"
+                                      confirmLabel="Delete"
+                                      confirmIcon={<DeleteOutline />}
+                                      confirmColor="error"
+                                      onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>
 

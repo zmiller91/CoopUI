@@ -20,12 +20,15 @@ import Divider from '@mui/material/Divider'
 import SearchIcon from '@mui/icons-material/Search'
 import ClearIcon from '@mui/icons-material/Clear'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead'
+import Button from '@mui/material/Button'
 import inboxClient, {InboxMessage, ListInboxResponse} from "../../../client/inbox";
 import {usePageTitle} from "../../../components/app-bar";
 import {currentCoop} from "../coop-context";
 import {AppContent} from "../../../components/app-content";
 import {MailOutline} from "@mui/icons-material";
 import InboxMessageDialog from "../../../features/inbox/inbox-message-dialog";
+import ConfirmDialog from "../../../components/dialog/confirm";
 import { formatRelativeDate } from "../../../utils/date"
 import {Badge} from "@mui/material";
 import {useInbox} from "../../../components/InboxContext";
@@ -63,6 +66,8 @@ export default function Contacts() {
     const [messageDialogOpen, setMessageDialogOpen] = useState(false);
     const [viewingMessageIdx, setViewingMessageIdx] = useState<number | undefined>(undefined);
     const [viewingMessage, setViewingMessage] = useState<InboxMessage | undefined>(undefined);
+
+    const [markAllReadDialogOpen, setMarkAllReadDialogOpen] = useState(false);
 
     useEffect(() => {
         setHasLoaded(hasMessagesLoaded && hasNewCountLoaded)
@@ -117,6 +122,19 @@ export default function Contacts() {
             setMessageDialogOpen(false);
 
         });
+    }
+
+    function onMarkAllReadConfirm() {
+        inboxClient.markAllRead(coopId, () => {
+            const now = new Date().toISOString()
+            setMessages(prev => prev.map(m => m.readTs == null ? { ...m, readTs: now } : m))
+            inbox.setInboxNewCount(0)
+            setMarkAllReadDialogOpen(false)
+        })
+    }
+
+    function onMarkAllReadCancel() {
+        setMarkAllReadDialogOpen(false)
     }
 
     function onMessageClick(message: InboxMessage, index: number) {
@@ -176,6 +194,16 @@ export default function Contacts() {
                         ) : undefined,
                     }}
                 />
+
+                <Button
+                    variant="outlined"
+                    fullWidth
+                    startIcon={<MarkEmailReadIcon />}
+                    disabled={inbox.inboxNewCount === 0}
+                    onClick={() => setMarkAllReadDialogOpen(true)}
+                >
+                    Mark all as read
+                </Button>
 
                 {/* List / Empty State */}
                 {filtered.length === 0 ? (
@@ -269,6 +297,14 @@ export default function Contacts() {
                               handleClose={onMessageDialogClosed}
                               handleDelete={onMessageDeleted}
                               message={viewingMessage}/>
+
+            <ConfirmDialog title="Mark all as read?"
+                          confirmLabel="Mark all as read"
+                          confirmIcon={<MarkEmailReadIcon />}
+                          confirmColor="primary"
+                          onConfirm={onMarkAllReadConfirm}
+                          onCancel={onMarkAllReadCancel}
+                          open={markAllReadDialogOpen}/>
         </AppContent>
     )
 }

@@ -15,7 +15,8 @@ import {ReactNode, useEffect, useMemo, useState} from "react";
 import { Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CreateValveAction from "./form-creators/actions/valve-create";
-import DeleteDialog from "../../../components/dialog/delete";
+import ConfirmDialog from "../../../components/dialog/confirm";
+import DeleteOutline from "@mui/icons-material/DeleteOutline";
 
 export interface AddActuatorDialogProps {
     open: boolean,
@@ -145,8 +146,11 @@ export default function AddActionDialog(props: AddActuatorDialogProps) {
                             Delete action
                         </Button>}
 
-                        <DeleteDialog title="Delete action?"
-                                      onDelete={onDeleteConfirm}
+                        <ConfirmDialog title="Delete action?"
+                                      confirmLabel="Delete"
+                                      confirmIcon={<DeleteOutline />}
+                                      confirmColor="error"
+                                      onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>
                     </Stack>

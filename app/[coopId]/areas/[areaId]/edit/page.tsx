@@ -12,7 +12,7 @@ import AddAreaDialog from "../../../../../features/areas/add-area-dialog"
 import { getChildAreaTypeOptions } from "../../../../../features/areas/child-area-types"
 import TextInput from "../../../../../components/form/text-input"
 import SelectInput, { SelectOption } from "../../../../../components/form/select"
-import DeleteDialog from "../../../../../components/dialog/delete"
+import ConfirmDialog from "../../../../../components/dialog/confirm"
 import SnackBar from "../../../../../components/snack-bar"
 
 import Box from "@mui/material/Box"
@@ -29,6 +29,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import CloseIcon from "@mui/icons-material/Close"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import AddIcon from "@mui/icons-material/Add"
+import DeleteOutline from "@mui/icons-material/DeleteOutline"
 
 function currentArea(): string {
     return useParams()["areaId"] as string
@@ -318,9 +319,12 @@ export default function AreaEdit() {
                             Delete Group
                         </Button>
 
-                        <DeleteDialog
+                        <ConfirmDialog
                             title="Delete group?"
-                            onDelete={deleteArea}
+                            confirmLabel="Delete"
+                            confirmIcon={<DeleteOutline />}
+                            confirmColor="error"
+                            onConfirm={deleteArea}
                             onCancel={() => setOpenDelete(false)}
                             open={openDelete}
                         >
@@ -328,7 +332,7 @@ export default function AreaEdit() {
                                 This removes &quot;{area?.name}&quot; and its device assignments. This action cannot
                                 be undone.
                             </Typography>
-                        </DeleteDialog>
+                        </ConfirmDialog>
                     </>
                 )}
             </Stack>

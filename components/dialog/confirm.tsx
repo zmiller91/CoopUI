@@ -3,20 +3,26 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import {DeleteOutline} from "@mui/icons-material";
+import {CheckCircleOutline} from "@mui/icons-material";
 import React, {ReactNode} from "react";
 import {useTheme} from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-export interface DeleteDialogProps {
+export interface ConfirmDialogProps {
     title: string,
     children?: ReactNode,
-    onDelete: () => void,
+    onConfirm: () => void,
     onCancel: () => void,
-    open: boolean
+    open: boolean,
+    // Generic by default ("Confirm" / a checkmark / primary) - callers that need delete-specific styling
+    // (label "Delete", DeleteOutline icon, error color) pass these explicitly rather than relying on a
+    // delete-flavored default for a component that isn't exclusively about deleting.
+    confirmLabel?: string,
+    confirmIcon?: ReactNode,
+    confirmColor?: 'error' | 'primary',
 }
 
-export default function DeleteDialog(props: DeleteDialogProps) {
+export default function ConfirmDialog(props: ConfirmDialogProps) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -45,11 +51,11 @@ export default function DeleteDialog(props: DeleteDialogProps) {
             >
                 <Button
                     variant="contained"
-                    color="error"
-                    startIcon={<DeleteOutline />}
-                    onClick={props.onDelete}
+                    color={props.confirmColor ?? 'primary'}
+                    startIcon={props.confirmIcon ?? <CheckCircleOutline />}
+                    onClick={props.onConfirm}
                 >
-                    Delete
+                    {props.confirmLabel ?? 'Confirm'}
                 </Button>
 
                 <Button
