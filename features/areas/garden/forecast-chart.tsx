@@ -120,7 +120,12 @@ export default function ForecastChart(props: ForecastChartProps) {
                             fontSize={12}
                             fontFamily={__font_family}
                         />
-                        <Tooltip labelFormatter={formatTick} />
+                        <Tooltip
+                            formatter={(value: number, name: string) =>
+                                name.startsWith("Temperature") ? [Math.round(value), name] : [value, name]
+                            }
+                            labelFormatter={formatTick}
+                        />
                     </>
                 )}
             </ComposedChart>

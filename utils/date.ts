@@ -21,6 +21,26 @@ export function formatDateToFriendlyString(input: string | number | Date): strin
 
 
 
+// For event/activity timestamps specifically - "3h ago" is ambiguous once it rolls into "Yesterday"
+// (yesterday when?), so this shows a real time instead: just the time if it happened today, otherwise
+// an abbreviated date plus time (e.g. "Jul. 14 6:42 AM").
+export function formatEventTime(input: string | number | Date): string {
+    const date = new Date(input)
+    const now = new Date()
+
+    const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+
+    const isToday =
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth() &&
+        date.getDate() === now.getDate()
+
+    if (isToday) return time
+
+    const month = date.toLocaleDateString('en-US', { month: 'short' })
+    return `${month}. ${date.getDate()} ${time}`
+}
+
 export function formatRelativeDate(input: string | number | Date): string {
     const date = new Date(input)
     const now = new Date()

@@ -57,7 +57,11 @@ function ForecastChartCard(props: { coopId: string; data: ComponentData }) {
                     {dimension1 && (
                         <div className="justify-self-end pr-5">
                             <span className="text-5xl font-semibold tracking-tight text-primary-700">
-                                {point ? point[dimension1.key] : "—"}
+                                {point
+                                    ? dimension1.formatter
+                                        ? dimension1.formatter(point[dimension1.key])
+                                        : point[dimension1.key]
+                                    : "—"}
                             </span>
                             <sup className="text-xl ml-1 text-neutral-500">{dimension1.label}</sup>
                         </div>
@@ -120,7 +124,7 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
     return (
         <Stack spacing={2}>
             {environmentParts.length > 0 && (
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>
                     {environmentParts.join(" · ")}
                 </Typography>
             )}

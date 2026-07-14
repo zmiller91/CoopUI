@@ -5,7 +5,7 @@ import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import { ActivityEntry } from "../../client/area"
 import { Component } from "../../client/component"
-import { formatRelativeDate } from "../../utils/date"
+import { formatEventTime } from "../../utils/date"
 
 export interface ActivityLogProps {
     entries: ActivityEntry[];
@@ -55,7 +55,7 @@ export function ActivityLog(props: ActivityLogProps) {
                         </Typography>
                     </Stack>
                     <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
-                        {formatRelativeDate(entry.createdAt)}
+                        {formatEventTime(entry.createdAt)}
                     </Typography>
                 </Stack>
             ))}

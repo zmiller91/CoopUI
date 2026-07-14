@@ -10,6 +10,14 @@ import { HeroStat, StatRow } from "../card-stats"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 
+function solarRadiationLabel(wattsPerM2: number): string {
+    if (wattsPerM2 < 50) return "None"
+    if (wattsPerM2 < 250) return "Low"
+    if (wattsPerM2 < 500) return "Moderate"
+    if (wattsPerM2 < 800) return "High"
+    return "Very High"
+}
+
 function mostRecent(d: ComponentData): Record<string, any> | undefined {
     let idx = -1
     let result: Record<string, any> | undefined
@@ -44,13 +52,14 @@ export default function GardenGroupCard(props: AreaCardProps) {
     )
 
     const hasHero = temperature !== undefined || transpiration !== undefined
-    const hasRain =
+    const hasStats =
         rainChance !== undefined ||
         rainForecast !== undefined ||
         rainActual !== undefined ||
         uvIndex !== undefined ||
-        solarRadiation !== undefined
-    const hasAnyStat = hasHero || hasRain || totalZones > 0
+        solarRadiation !== undefined ||
+        totalZones > 0
+    const hasAnyStat = hasHero || hasStats
 
     return (
         <AreaCardShell
@@ -88,7 +97,7 @@ export default function GardenGroupCard(props: AreaCardProps) {
                     </Stack>
                 )}
 
-                {hasRain && (
+                {hasStats && (
                     <Stack spacing={0.5}>
                         {rainActual !== undefined && (
                             <StatRow label="Rain (last 24h)" value={`${mmToInches(rainActual)} in`} />
@@ -103,12 +112,13 @@ export default function GardenGroupCard(props: AreaCardProps) {
                             <StatRow label="UV index" value={`${Math.round(uvIndex)}`} />
                         )}
                         {solarRadiation !== undefined && (
-                            <StatRow label="Solar radiation" value={`${Math.round(solarRadiation)} W/m²`} />
+                            <StatRow label="Solar radiation" value={solarRadiationLabel(solarRadiation)} />
+                        )}
+                        {totalZones > 0 && (
+                            <StatRow label="Zones watering" value={`${zonesOn} of ${totalZones}`} />
                         )}
                     </Stack>
                 )}
-
-                {totalZones > 0 && <StatRow label="Zones watering" value={`${zonesOn} of ${totalZones}`} />}
 
                 {!hasAnyStat && (
                     <Typography variant="body2" color="text.secondary">

@@ -45,6 +45,7 @@ export const CHART_CONFIG: Record<string, ChartConfig> = {
             key: "TEMPERATURE",
             name: "TEMPERATURE",
             label: "°F",
+            formatter: (f) => Math.round(f),
         },
         dimension2: {
             key: "EVAPOTRANSPIRATION",
