@@ -10,13 +10,15 @@ import ListItem from "@mui/material/ListItem"
 import ListItemButton from "@mui/material/ListItemButton"
 import ListItemText from "@mui/material/ListItemText"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
-import ChartCard from "../../../components/dashboard/chart-card"
+import { Card, CardTitle } from "../../../components/card"
+import { StatusInfo } from "../../../app/[coopId]/dashboard/status-info"
 import { AREA_TYPE_META } from "../../../components/dashboard/group-card"
 import { AreaDetailContentProps } from "../registry"
 import { CHART_CONFIG } from "../../../utils/chart-config"
 import areaClient, { ActivityEntry } from "../../../client/area"
 import { ActivityLog } from "../activity-log"
 import { ComponentData } from "../../../client/data"
+import ForecastChart from "./forecast-chart"
 
 const ACTIVITY_LIMIT = 10
 const ACTIVITY_WINDOW_MS = 24 * 60 * 60 * 1000
@@ -31,6 +33,52 @@ function mostRecent(d: ComponentData): Record<string, any> | undefined {
         }
     }
     return result
+}
+
+function ForecastChartCard(props: { coopId: string; data: ComponentData }) {
+    const router = useRouter()
+    const point = mostRecent(props.data)
+    const dimension1 = CHART_CONFIG.WEATHER_FORECAST.dimension1
+    const dimension2 = CHART_CONFIG.WEATHER_FORECAST.dimension2
+
+    function lastCheckIn() {
+        return Math.round((Date.now() - props.data.lastUpdate) / 1000 / 60)
+    }
+
+    return (
+        <Card onClick={() => router.push(`/${props.coopId}/dashboard/${props.data.componentId}`)} className="mb-2">
+            <div className="grid grid-cols-2">
+                <CardTitle title={props.data.componentName} subtitle={props.data.componentTypeDescription} />
+                <StatusInfo lastCheckin={lastCheckIn()} preview={true} className="justify-self-end" />
+            </div>
+
+            <div className="text-5xl mb-4">
+                <div className="grid grid-cols-2 pt-4 pb-4 pr-2 pl-2">
+                    {dimension1 && (
+                        <div className="justify-self-end pr-5">
+                            <span className="text-5xl font-semibold tracking-tight text-primary-700">
+                                {point ? point[dimension1.key] : "—"}
+                            </span>
+                            <sup className="text-xl ml-1 text-neutral-500">{dimension1.label}</sup>
+                        </div>
+                    )}
+
+                    {dimension2 && (
+                        <div className="justify-self-end pr-5">
+                            <span className="text-5xl font-semibold tracking-tight text-accent-700">
+                                {point ? dimension2.formatter!(point[dimension2.key]) : "—"}
+                            </span>
+                            <sup className="text-xl ml-1 text-neutral-500">{dimension2.label}</sup>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="h-[75px]">
+                <ForecastChart data={props.data.data} detailed={false} />
+            </div>
+        </Card>
+    )
 }
 
 export default function GardenDetailContent(props: AreaDetailContentProps) {
@@ -73,16 +121,7 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
                 </Typography>
             )}
 
-            {forecastMember && (
-                <ChartCard
-                    name={forecastMember.componentName}
-                    type={forecastMember.componentTypeDescription}
-                    data={forecastMember}
-                    dimension1={CHART_CONFIG.WEATHER_FORECAST.dimension1}
-                    dimension2={CHART_CONFIG.WEATHER_FORECAST.dimension2}
-                    href={`/${props.coopId}/dashboard/${forecastMember.componentId}`}
-                />
-            )}
+            {forecastMember && <ForecastChartCard coopId={props.coopId} data={forecastMember} />}
 
             <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
                 <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5 }}>

@@ -8,6 +8,7 @@ import { CHART_CONFIG, DataDimension } from '../../../../utils/chart-config'
 import { AppContent } from '../../../../components/app-content'
 import { StatusInfo } from '../status-info'
 import Chart from '../chart'
+import ForecastChart from '../../../../features/areas/garden/forecast-chart'
 
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -93,6 +94,7 @@ export default function ComponentDashboard() {
 
     const hasD1 = !!chartConfig?.dimension1
     const hasD2 = !!chartConfig?.dimension2
+    const isForecast = componentData?.componentType === 'WEATHER_FORECAST'
 
     return (
         <AppContent>
@@ -217,12 +219,16 @@ export default function ComponentDashboard() {
                             </Box>
                         )}
 
-                        <Chart
-                            detailed={true}
-                            data={convertedData}
-                            dataKey={chartConfig?.dimension1?.key}
-                            dataKey2={chartConfig?.dimension2?.key}
-                        />
+                        {isForecast ? (
+                            <ForecastChart data={componentData?.data ?? []} detailed={true} />
+                        ) : (
+                            <Chart
+                                detailed={true}
+                                data={convertedData}
+                                dataKey={chartConfig?.dimension1?.key}
+                                dataKey2={chartConfig?.dimension2?.key}
+                            />
+                        )}
                     </Box>
                 </Paper>
             </Stack>
