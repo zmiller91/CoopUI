@@ -18,7 +18,8 @@ import { CHART_CONFIG } from "../../../utils/chart-config"
 import areaClient, { ActivityEntry } from "../../../client/area"
 import { ActivityLog } from "../activity-log"
 import { ComponentData } from "../../../client/data"
-import { solarRadiationLabel } from "../units"
+import { cloudCoverLabel, solarRadiationLabel } from "../units"
+import Box from "@mui/material/Box"
 import ForecastChart from "./forecast-chart"
 
 const ACTIVITY_LIMIT = 10
@@ -116,7 +117,7 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
         environmentParts.push(`${solarRadiationLabel(forecastPoint.SOLAR_RADIATION)} solar radiation`)
     }
     if (forecastPoint?.CLOUD_COVER !== undefined) {
-        environmentParts.push(`${Math.round(forecastPoint.CLOUD_COVER)}% cloud cover`)
+        environmentParts.push(cloudCoverLabel(forecastPoint.CLOUD_COVER))
     }
     if (forecastPoint?.RAIN_PROBABILITY_24H !== undefined) {
         environmentParts.push(`${Math.round(forecastPoint.RAIN_PROBABILITY_24H)}% chance of rain`)
@@ -125,9 +126,27 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
     return (
         <Stack spacing={2}>
             {environmentParts.length > 0 && (
-                <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>
-                    {environmentParts.join(" · ")}
-                </Typography>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        columnGap: 1,
+                        rowGap: 0.25,
+                    }}
+                >
+                    {environmentParts.map((part, idx) => (
+                        <Typography
+                            key={idx}
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ whiteSpace: "nowrap" }}
+                        >
+                            {part}
+                            {idx < environmentParts.length - 1 ? " ·" : ""}
+                        </Typography>
+                    ))}
+                </Box>
             )}
 
             {forecastMember && <ForecastChartCard coopId={props.coopId} data={forecastMember} />}
