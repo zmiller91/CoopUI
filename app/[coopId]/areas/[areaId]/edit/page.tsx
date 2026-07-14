@@ -29,6 +29,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import CloseIcon from "@mui/icons-material/Close"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import AddIcon from "@mui/icons-material/Add"
+import DeleteOutline from "@mui/icons-material/DeleteOutline"
 
 function currentArea(): string {
     return useParams()["areaId"] as string
@@ -320,6 +321,9 @@ export default function AreaEdit() {
 
                         <ConfirmDialog
                             title="Delete group?"
+                            confirmLabel="Delete"
+                            confirmIcon={<DeleteOutline />}
+                            confirmColor="error"
                             onConfirm={deleteArea}
                             onCancel={() => setOpenDelete(false)}
                             open={openDelete}

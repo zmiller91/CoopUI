@@ -14,6 +14,7 @@ import {Checkbox, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Sta
 import Typography from "@mui/material/Typography";
 import CreateSource from "./form-creators/sources/create";
 import ConfirmDialog from "../../../components/dialog/confirm";
+import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import MultiSelectInput from "../../../components/form/multi-select";
 import {Contact} from "../../../client/contact";
 
@@ -167,6 +168,9 @@ export default function AddNotificationDialog(props: AddNotificationDialogProps)
                         </Button>}
 
                         <ConfirmDialog title="Delete notification?"
+                                      confirmLabel="Delete"
+                                      confirmIcon={<DeleteOutline />}
+                                      confirmColor="error"
                                       onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>

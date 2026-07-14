@@ -3,7 +3,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import {DeleteOutline} from "@mui/icons-material";
+import {CheckCircleOutline} from "@mui/icons-material";
 import React, {ReactNode} from "react";
 import {useTheme} from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -14,8 +14,9 @@ export interface ConfirmDialogProps {
     onConfirm: () => void,
     onCancel: () => void,
     open: boolean,
-    // Defaults match this dialog's original delete-only styling, so every pre-existing delete call site
-    // is unaffected; pass these to repurpose it for other confirmations (e.g. "mark all as read").
+    // Generic by default ("Confirm" / a checkmark / primary) - callers that need delete-specific styling
+    // (label "Delete", DeleteOutline icon, error color) pass these explicitly rather than relying on a
+    // delete-flavored default for a component that isn't exclusively about deleting.
     confirmLabel?: string,
     confirmIcon?: ReactNode,
     confirmColor?: 'error' | 'primary',
@@ -50,11 +51,11 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
             >
                 <Button
                     variant="contained"
-                    color={props.confirmColor ?? 'error'}
-                    startIcon={props.confirmIcon ?? <DeleteOutline />}
+                    color={props.confirmColor ?? 'primary'}
+                    startIcon={props.confirmIcon ?? <CheckCircleOutline />}
                     onClick={props.onConfirm}
                 >
-                    {props.confirmLabel ?? 'Delete'}
+                    {props.confirmLabel ?? 'Confirm'}
                 </Button>
 
                 <Button

@@ -13,6 +13,7 @@ import { Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CreateTimeCondition from "./form-creators/time-condition/create";
 import ConfirmDialog from "../../../components/dialog/confirm";
+import DeleteOutline from "@mui/icons-material/DeleteOutline";
 
 export interface AddTimeConditionDialogProps {
     open: boolean,
@@ -110,6 +111,9 @@ export default function AddTimeConditionDialog(props: AddTimeConditionDialogProp
                         </Button>}
 
                         <ConfirmDialog title="Delete time condition?"
+                                      confirmLabel="Delete"
+                                      confirmIcon={<DeleteOutline />}
+                                      confirmColor="error"
                                       onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>

@@ -11,6 +11,7 @@ import {useEffect, useState} from "react";
 import {Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import ConfirmDialog from "../../../components/dialog/confirm";
+import DeleteOutline from "@mui/icons-material/DeleteOutline";
 import {Contact} from "../../../client/contact";
 import TextInput from "../../../components/form/text-input";
 
@@ -104,6 +105,9 @@ export default function AddContactDialog(props: AddContactDialogProps) {
                         </Button>}
 
                         <ConfirmDialog title="Delete contact?"
+                                      confirmLabel="Delete"
+                                      confirmIcon={<DeleteOutline />}
+                                      confirmColor="error"
                                       onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>

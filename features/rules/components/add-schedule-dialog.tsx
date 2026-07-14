@@ -13,6 +13,7 @@ import { Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CreateSchedule from "./form-creators/schedule/create";
 import ConfirmDialog from "../../../components/dialog/confirm";
+import DeleteOutline from "@mui/icons-material/DeleteOutline";
 
 export interface AddScheduleDialogProps {
     open: boolean,
@@ -116,6 +117,9 @@ export default function AddScheduleDialog(props: AddScheduleDialogProps) {
                         </Button>}
 
                         <ConfirmDialog title="Delete schedule?"
+                                      confirmLabel="Delete"
+                                      confirmIcon={<DeleteOutline />}
+                                      confirmColor="error"
                                       onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>
