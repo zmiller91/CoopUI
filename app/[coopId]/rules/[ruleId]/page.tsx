@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import {useTheme} from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Emphasis from "../../../../components/typography/emphasis";
-import DeleteDialog from "../../../../components/dialog/delete";
+import ConfirmDialog from "../../../../components/dialog/confirm";
 
 
 
@@ -77,8 +77,8 @@ export default function Rule() {
                     Delete Automation
                 </Button>
 
-                <DeleteDialog title="Delete automation?"
-                              onDelete={deleteRule}
+                <ConfirmDialog title="Delete automation?"
+                              onConfirm={deleteRule}
                               onCancel={() => setOpenDelete(false)}
                               open={openDelete}>
 
@@ -95,7 +95,7 @@ export default function Rule() {
                             This action cannot be undone.
                         </Typography>
                     </Stack>
-                </DeleteDialog>
+                </ConfirmDialog>
 
             </Stack>
         </AppContent>

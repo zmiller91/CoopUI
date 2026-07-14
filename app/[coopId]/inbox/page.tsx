@@ -28,7 +28,7 @@ import {currentCoop} from "../coop-context";
 import {AppContent} from "../../../components/app-content";
 import {MailOutline} from "@mui/icons-material";
 import InboxMessageDialog from "../../../features/inbox/inbox-message-dialog";
-import DeleteDialog from "../../../components/dialog/delete";
+import ConfirmDialog from "../../../components/dialog/confirm";
 import { formatRelativeDate } from "../../../utils/date"
 import {Badge} from "@mui/material";
 import {useInbox} from "../../../components/InboxContext";
@@ -298,11 +298,11 @@ export default function Contacts() {
                               handleDelete={onMessageDeleted}
                               message={viewingMessage}/>
 
-            <DeleteDialog title="Mark all as read?"
+            <ConfirmDialog title="Mark all as read?"
                           confirmLabel="Mark all as read"
                           confirmIcon={<MarkEmailReadIcon />}
                           confirmColor="primary"
-                          onDelete={onMarkAllReadConfirm}
+                          onConfirm={onMarkAllReadConfirm}
                           onCancel={onMarkAllReadCancel}
                           open={markAllReadDialogOpen}/>
         </AppContent>

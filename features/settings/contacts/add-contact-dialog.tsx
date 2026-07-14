@@ -10,7 +10,7 @@ import Form from "../../../components/form/form";
 import {useEffect, useState} from "react";
 import {Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
-import DeleteDialog from "../../../components/dialog/delete";
+import ConfirmDialog from "../../../components/dialog/confirm";
 import {Contact} from "../../../client/contact";
 import TextInput from "../../../components/form/text-input";
 
@@ -103,8 +103,8 @@ export default function AddContactDialog(props: AddContactDialogProps) {
                             Delete contact
                         </Button>}
 
-                        <DeleteDialog title="Delete contact?"
-                                      onDelete={onDeleteConfirm}
+                        <ConfirmDialog title="Delete contact?"
+                                      onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>
 

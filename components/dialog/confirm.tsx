@@ -8,21 +8,20 @@ import React, {ReactNode} from "react";
 import {useTheme} from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-export interface DeleteDialogProps {
+export interface ConfirmDialogProps {
     title: string,
     children?: ReactNode,
-    onDelete: () => void,
+    onConfirm: () => void,
     onCancel: () => void,
     open: boolean,
-    // Let other confirm prompts (e.g. "mark all as read") reuse this same dialog shape/layout without
-    // looking like a destructive delete action. Default to today's delete-specific styling so every
-    // existing call site is unaffected.
+    // Defaults match this dialog's original delete-only styling, so every pre-existing delete call site
+    // is unaffected; pass these to repurpose it for other confirmations (e.g. "mark all as read").
     confirmLabel?: string,
     confirmIcon?: ReactNode,
     confirmColor?: 'error' | 'primary',
 }
 
-export default function DeleteDialog(props: DeleteDialogProps) {
+export default function ConfirmDialog(props: ConfirmDialogProps) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -53,7 +52,7 @@ export default function DeleteDialog(props: DeleteDialogProps) {
                     variant="contained"
                     color={props.confirmColor ?? 'error'}
                     startIcon={props.confirmIcon ?? <DeleteOutline />}
-                    onClick={props.onDelete}
+                    onClick={props.onConfirm}
                 >
                     {props.confirmLabel ?? 'Delete'}
                 </Button>

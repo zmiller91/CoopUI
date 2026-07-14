@@ -12,7 +12,7 @@ import AddAreaDialog from "../../../../../features/areas/add-area-dialog"
 import { getChildAreaTypeOptions } from "../../../../../features/areas/child-area-types"
 import TextInput from "../../../../../components/form/text-input"
 import SelectInput, { SelectOption } from "../../../../../components/form/select"
-import DeleteDialog from "../../../../../components/dialog/delete"
+import ConfirmDialog from "../../../../../components/dialog/confirm"
 import SnackBar from "../../../../../components/snack-bar"
 
 import Box from "@mui/material/Box"
@@ -318,9 +318,9 @@ export default function AreaEdit() {
                             Delete Group
                         </Button>
 
-                        <DeleteDialog
+                        <ConfirmDialog
                             title="Delete group?"
-                            onDelete={deleteArea}
+                            onConfirm={deleteArea}
                             onCancel={() => setOpenDelete(false)}
                             open={openDelete}
                         >
@@ -328,7 +328,7 @@ export default function AreaEdit() {
                                 This removes &quot;{area?.name}&quot; and its device assignments. This action cannot
                                 be undone.
                             </Typography>
-                        </DeleteDialog>
+                        </ConfirmDialog>
                     </>
                 )}
             </Stack>

@@ -13,7 +13,7 @@ import {ReactNode, useEffect, useMemo, useState} from "react";
 import {Checkbox, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CreateSource from "./form-creators/sources/create";
-import DeleteDialog from "../../../components/dialog/delete";
+import ConfirmDialog from "../../../components/dialog/confirm";
 import MultiSelectInput from "../../../components/form/multi-select";
 import {Contact} from "../../../client/contact";
 
@@ -166,8 +166,8 @@ export default function AddNotificationDialog(props: AddNotificationDialogProps)
                             Delete notification
                         </Button>}
 
-                        <DeleteDialog title="Delete notification?"
-                                      onDelete={onDeleteConfirm}
+                        <ConfirmDialog title="Delete notification?"
+                                      onConfirm={onDeleteConfirm}
                                       onCancel={onDeleteCancel}
                                       open={showDelete}/>
 
