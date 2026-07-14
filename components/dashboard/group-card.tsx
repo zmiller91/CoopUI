@@ -10,6 +10,7 @@ import CategoryIcon from "@mui/icons-material/Category"
 
 import { Area } from "../../client/area"
 import { ComponentData } from "../../client/data"
+import { Component } from "../../client/component"
 
 export const AREA_TYPE_META: Record<string, { label: string; icon?: React.ReactNode }> = {
     GARDEN: { label: "Garden" },
@@ -49,6 +50,7 @@ export function GroupTileLayout(props: GroupTileLayoutProps) {
 export interface GroupCardProps {
     area: Area;
     members: ComponentData[];
+    memberComponents: Component[];
     onClick: () => void;
 }
 

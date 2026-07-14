@@ -10,7 +10,6 @@ import { AppContent } from "../../../components/app-content"
 import GroupCard, { GroupTileLayout } from "../../../components/dashboard/group-card"
 import { AREA_CARD_REGISTRY } from "../../../features/areas/registry"
 import AddAreaDialog from "../../../features/areas/add-area-dialog"
-import { CHART_CONFIG } from "../../../utils/chart-config"
 
 import Box from "@mui/material/Box"
 import Stack from "@mui/material/Stack"
@@ -70,10 +69,6 @@ export default function Dashboard() {
     })
   }, [coopId])
 
-  const chartable = useMemo(() => {
-    return coopData.filter((d) => !!CHART_CONFIG[d.componentType])
-  }, [coopData])
-
   const componentsById = useMemo(() => {
     const map: Record<string, Component> = {}
     components.forEach((c) => {
@@ -94,7 +89,7 @@ export default function Dashboard() {
 
     const ungrouped: ComponentData[] = []
 
-    chartable.forEach((d) => {
+    coopData.forEach((d) => {
       const componentAreas = componentsById[d.componentId]?.areas ?? []
       // A component whose only area assignments are child groups has no top-level tile to
       // attach to - falls back to Ungrouped rather than silently disappearing from the Dashboard.
@@ -109,7 +104,24 @@ export default function Dashboard() {
     })
 
     return { groups: Object.values(byAreaId), ungrouped }
-  }, [chartable, componentsById, areas])
+  }, [coopData, componentsById, areas])
+
+  const componentsByAreaId = useMemo(() => {
+    // Parallel to the `groups` memo above, but over every Component (not just chartable ones) -
+    // type-specific cards need raw Component/port data (e.g. valve zone state) that ComponentData
+    // doesn't carry.
+    const topLevelIds = new Set(areas.filter((a) => !a.parentId).map((a) => a.id as string))
+    const map: Record<string, Component[]> = {}
+    components.forEach((c) => {
+      ;(c.areas ?? []).forEach((a) => {
+        const id = a.id as string
+        if (!topLevelIds.has(id)) return
+        if (!map[id]) map[id] = []
+        map[id].push(c)
+      })
+    })
+    return map
+  }, [components, areas])
 
   const filteredGroups = useMemo(() => {
     const q = normalize(query)
@@ -172,8 +184,8 @@ export default function Dashboard() {
               />
           )}
 
-          {/* Empty state: nothing chartable at all */}
-          {chartable.length === 0 ? (
+          {/* Empty state: nothing reporting at all */}
+          {coopData.length === 0 ? (
               <Paper
                   variant="outlined"
                   sx={{ p: 3, borderRadius: 2, textAlign: "center", bgcolor: "background.paper" }}
@@ -236,6 +248,7 @@ export default function Dashboard() {
                               <CardComponent
                                   area={g.area}
                                   members={g.members}
+                                  memberComponents={componentsByAreaId[g.area.id as string] ?? []}
                                   onClick={() => router.push(`/${coopId}/areas/${g.area.id}`)}
                               />
                             </Grid>

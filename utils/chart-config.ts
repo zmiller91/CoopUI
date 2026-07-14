@@ -40,4 +40,16 @@ export const CHART_CONFIG: Record<string, ChartConfig> = {
             formatter: (grams) => Math.round((grams * 10) / 453.592) / 10,
         },
     },
+    WEATHER_FORECAST: {
+        dimension1: {
+            key: "RAIN_PROBABILITY_24H",
+            name: "RAIN_PROBABILITY_24H",
+            label: "%",
+        },
+        dimension2: {
+            key: "TEMPERATURE",
+            name: "TEMPERATURE",
+            label: "°F",
+        },
+    },
 };
