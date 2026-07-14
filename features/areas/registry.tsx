@@ -22,6 +22,8 @@ export interface AreaDetailContentProps {
     members: ComponentData[];              // this area's chartable members' current data, for charts
     memberComponents: Component[];         // every Component directly in this area (ports, config, etc.)
     childAreas: Area[];                    // this area's direct children
+    allComponents: Component[];            // every Component in the coop, for looking up child areas' members
+    allData: ComponentData[];              // every ComponentData in the coop, for looking up child areas' members
 }
 
 // GARDEN_BED and OTHER have no custom card yet - they fall back to the generic GroupCard.

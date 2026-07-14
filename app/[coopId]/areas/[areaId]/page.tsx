@@ -157,6 +157,8 @@ export default function AreaDetail() {
                             members={memberCharts}
                             memberComponents={memberComponents}
                             childAreas={childAreas}
+                            allComponents={components}
+                            allData={coopData}
                         />
                     )}
                 </Stack>

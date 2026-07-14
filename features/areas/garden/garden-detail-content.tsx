@@ -18,6 +18,7 @@ import { CHART_CONFIG } from "../../../utils/chart-config"
 import areaClient, { ActivityEntry } from "../../../client/area"
 import { ActivityLog } from "../../activity/activity-log"
 import { ComponentData } from "../../../client/data"
+import { Component } from "../../../client/component"
 import { cloudCoverLabel, solarRadiationLabel } from "../../components/weather-forecast/units"
 import Box from "@mui/material/Box"
 import ForecastChart from "../../components/weather-forecast/forecast-chart"
@@ -35,6 +36,25 @@ function mostRecent(d: ComponentData): Record<string, any> | undefined {
         }
     }
     return result
+}
+
+// Averages the current MOISTURE_PERCENT reading across every Moisture Sensor assigned to the given
+// (sub-)area - undefined if it has none, so the caller can skip the stat entirely rather than show 0.
+function childMoistureAverage(childId: string, components: Component[], data: ComponentData[]): number | undefined {
+    const sensorIds = new Set(
+        components
+            .filter((c) => c.type === "MOISTURE" && (c.areas ?? []).some((a) => a.id === childId))
+            .map((c) => c.id)
+    )
+    if (sensorIds.size === 0) return undefined
+
+    const values = data
+        .filter((d) => sensorIds.has(d.componentId))
+        .map((d) => mostRecent(d)?.MOISTURE_PERCENT)
+        .filter((v): v is number => v !== undefined)
+
+    if (values.length === 0) return undefined
+    return values.reduce((sum, v) => sum + v, 0) / values.length
 }
 
 function ForecastChartCard(props: { coopId: string; data: ComponentData }) {
@@ -178,6 +198,7 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
                     <List disablePadding>
                         {props.childAreas.map((child) => {
                             const childMeta = AREA_TYPE_META[child.type]
+                            const moisture = childMoistureAverage(child.id, props.allComponents, props.allData)
                             return (
                                 <ListItem key={child.id} disableGutters disablePadding>
                                     <ListItemButton onClick={() => router.push(`/${props.coopId}/areas/${child.id}`)}>
@@ -185,6 +206,15 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
                                             primary={child.name}
                                             secondary={childMeta?.label ?? child.type}
                                         />
+                                        {moisture !== undefined && (
+                                            <Typography
+                                                variant="body2"
+                                                fontWeight={700}
+                                                sx={{ color: "var(--primary-700)", mr: 1, whiteSpace: "nowrap" }}
+                                            >
+                                                {Math.round(moisture)}% moisture
+                                            </Typography>
+                                        )}
                                         <ChevronRightIcon fontSize="small" color="action" />
                                     </ListItemButton>
                                 </ListItem>
