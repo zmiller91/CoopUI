@@ -138,7 +138,7 @@ export default function Rules() {
                 )}
             </Stack>
 
-            <FloatingActionButton onClick={goCreate}>
+            <FloatingActionButton label="Add rule" onClick={goCreate}>
                 <AddIcon sx={{ fontSize: 20 }} />
             </FloatingActionButton>
         </AppContent>

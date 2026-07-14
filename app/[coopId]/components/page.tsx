@@ -6,6 +6,7 @@ import { currentCoop } from "../coop-context"
 import { useRouter } from "next/navigation"
 import { AppContent } from "../../../components/app-content"
 import { usePageTitle } from "../../../components/app-bar"
+import FloatingActionButton from "../../../components/fab"
 
 import Box from "@mui/material/Box"
 import Stack from "@mui/material/Stack"
@@ -21,9 +22,7 @@ import ListItemAvatar from "@mui/material/ListItemAvatar"
 import Avatar from "@mui/material/Avatar"
 import ListItemText from "@mui/material/ListItemText"
 import Divider from "@mui/material/Divider"
-import Fab from "@mui/material/Fab"
 import Button from "@mui/material/Button"
-import Tooltip from "@mui/material/Tooltip"
 
 import SearchIcon from "@mui/icons-material/Search"
 import ClearIcon from "@mui/icons-material/Clear"
@@ -260,21 +259,9 @@ export default function Components() {
             </Stack>
 
             {/* FAB */}
-            <Tooltip title="Register component" placement="left" arrow>
-                <Fab
-                    color="primary"
-                    aria-label="Register component"
-                    onClick={() => router.push(registerPath)}
-                    sx={{
-                        position: "fixed",
-                        right: 16,
-                        bottom: "calc(56px + env(safe-area-inset-bottom) + 16px)", // bottom nav + safe area + spacing
-                        zIndex: (t) => t.zIndex.appBar + 1,
-                    }}
-                >
-                    <AddIcon />
-                </Fab>
-            </Tooltip>
+            <FloatingActionButton label="Register component" onClick={() => router.push(registerPath)}>
+                <AddIcon />
+            </FloatingActionButton>
         </AppContent>
     )
 }

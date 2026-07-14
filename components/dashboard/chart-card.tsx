@@ -12,6 +12,7 @@ export interface ChartCardProps {
     data: ComponentData;
     dimension1?: DataDimension,
     dimension2?: DataDimension
+    href?: string
 }
 
 export default function ChartCard(props:ChartCardProps) {
@@ -32,6 +33,10 @@ export default function ChartCard(props:ChartCardProps) {
     }
 
     function goToDetail() {
+        if (props.href) {
+            router.push(props.href);
+            return;
+        }
         router.push("./dashboard/" + props.data.componentId);
     }
 

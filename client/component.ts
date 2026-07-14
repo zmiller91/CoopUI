@@ -1,5 +1,6 @@
 
 import authClient from "./auth"
+import { Area } from "./area"
 
 class ComponentClient {
 
@@ -71,6 +72,7 @@ export interface ComponentPort {
     name:string;
     config?:ComponentConfig[];
     state?:"ON" | "OFF" | null;
+    areas?:Area[];
 }
 
 export interface PortLogEntry {
@@ -87,6 +89,7 @@ export interface Component {
     type:string;
     config:ComponentConfig[];
     ports:ComponentPort[];
+    areas:Area[];
 }
 
 export default new ComponentClient();

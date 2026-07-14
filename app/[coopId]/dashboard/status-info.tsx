@@ -32,21 +32,25 @@ export enum Status {
     ONLINE,
 }
 
+export function computeStatus(lastCheckinMinutes: number): Status {
+    if (lastCheckinMinutes <= 240) {
+        return Status.ONLINE;
+    }
+
+    if (lastCheckinMinutes >= 720) {
+        return Status.OFFLINE;
+    }
+
+    return Status.UNKNOWN;
+}
+
 export function StatusInfo(props:StatusInfoProps) {
 
     function getStatus() {
-        if(props.lastCheckin <= 240) {
-          return Status.ONLINE;
-        }
-    
-        if(props.lastCheckin >= 720) {
-          return Status.OFFLINE;
-        }
-    
-        return Status.UNKNOWN;
+        return computeStatus(props.lastCheckin);
       }
-    
-    
+
+
       function getCheckIn() {
     
         if(props.lastCheckin  <= 240) {

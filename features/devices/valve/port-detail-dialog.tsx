@@ -14,7 +14,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import TextInput from "../../../components/form/text-input";
 import componentClient, { ComponentConfig, ComponentPort, PortLogEntry } from "../../../client/component";
-import { formatRelativeDate } from "../../../utils/date";
+import { formatEventTime } from "../../../utils/date";
 
 export interface PortDetailDialogProps {
     open: boolean;
@@ -134,7 +134,7 @@ export default function PortDetailDialog({ open, componentId, portIndex, ports, 
                             <Stack key={idx} direction="row" justifyContent="space-between" spacing={2}>
                                 <Typography variant="body2">{describeEntry(entry)}</Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    {formatRelativeDate(entry.createdAt)}
+                                    {formatEventTime(entry.createdAt)}
                                 </Typography>
                             </Stack>
                         ))}
