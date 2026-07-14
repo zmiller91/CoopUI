@@ -34,7 +34,7 @@ export default function GardenBedPreviewLine(props: AreaPreviewLineProps) {
         <GenericAreaPreviewLine {...props}>
             {moisture !== undefined && (
                 <PreviewStat
-                    icon={<WaterDropIcon fontSize="small" sx={{ color: "var(--primary-700)" }} />}
+                    icon={<WaterDropIcon sx={{ fontSize: 14, color: "var(--primary-700)" }} />}
                     value={`${Math.round(moisture)}`}
                     unit="%"
                     color="primary"

@@ -79,7 +79,6 @@ export function PreviewStat(props: PreviewStatProps) {
             component="span"
             sx={{ display: "inline-flex", whiteSpace: "nowrap" }}
         >
-            {props.icon}
             <Typography
                 variant="body2"
                 fontWeight={700}
@@ -88,6 +87,7 @@ export function PreviewStat(props: PreviewStatProps) {
             >
                 {props.value}{props.unit}
             </Typography>
+            {props.icon}
         </Stack>
     )
 }
