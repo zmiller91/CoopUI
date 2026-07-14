@@ -5,18 +5,10 @@ import AreaCardShell from "../area-card-shell"
 import { computeGroupHealth } from "../device-health"
 import { AreaCardProps } from "../registry"
 import { ComponentData } from "../../../client/data"
-import { mmToInches } from "../units"
+import { mmToInches, solarRadiationLabel } from "../units"
 import { HeroStat, StatRow } from "../card-stats"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
-
-function solarRadiationLabel(wattsPerM2: number): string {
-    if (wattsPerM2 < 50) return "None"
-    if (wattsPerM2 < 250) return "Low"
-    if (wattsPerM2 < 500) return "Moderate"
-    if (wattsPerM2 < 800) return "High"
-    return "Very High"
-}
 
 function mostRecent(d: ComponentData): Record<string, any> | undefined {
     let idx = -1
@@ -41,7 +33,6 @@ export default function GardenGroupCard(props: AreaCardProps) {
     const rainChance: number | undefined = forecastPoint?.RAIN_PROBABILITY_24H
     const rainForecast: number | undefined = forecastPoint?.RAIN_AMOUNT_24H
     const rainActual: number | undefined = forecastPoint?.RAIN_ACTUAL_24H
-    const uvIndex: number | undefined = forecastPoint?.UV_INDEX
     const solarRadiation: number | undefined = forecastPoint?.SOLAR_RADIATION
 
     const valveComponents = props.memberComponents.filter((c) => c.type === "VALVE")
@@ -56,7 +47,6 @@ export default function GardenGroupCard(props: AreaCardProps) {
         rainChance !== undefined ||
         rainForecast !== undefined ||
         rainActual !== undefined ||
-        uvIndex !== undefined ||
         solarRadiation !== undefined ||
         totalZones > 0
     const hasAnyStat = hasHero || hasStats
@@ -107,9 +97,6 @@ export default function GardenGroupCard(props: AreaCardProps) {
                         )}
                         {rainForecast !== undefined && (
                             <StatRow label="Rain forecast" value={`${mmToInches(rainForecast)} in`} />
-                        )}
-                        {uvIndex !== undefined && (
-                            <StatRow label="UV index" value={`${Math.round(uvIndex)}`} />
                         )}
                         {solarRadiation !== undefined && (
                             <StatRow label="Solar radiation" value={solarRadiationLabel(solarRadiation)} />

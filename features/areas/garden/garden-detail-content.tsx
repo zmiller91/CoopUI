@@ -18,6 +18,7 @@ import { CHART_CONFIG } from "../../../utils/chart-config"
 import areaClient, { ActivityEntry } from "../../../client/area"
 import { ActivityLog } from "../activity-log"
 import { ComponentData } from "../../../client/data"
+import { solarRadiationLabel } from "../units"
 import ForecastChart from "./forecast-chart"
 
 const ACTIVITY_LIMIT = 10
@@ -111,8 +112,8 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
     const forecastPoint = forecastMember ? mostRecent(forecastMember) : undefined
 
     const environmentParts: string[] = []
-    if (forecastPoint?.UV_INDEX !== undefined) {
-        environmentParts.push(`UV index ${Math.round(forecastPoint.UV_INDEX)}`)
+    if (forecastPoint?.SOLAR_RADIATION !== undefined) {
+        environmentParts.push(`${solarRadiationLabel(forecastPoint.SOLAR_RADIATION)} solar radiation`)
     }
     if (forecastPoint?.CLOUD_COVER !== undefined) {
         environmentParts.push(`${Math.round(forecastPoint.CLOUD_COVER)}% cloud cover`)
