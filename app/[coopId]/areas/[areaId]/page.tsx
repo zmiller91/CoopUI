@@ -71,6 +71,9 @@ export default function AreaDetail() {
         return areas.filter((a) => a.parentId === areaId)
     }, [areas, areaId])
 
+    // `.get()` itself always returns a component (it falls back to GenericAreaDetailContent internally),
+    // so this is only ever undefined while `area` hasn't loaded yet or wasn't found - not a "no content
+    // registered for this type" case. Rendering below is gated on `area && DetailContent` accordingly.
     const DetailContent = area ? AREA_DETAIL_CONTENT_REGISTRY.get(area.type) : undefined
     const typeMeta = area ? AREA_TYPE_META[area.type] : undefined
 

@@ -12,7 +12,7 @@ import { AreaDetailContentProps, AREA_PREVIEW_LINE_REGISTRY } from "../registry"
 import { CHART_CONFIG } from "../../../utils/chart-config"
 import areaClient, { ActivityEntry } from "../../../client/area"
 import { ActivityLog } from "../../activity/activity-log"
-import { ComponentData } from "../../../client/data"
+import { ComponentData, mostRecentPoint } from "../../../client/data"
 import { cloudCoverLabel, solarRadiationLabel } from "../../components/weather-forecast/units"
 import Box from "@mui/material/Box"
 import ForecastChart from "../../components/weather-forecast/forecast-chart"
@@ -20,21 +20,9 @@ import ForecastChart from "../../components/weather-forecast/forecast-chart"
 const ACTIVITY_LIMIT = 10
 const ACTIVITY_WINDOW_MS = 24 * 60 * 60 * 1000
 
-function mostRecent(d: ComponentData): Record<string, any> | undefined {
-    let idx = -1
-    let result: Record<string, any> | undefined
-    for (const point of d.data ?? []) {
-        if (point.idx > idx) {
-            idx = point.idx
-            result = point
-        }
-    }
-    return result
-}
-
 function ForecastChartCard(props: { coopId: string; data: ComponentData }) {
     const router = useRouter()
-    const point = mostRecent(props.data)
+    const point = mostRecentPoint(props.data)
     const dimension1 = CHART_CONFIG.WEATHER_FORECAST.dimension1
     const dimension2 = CHART_CONFIG.WEATHER_FORECAST.dimension2
 
@@ -119,7 +107,7 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
     }, [props.coopId, props.area.id])
 
     const forecastMember = props.members.find((d) => d.componentType === "WEATHER_FORECAST")
-    const forecastPoint = forecastMember ? mostRecent(forecastMember) : undefined
+    const forecastPoint = forecastMember ? mostRecentPoint(forecastMember) : undefined
 
     const environmentParts: string[] = []
     if (forecastPoint?.SOLAR_RADIATION !== undefined) {

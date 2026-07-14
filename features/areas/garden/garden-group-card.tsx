@@ -4,30 +4,18 @@ import React from "react"
 import AreaCardShell from "../area-card-shell"
 import { computeGroupHealth } from "../device-health"
 import { AreaCardProps } from "../registry"
-import { ComponentData } from "../../../client/data"
+import { ComponentData, mostRecentPoint } from "../../../client/data"
 import { mmToInches } from "../../../utils/units"
 import { solarRadiationLabel } from "../../components/weather-forecast/units"
 import { HeroStat, StatRow } from "../card-stats"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 
-function mostRecent(d: ComponentData): Record<string, any> | undefined {
-    let idx = -1
-    let result: Record<string, any> | undefined
-    for (const point of d.data ?? []) {
-        if (point.idx > idx) {
-            idx = point.idx
-            result = point
-        }
-    }
-    return result
-}
-
 export default function GardenGroupCard(props: AreaCardProps) {
     const health = computeGroupHealth(props.members)
 
     const forecastMember = props.members.find((d) => d.componentType === "WEATHER_FORECAST")
-    const forecastPoint = forecastMember ? mostRecent(forecastMember) : undefined
+    const forecastPoint = forecastMember ? mostRecentPoint(forecastMember) : undefined
 
     const temperature: number | undefined = forecastPoint?.TEMPERATURE
     const transpiration: number | undefined = forecastPoint?.EVAPOTRANSPIRATION

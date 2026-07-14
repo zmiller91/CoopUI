@@ -5,19 +5,7 @@ import GenericAreaPreviewLine from "../generic-area-preview-line"
 import { PreviewStat } from "../card-stats"
 import { AreaPreviewLineProps } from "../registry"
 import { Component } from "../../../client/component"
-import { ComponentData } from "../../../client/data"
-
-function mostRecent(d: ComponentData): Record<string, any> | undefined {
-    let idx = -1
-    let result: Record<string, any> | undefined
-    for (const point of d.data ?? []) {
-        if (point.idx > idx) {
-            idx = point.idx
-            result = point
-        }
-    }
-    return result
-}
+import { ComponentData, mostRecentPoint } from "../../../client/data"
 
 // Averages the current MOISTURE_PERCENT reading across every Moisture Sensor assigned to this area -
 // undefined if it has none, so the caller can skip the stat entirely rather than show 0.
@@ -31,7 +19,7 @@ function moistureAverage(areaId: string, components: Component[], data: Componen
 
     const values = data
         .filter((d) => sensorIds.has(d.componentId))
-        .map((d) => mostRecent(d)?.MOISTURE_PERCENT)
+        .map((d) => mostRecentPoint(d)?.MOISTURE_PERCENT)
         .filter((v): v is number => v !== undefined)
 
     if (values.length === 0) return undefined
