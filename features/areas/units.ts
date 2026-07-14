@@ -19,7 +19,7 @@ export function solarRadiationLabel(wattsPerM2: number): string {
 }
 
 export function cloudCoverLabel(percent: number): string {
-    if (percent < 10) return "Clear"
+    if (percent < 10) return "Clear skies"
     if (percent < 30) return "Mostly Clear"
     if (percent < 60) return "Partly Cloudy"
     if (percent < 85) return "Mostly Cloudy"
