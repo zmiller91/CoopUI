@@ -13,7 +13,13 @@ export interface DeleteDialogProps {
     children?: ReactNode,
     onDelete: () => void,
     onCancel: () => void,
-    open: boolean
+    open: boolean,
+    // Let other confirm prompts (e.g. "mark all as read") reuse this same dialog shape/layout without
+    // looking like a destructive delete action. Default to today's delete-specific styling so every
+    // existing call site is unaffected.
+    confirmLabel?: string,
+    confirmIcon?: ReactNode,
+    confirmColor?: 'error' | 'primary',
 }
 
 export default function DeleteDialog(props: DeleteDialogProps) {
@@ -45,11 +51,11 @@ export default function DeleteDialog(props: DeleteDialogProps) {
             >
                 <Button
                     variant="contained"
-                    color="error"
-                    startIcon={<DeleteOutline />}
+                    color={props.confirmColor ?? 'error'}
+                    startIcon={props.confirmIcon ?? <DeleteOutline />}
                     onClick={props.onDelete}
                 >
-                    Delete
+                    {props.confirmLabel ?? 'Delete'}
                 </Button>
 
                 <Button
