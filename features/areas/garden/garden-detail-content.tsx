@@ -66,7 +66,11 @@ function ForecastChartCard(props: { coopId: string; data: ComponentData }) {
                     {dimension2 && (
                         <div className="justify-self-end pr-5">
                             <span className="text-5xl font-semibold tracking-tight text-accent-700">
-                                {point ? dimension2.formatter!(point[dimension2.key]) : "—"}
+                                {point
+                                    ? dimension2.formatter
+                                        ? dimension2.formatter(point[dimension2.key])
+                                        : point[dimension2.key]
+                                    : "—"}
                             </span>
                             <sup className="text-xl ml-1 text-neutral-500">{dimension2.label}</sup>
                         </div>

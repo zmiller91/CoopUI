@@ -49,8 +49,7 @@ export const CHART_CONFIG: Record<string, ChartConfig> = {
         dimension2: {
             key: "EVAPOTRANSPIRATION",
             name: "EVAPOTRANSPIRATION",
-            label: "in",
-            formatter: (mm) => Math.round((mm / 25.4) * 100) / 100,
+            label: "mm/hr",
         },
     },
 };

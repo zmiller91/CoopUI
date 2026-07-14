@@ -17,13 +17,14 @@ import {
     __accent_400,
     __font_family,
 } from "../../../globals"
-import { mmToInches } from "../units"
 
-// FAO reference daily ET0 realistically tops out well under 0.4in even in hot, arid conditions -
-// fixing the axis here (instead of scaling it to the visible days' min/max like the rest of the app's
-// charts do) is deliberate: a low-ET0 day would otherwise stretch to fill the axis and *look* just as
-// tall as a high-ET0 day, which defeats the point of glancing at bar height to gauge "high vs low."
-const ET0_DOMAIN: AxisDomain = [0, 0.4]
+// This is the hourly ET0 rate (mm/hr, from Open-Meteo's FAO Penman-Monteith field), not a daily
+// total - it peaks around solar noon and is ~0 overnight. Most climates top out well under 1mm/hr
+// even at peak sun; fixing the axis here (instead of scaling it to the visible days' min/max like the
+// rest of the app's charts do) is deliberate: a low-ET0 hour would otherwise stretch to fill the axis
+// and *look* just as tall as a high-ET0 hour, which defeats the point of glancing at bar height to
+// gauge "high vs low."
+const ET0_DOMAIN: AxisDomain = [0, 1.2]
 
 const formatTick = (value: string | number | Date) => {
     const d = new Date(value)
@@ -55,17 +56,13 @@ export default function ForecastChart(props: ForecastChartProps) {
         )
     }
 
-    const data = props.data.map((row) => ({
-        ...row,
-        EVAPOTRANSPIRATION_IN: mmToInches(Number(row.EVAPOTRANSPIRATION)),
-    }))
-
+    const data = props.data
     const detailed = !!props.detailed
 
     return (
         <ResponsiveContainer width="100%" height="100%">
             <ComposedChart margin={{ top: 4, left: 4, right: 4, bottom: 4 }} data={data}>
-                <Bar yAxisId="et0" dataKey="EVAPOTRANSPIRATION_IN" fill={__accent_400} radius={[2, 2, 0, 0]} barSize={detailed ? 16 : 6} />
+                <Bar yAxisId="et0" dataKey="EVAPOTRANSPIRATION" fill={__accent_400} radius={[2, 2, 0, 0]} barSize={detailed ? 16 : 6} />
                 <Line yAxisId="temp" type="basis" dataKey="TEMPERATURE" stroke={__primary_600} strokeWidth={3} dot={false} />
 
                 <YAxis yAxisId="temp" hide domain={temperatureDomain(data)} />
@@ -85,7 +82,7 @@ export default function ForecastChart(props: ForecastChartProps) {
                         />
                         <Tooltip
                             formatter={(value: number, name: string) =>
-                                name === "EVAPOTRANSPIRATION_IN" ? [`${value} in`, "Transpiration"] : [`${value}°F`, "Temperature"]
+                                name === "EVAPOTRANSPIRATION" ? [`${value} mm/hr`, "Transpiration"] : [`${value}°F`, "Temperature"]
                             }
                             labelFormatter={formatTick}
                         />

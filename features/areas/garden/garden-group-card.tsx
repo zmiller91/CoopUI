@@ -68,10 +68,13 @@ export default function GardenGroupCard(props: AreaCardProps) {
                             />
                         )}
                         {transpiration !== undefined && (
+                            // Raw hourly ET0 rate (mm/hr) - values are small enough (typically well under
+                            // 1mm/hr) that converting to inches rounds almost everything down to 0.0-0.03,
+                            // losing the resolution that makes "high vs low" readable at a glance.
                             <HeroStat
                                 label="Transpiration"
-                                value={`${mmToInches(transpiration)}`}
-                                unit="in"
+                                value={`${Math.round(transpiration * 100) / 100}`}
+                                unit="mm/hr"
                                 color="accent"
                             />
                         )}
