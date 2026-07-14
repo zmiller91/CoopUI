@@ -6,8 +6,6 @@ import Chip from "@mui/material/Chip"
 import Stack from "@mui/material/Stack"
 import Box from "@mui/material/Box"
 
-import CategoryIcon from "@mui/icons-material/Category"
-
 import { Area } from "../../client/area"
 import { ComponentData } from "../../client/data"
 import { Component } from "../../client/component"
@@ -16,7 +14,7 @@ export const AREA_TYPE_META: Record<string, { label: string; icon?: React.ReactN
     GARDEN: { label: "Garden" },
     GARDEN_BED: { label: "Garden Bed" },
     CHICKEN_COOP: { label: "Chicken Coop" },
-    OTHER: { label: "Other", icon: <CategoryIcon fontSize="small" /> },
+    OTHER: { label: "Other" },
 }
 
 export interface GroupTileLayoutProps {
@@ -61,7 +59,7 @@ export default function GroupCard(props: GroupCardProps) {
         <GroupTileLayout
             name={props.area.name}
             label={meta?.label ?? props.area.type}
-            icon={meta ? meta.icon : <CategoryIcon fontSize="small" />}
+            icon={meta?.icon}
             memberCount={props.members.length}
             onClick={props.onClick}
         />

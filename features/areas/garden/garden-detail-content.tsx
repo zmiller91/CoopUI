@@ -49,44 +49,58 @@ function ForecastChartCard(props: { coopId: string; data: ComponentData }) {
 
     return (
         <Card onClick={() => router.push(`/${props.coopId}/dashboard/${props.data.componentId}`)} className="mb-2">
-            <div className="grid grid-cols-2">
+            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
                 <CardTitle title={props.data.componentName} subtitle={props.data.componentTypeDescription} />
                 <StatusInfo lastCheckin={lastCheckIn()} preview={true} className="justify-self-end" />
-            </div>
+            </Box>
 
-            <div className="text-5xl mb-4">
-                <div className="grid grid-cols-2 pt-4 pb-4 pr-2 pl-2">
+            <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", pt: 2, pb: 2, pr: 1, pl: 1 }}>
                     {dimension1 && (
-                        <div className="justify-self-end pr-5">
-                            <span className="text-5xl font-semibold tracking-tight text-primary-700">
+                        <Box sx={{ justifySelf: "end", pr: 2.5 }}>
+                            <Typography
+                                component="span"
+                                variant="h3"
+                                fontWeight={600}
+                                sx={{ letterSpacing: "-0.025em", color: "var(--primary-700)" }}
+                            >
                                 {point
                                     ? dimension1.formatter
                                         ? dimension1.formatter(point[dimension1.key])
                                         : point[dimension1.key]
                                     : "—"}
-                            </span>
-                            <sup className="text-xl ml-1 text-neutral-500">{dimension1.label}</sup>
-                        </div>
+                            </Typography>
+                            <Typography component="sup" variant="h6" sx={{ ml: 0.5, color: "var(--neutral-500)" }}>
+                                {dimension1.label}
+                            </Typography>
+                        </Box>
                     )}
 
                     {dimension2 && (
-                        <div className="justify-self-end pr-5">
-                            <span className="text-5xl font-semibold tracking-tight text-accent-700">
+                        <Box sx={{ justifySelf: "end", pr: 2.5 }}>
+                            <Typography
+                                component="span"
+                                variant="h3"
+                                fontWeight={600}
+                                sx={{ letterSpacing: "-0.025em", color: "var(--accent-700)" }}
+                            >
                                 {point
                                     ? dimension2.formatter
                                         ? dimension2.formatter(point[dimension2.key])
                                         : point[dimension2.key]
                                     : "—"}
-                            </span>
-                            <sup className="text-xl ml-1 text-neutral-500">{dimension2.label}</sup>
-                        </div>
+                            </Typography>
+                            <Typography component="sup" variant="h6" sx={{ ml: 0.5, color: "var(--neutral-500)" }}>
+                                {dimension2.label}
+                            </Typography>
+                        </Box>
                     )}
-                </div>
-            </div>
+                </Box>
+            </Box>
 
-            <div className="h-[75px]">
+            <Box sx={{ height: 75 }}>
                 <ForecastChart data={props.data.data} detailed={false} />
-            </div>
+            </Box>
         </Card>
     )
 }

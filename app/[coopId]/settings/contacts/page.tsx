@@ -17,9 +17,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import ListItemText from '@mui/material/ListItemText'
 import Divider from '@mui/material/Divider'
-import Fab from '@mui/material/Fab'
 import Button from '@mui/material/Button'
-import Tooltip from '@mui/material/Tooltip'
 
 import SearchIcon from '@mui/icons-material/Search'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -35,6 +33,7 @@ import contactClient, {
     UpdateContactResponse
 } from "../../../../client/contact";
 import {AppContent} from "../../../../components/app-content";
+import FloatingActionButton from "../../../../components/fab";
 import AddActionDialog from "../../../../features/rules/components/add-action-dialog";
 import AddContactDialog from "../../../../features/settings/contacts/add-contact-dialog";
 import {RuleNotification} from "../../../../client/rule";
@@ -301,21 +300,9 @@ export default function Contacts() {
                              handleDelete={onContactDeleted}
                              initial={editingContact}/>
 
-            <Tooltip title="Add contact" placement="left" arrow>
-                <Fab
-                    color="primary"
-                    aria-label="Add contact"
-                    onClick={onContactAdd}
-                    sx={{
-                        position: 'fixed',
-                        right: 16,
-                        bottom: 'calc(56px + env(safe-area-inset-bottom) + 16px)', // bottom nav + safe area + spacing
-                        zIndex: (t) => t.zIndex.appBar + 1,
-                    }}
-                >
-                    <AddIcon />
-                </Fab>
-            </Tooltip>
+            <FloatingActionButton label="Add contact" onClick={onContactAdd}>
+                <AddIcon />
+            </FloatingActionButton>
         </AppContent>
     )
 }

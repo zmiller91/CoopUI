@@ -10,6 +10,7 @@ import { AppContent } from "../../../components/app-content"
 import GroupCard, { GroupTileLayout } from "../../../components/dashboard/group-card"
 import { AREA_CARD_REGISTRY } from "../../../features/areas/registry"
 import AddAreaDialog from "../../../features/areas/add-area-dialog"
+import FloatingActionButton from "../../../components/fab"
 
 import Box from "@mui/material/Box"
 import Stack from "@mui/material/Stack"
@@ -21,8 +22,6 @@ import IconButton from "@mui/material/IconButton"
 import Grid from "@mui/material/Grid"
 import Paper from "@mui/material/Paper"
 import Button from "@mui/material/Button"
-import Fab from "@mui/material/Fab"
-import Tooltip from "@mui/material/Tooltip"
 
 import SearchIcon from "@mui/icons-material/Search"
 import ClearIcon from "@mui/icons-material/Clear"
@@ -278,21 +277,9 @@ export default function Dashboard() {
             handleClose={() => setAddGroupOpen(false)}
         />
 
-        <Tooltip title="Add group" placement="left" arrow>
-          <Fab
-              color="primary"
-              aria-label="Add group"
-              onClick={() => setAddGroupOpen(true)}
-              sx={{
-                position: "fixed",
-                right: 16,
-                bottom: "calc(56px + env(safe-area-inset-bottom) + 16px)",
-                zIndex: (t) => t.zIndex.appBar + 1,
-              }}
-          >
-            <AddIcon />
-          </Fab>
-        </Tooltip>
+        <FloatingActionButton label="Add group" onClick={() => setAddGroupOpen(true)}>
+          <AddIcon />
+        </FloatingActionButton>
       </AppContent>
   )
 }
