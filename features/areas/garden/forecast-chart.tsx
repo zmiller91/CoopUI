@@ -9,6 +9,7 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
+    Legend,
     ResponsiveContainer,
 } from "recharts"
 import { AxisDomain } from "recharts/types/util/types"
@@ -61,16 +62,55 @@ export default function ForecastChart(props: ForecastChartProps) {
 
     return (
         <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart margin={{ top: 4, left: 4, right: 4, bottom: 4 }} data={data}>
-                <Bar yAxisId="et0" dataKey="EVAPOTRANSPIRATION" fill={__accent_400} radius={[2, 2, 0, 0]} barSize={detailed ? 16 : 6} />
-                <Line yAxisId="temp" type="basis" dataKey="TEMPERATURE" stroke={__primary_600} strokeWidth={3} dot={false} />
+            <ComposedChart margin={{ top: detailed ? 8 : 4, left: 4, right: 4, bottom: 4 }} data={data}>
+                <Bar
+                    yAxisId="et0"
+                    dataKey="EVAPOTRANSPIRATION"
+                    name="Transpiration (mm/hr)"
+                    fill={__accent_400}
+                    radius={[2, 2, 0, 0]}
+                    barSize={detailed ? 16 : 6}
+                />
+                <Line
+                    yAxisId="temp"
+                    type="basis"
+                    dataKey="TEMPERATURE"
+                    name="Temperature (°F)"
+                    stroke={__primary_600}
+                    strokeWidth={3}
+                    dot={false}
+                />
 
-                <YAxis yAxisId="temp" hide domain={temperatureDomain(data)} />
-                <YAxis yAxisId="et0" hide domain={ET0_DOMAIN} orientation="right" />
+                <YAxis
+                    yAxisId="temp"
+                    hide={!detailed}
+                    domain={temperatureDomain(data)}
+                    tickFormatter={(v) => `${Math.round(v)}°`}
+                    stroke={__primary_600}
+                    fontSize={11}
+                    fontFamily={__font_family}
+                    axisLine={false}
+                    tickLine={false}
+                    width={36}
+                />
+                <YAxis
+                    yAxisId="et0"
+                    hide={!detailed}
+                    domain={ET0_DOMAIN}
+                    orientation="right"
+                    tickFormatter={(v) => `${v}mm`}
+                    stroke={__accent_400}
+                    fontSize={11}
+                    fontFamily={__font_family}
+                    axisLine={false}
+                    tickLine={false}
+                    width={40}
+                />
 
                 {detailed && (
                     <>
                         <CartesianGrid vertical={false} />
+                        <Legend verticalAlign="top" height={28} wrapperStyle={{ fontSize: 12, fontFamily: __font_family }} />
                         <XAxis
                             dataKey="date"
                             tickFormatter={formatTick}
@@ -80,12 +120,7 @@ export default function ForecastChart(props: ForecastChartProps) {
                             fontSize={12}
                             fontFamily={__font_family}
                         />
-                        <Tooltip
-                            formatter={(value: number, name: string) =>
-                                name === "EVAPOTRANSPIRATION" ? [`${value} mm/hr`, "Transpiration"] : [`${value}°F`, "Temperature"]
-                            }
-                            labelFormatter={formatTick}
-                        />
+                        <Tooltip labelFormatter={formatTick} />
                     </>
                 )}
             </ComposedChart>
