@@ -8,61 +8,20 @@ import data, { ComponentData } from "../../../../client/data"
 import { currentCoop } from "../../coop-context"
 import { AppContent } from "../../../../components/app-content"
 import { usePageTitle } from "../../../../components/app-bar"
-import ChartCard from "../../../../components/dashboard/chart-card"
 import { AREA_TYPE_META } from "../../../../components/dashboard/group-card"
-import { AREA_DETAIL_CONTENT_REGISTRY, AreaDetailContentProps } from "../../../../features/areas/registry"
+import { AREA_DETAIL_CONTENT_REGISTRY } from "../../../../features/areas/registry"
 import { CHART_CONFIG } from "../../../../utils/chart-config"
 
 import Box from "@mui/material/Box"
 import Stack from "@mui/material/Stack"
 import SectionPaper from "../../../../components/section-paper"
 import Typography from "@mui/material/Typography"
-import Grid from "@mui/material/Grid"
 import IconButton from "@mui/material/IconButton"
 import Tooltip from "@mui/material/Tooltip"
-import Button from "@mui/material/Button"
 import EditIcon from "@mui/icons-material/Edit"
 
 function currentArea(): string {
     return useParams()["areaId"] as string
-}
-
-function GenericAreaDetailContent(props: AreaDetailContentProps) {
-    const router = useRouter()
-
-    if (props.members.length === 0) {
-        return (
-            <SectionPaper sx={{ p: 3, textAlign: "center" }}>
-                <Typography variant="body2" color="text.secondary">
-                    No devices in this group yet.
-                </Typography>
-                <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => router.push(`/${props.coopId}/areas/${props.area.id}/edit`)}
-                >
-                    Add Devices
-                </Button>
-            </SectionPaper>
-        )
-    }
-
-    return (
-        <Grid container spacing={2} sx={{ width: "100%" }}>
-            {props.members.map((d: ComponentData) => (
-                <Grid key={d.componentId} size={{ xs: 12, md: 6, lg: 4 }}>
-                    <ChartCard
-                        name={d.componentName}
-                        type={d.componentTypeDescription}
-                        data={d}
-                        dimension1={CHART_CONFIG[d.componentType].dimension1}
-                        dimension2={CHART_CONFIG[d.componentType].dimension2}
-                        href={`/${props.coopId}/dashboard/${d.componentId}`}
-                    />
-                </Grid>
-            ))}
-        </Grid>
-    )
 }
 
 export default function AreaDetail() {
@@ -112,7 +71,10 @@ export default function AreaDetail() {
         return areas.filter((a) => a.parentId === areaId)
     }, [areas, areaId])
 
-    const DetailContent = area ? AREA_DETAIL_CONTENT_REGISTRY[area.type] ?? GenericAreaDetailContent : undefined
+    // `.get()` itself always returns a component (it falls back to GenericAreaDetailContent internally),
+    // so this is only ever undefined while `area` hasn't loaded yet or wasn't found - not a "no content
+    // registered for this type" case. Rendering below is gated on `area && DetailContent` accordingly.
+    const DetailContent = area ? AREA_DETAIL_CONTENT_REGISTRY.get(area.type) : undefined
     const typeMeta = area ? AREA_TYPE_META[area.type] : undefined
 
     return (
@@ -157,6 +119,8 @@ export default function AreaDetail() {
                             members={memberCharts}
                             memberComponents={memberComponents}
                             childAreas={childAreas}
+                            allComponents={components}
+                            allData={coopData}
                         />
                     )}
                 </Stack>

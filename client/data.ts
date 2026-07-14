@@ -61,6 +61,19 @@ export interface Datapoint {
     date:string;
 }
 
+// The data point with the highest idx - i.e. the most recently reported reading for this component.
+export function mostRecentPoint(d: ComponentData): Record<string, any> | undefined {
+    let idx = -1
+    let result: Record<string, any> | undefined
+    for (const point of d.data ?? []) {
+        if (point.idx > idx) {
+            idx = point.idx
+            result = point
+        }
+    }
+    return result
+}
+
 export enum MetricInterval {
     DAY="DAY", WEEK="WEEK", MONTH="MONTH", YEAR="YEAR"
 }

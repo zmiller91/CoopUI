@@ -7,7 +7,6 @@ import { currentComponent } from './component-context'
 import { AppContent } from '../../../../components/app-content'
 import { StatusInfo } from '../status-info'
 import { COMPONENT_DETAIL_REGISTRY } from '../../../../features/components/registry'
-import GenericComponentDetail from '../../../../features/components/generic-component-detail'
 
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
@@ -47,9 +46,7 @@ export default function ComponentDashboard() {
         })
     }
 
-    const DetailContent = componentData?.componentType
-        ? COMPONENT_DETAIL_REGISTRY[componentData.componentType] ?? GenericComponentDetail
-        : GenericComponentDetail
+    const DetailContent = COMPONENT_DETAIL_REGISTRY.get(componentData?.componentType)
 
     return (
         <AppContent>
