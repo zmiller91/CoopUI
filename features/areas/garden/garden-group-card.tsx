@@ -31,7 +31,8 @@ export default function GardenGroupCard(props: AreaCardProps) {
     const temperature: number | undefined = forecastPoint?.TEMPERATURE
     const transpiration: number | undefined = forecastPoint?.EVAPOTRANSPIRATION
     const rainChance: number | undefined = forecastPoint?.RAIN_PROBABILITY_24H
-    const rainAmount: number | undefined = forecastPoint?.RAIN_AMOUNT_24H
+    const rainForecast: number | undefined = forecastPoint?.RAIN_AMOUNT_24H
+    const rainActual: number | undefined = forecastPoint?.RAIN_ACTUAL_24H
     const uvIndex: number | undefined = forecastPoint?.UV_INDEX
 
     const valveComponents = props.memberComponents.filter((c) => c.type === "VALVE")
@@ -42,7 +43,8 @@ export default function GardenGroupCard(props: AreaCardProps) {
     )
 
     const hasHero = temperature !== undefined || transpiration !== undefined
-    const hasRain = rainChance !== undefined || rainAmount !== undefined || uvIndex !== undefined
+    const hasRain =
+        rainChance !== undefined || rainForecast !== undefined || rainActual !== undefined || uvIndex !== undefined
     const hasAnyStat = hasHero || hasRain || totalZones > 0
 
     return (
@@ -83,11 +85,14 @@ export default function GardenGroupCard(props: AreaCardProps) {
 
                 {hasRain && (
                     <Stack spacing={0.5}>
+                        {rainActual !== undefined && (
+                            <StatRow label="Rain (last 24h)" value={`${mmToInches(rainActual)} in`} />
+                        )}
                         {rainChance !== undefined && (
                             <StatRow label="Rain chance" value={`${Math.round(rainChance)}%`} />
                         )}
-                        {rainAmount !== undefined && (
-                            <StatRow label="Rain amount" value={`${mmToInches(rainAmount)} in`} />
+                        {rainForecast !== undefined && (
+                            <StatRow label="Rain forecast" value={`${mmToInches(rainForecast)} in`} />
                         )}
                         {uvIndex !== undefined && (
                             <StatRow label="UV index" value={`${Math.round(uvIndex)}`} />
