@@ -34,6 +34,7 @@ export default function GardenGroupCard(props: AreaCardProps) {
     const rainForecast: number | undefined = forecastPoint?.RAIN_AMOUNT_24H
     const rainActual: number | undefined = forecastPoint?.RAIN_ACTUAL_24H
     const uvIndex: number | undefined = forecastPoint?.UV_INDEX
+    const solarRadiation: number | undefined = forecastPoint?.SOLAR_RADIATION
 
     const valveComponents = props.memberComponents.filter((c) => c.type === "VALVE")
     const totalZones = valveComponents.reduce((sum, c) => sum + c.ports.length, 0)
@@ -44,7 +45,11 @@ export default function GardenGroupCard(props: AreaCardProps) {
 
     const hasHero = temperature !== undefined || transpiration !== undefined
     const hasRain =
-        rainChance !== undefined || rainForecast !== undefined || rainActual !== undefined || uvIndex !== undefined
+        rainChance !== undefined ||
+        rainForecast !== undefined ||
+        rainActual !== undefined ||
+        uvIndex !== undefined ||
+        solarRadiation !== undefined
     const hasAnyStat = hasHero || hasRain || totalZones > 0
 
     return (
@@ -96,6 +101,9 @@ export default function GardenGroupCard(props: AreaCardProps) {
                         )}
                         {uvIndex !== undefined && (
                             <StatRow label="UV index" value={`${Math.round(uvIndex)}`} />
+                        )}
+                        {solarRadiation !== undefined && (
+                            <StatRow label="Solar radiation" value={`${Math.round(solarRadiation)} W/m²`} />
                         )}
                     </Stack>
                 )}
