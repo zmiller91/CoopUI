@@ -13,7 +13,7 @@ import Box from "@mui/material/Box"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import Grid from "@mui/material/Grid"
-import Paper from "@mui/material/Paper"
+import SectionPaper from "../../../../components/section-paper"
 
 export default function UngroupedDashboard() {
   usePageTitle("Ungrouped")
@@ -63,17 +63,14 @@ export default function UngroupedDashboard() {
           </Box>
 
           {ungrouped.length === 0 ? (
-              <Paper
-                  variant="outlined"
-                  sx={{ p: 3, borderRadius: 2, textAlign: "center", bgcolor: "background.paper" }}
-              >
+              <SectionPaper sx={{ p: 3, textAlign: "center", bgcolor: "background.paper" }}>
                 <Typography variant="subtitle1" fontWeight={700}>
                   Nothing here
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                   Every device now belongs to at least one group.
                 </Typography>
-              </Paper>
+              </SectionPaper>
           ) : (
               <Grid container spacing={2} sx={{ width: "100%" }}>
                 {ungrouped.map((d) => (

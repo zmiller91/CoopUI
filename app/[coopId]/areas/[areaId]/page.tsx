@@ -15,7 +15,7 @@ import { CHART_CONFIG } from "../../../../utils/chart-config"
 
 import Box from "@mui/material/Box"
 import Stack from "@mui/material/Stack"
-import Paper from "@mui/material/Paper"
+import SectionPaper from "../../../../components/section-paper"
 import Typography from "@mui/material/Typography"
 import Grid from "@mui/material/Grid"
 import IconButton from "@mui/material/IconButton"
@@ -32,7 +32,7 @@ function GenericAreaDetailContent(props: AreaDetailContentProps) {
 
     if (props.members.length === 0) {
         return (
-            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, textAlign: "center" }}>
+            <SectionPaper sx={{ p: 3, textAlign: "center" }}>
                 <Typography variant="body2" color="text.secondary">
                     No devices in this group yet.
                 </Typography>
@@ -43,7 +43,7 @@ function GenericAreaDetailContent(props: AreaDetailContentProps) {
                 >
                     Add Devices
                 </Button>
-            </Paper>
+            </SectionPaper>
         )
     }
 
@@ -118,14 +118,14 @@ export default function AreaDetail() {
     return (
         <AppContent hasLoaded={hasLoaded}>
             {hasLoaded && !area ? (
-                <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, textAlign: "center" }}>
+                <SectionPaper sx={{ p: 3, textAlign: "center" }}>
                     <Typography variant="subtitle1" fontWeight={700}>
                         Group not found
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         This group may have been deleted.
                     </Typography>
-                </Paper>
+                </SectionPaper>
             ) : (
                 <Stack spacing={2}>
                     <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>

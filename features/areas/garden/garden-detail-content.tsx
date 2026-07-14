@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import Paper from "@mui/material/Paper"
+import SectionPaper from "../../../components/section-paper"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import List from "@mui/material/List"
@@ -16,11 +16,11 @@ import { AREA_TYPE_META } from "../../../components/dashboard/group-card"
 import { AreaDetailContentProps } from "../registry"
 import { CHART_CONFIG } from "../../../utils/chart-config"
 import areaClient, { ActivityEntry } from "../../../client/area"
-import { ActivityLog } from "../activity-log"
+import { ActivityLog } from "../../activity/activity-log"
 import { ComponentData } from "../../../client/data"
-import { cloudCoverLabel, solarRadiationLabel } from "../units"
+import { cloudCoverLabel, solarRadiationLabel } from "../../components/weather-forecast/units"
 import Box from "@mui/material/Box"
-import ForecastChart from "./forecast-chart"
+import ForecastChart from "../../components/weather-forecast/forecast-chart"
 
 const ACTIVITY_LIMIT = 10
 const ACTIVITY_WINDOW_MS = 24 * 60 * 60 * 1000
@@ -165,7 +165,7 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
 
             {forecastMember && <ForecastChartCard coopId={props.coopId} data={forecastMember} />}
 
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+            <SectionPaper>
                 <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5 }}>
                     Sub-areas
                 </Typography>
@@ -192,9 +192,9 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
                         })}
                     </List>
                 )}
-            </Paper>
+            </SectionPaper>
 
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+            <SectionPaper>
                 <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5 }}>
                     Activity
                 </Typography>
@@ -202,7 +202,7 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
                 {hasActivityLoaded && (
                     <ActivityLog entries={activity} memberComponents={props.memberComponents} />
                 )}
-            </Paper>
+            </SectionPaper>
         </Stack>
     )
 }

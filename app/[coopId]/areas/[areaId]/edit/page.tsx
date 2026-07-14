@@ -17,7 +17,7 @@ import SnackBar from "../../../../../components/snack-bar"
 
 import Box from "@mui/material/Box"
 import Stack from "@mui/material/Stack"
-import Paper from "@mui/material/Paper"
+import SectionPaper from "../../../../../components/section-paper"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import IconButton from "@mui/material/IconButton"
@@ -150,30 +150,26 @@ export default function AreaEdit() {
                 const removed = originalIds.filter((id) => !selectedIds.includes(id))
                 const changed = [...added, ...removed]
 
-                // Applied one at a time, not in parallel: concurrent setComponentAreas calls all insert
-                // into area_component referencing this same area, and InnoDB's implicit FK locking on
-                // that shared parent row deadlocks when multiple such transactions race each other.
-                function processNext(index: number) {
-                    if (index >= changed.length) {
-                        setIsSaving(false)
-                        router.push(`/${coopId}/areas/${areaId}`)
-                        return
-                    }
+                if (changed.length === 0) {
+                    setIsSaving(false)
+                    router.push(`/${coopId}/areas/${areaId}`)
+                    return
+                }
 
-                    const componentId = changed[index]
+                const assignments = changed.map((componentId) => {
                     const component = componentsById[componentId]
                     const currentAreaIds = (component?.areas ?? []).map((a) => a.id as string)
                     const nowSelected = selectedIds.includes(componentId)
-                    const nextAreaIds = nowSelected
+                    const areaIds = nowSelected
                         ? Array.from(new Set([...currentAreaIds, areaId]))
                         : currentAreaIds.filter((id) => id !== areaId)
+                    return { componentId, areaIds }
+                })
 
-                    areaClient.setComponentAreas(coopId, componentId, { areaIds: nextAreaIds }, () => {
-                        processNext(index + 1)
-                    })
-                }
-
-                processNext(0)
+                areaClient.setComponentAreasBulk(coopId, { assignments }, () => {
+                    setIsSaving(false)
+                    router.push(`/${coopId}/areas/${areaId}`)
+                })
             }
         )
     }
@@ -196,17 +192,17 @@ export default function AreaEdit() {
                 </Stack>
 
                 {hasLoaded && !area ? (
-                    <Paper variant="outlined" sx={{ p: 3, borderRadius: 2, textAlign: "center" }}>
+                    <SectionPaper sx={{ p: 3, textAlign: "center" }}>
                         <Typography variant="subtitle1" fontWeight={700}>
                             Group not found
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                             This group may have been deleted.
                         </Typography>
-                    </Paper>
+                    </SectionPaper>
                 ) : (
                     <>
-                        <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                        <SectionPaper>
                             <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
                                 Details
                             </Typography>
@@ -221,9 +217,9 @@ export default function AreaEdit() {
                             )}
 
                             <TextInput id="name" title="Name" value={name} onChange={setName} required />
-                        </Paper>
+                        </SectionPaper>
 
-                        <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                        <SectionPaper>
                             <Typography variant="subtitle1" fontWeight={700}>
                                 Members
                             </Typography>
@@ -267,10 +263,10 @@ export default function AreaEdit() {
                                     </List>
                                 )}
                             </Box>
-                        </Paper>
+                        </SectionPaper>
 
                         {childTypeOptions.length > 0 && (
-                            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                            <SectionPaper>
                                 <Typography variant="subtitle1" fontWeight={700}>
                                     Child Groups
                                 </Typography>
@@ -311,7 +307,7 @@ export default function AreaEdit() {
                                 >
                                     Add Child Group
                                 </Button>
-                            </Paper>
+                            </SectionPaper>
                         )}
 
                         <Button variant="contained" color="primary" fullWidth onClick={save} disabled={isSaving}>

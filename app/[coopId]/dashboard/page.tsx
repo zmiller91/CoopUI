@@ -38,6 +38,23 @@ function normalize(s: string) {
   return (s || "").toLowerCase().trim()
 }
 
+// Walks a.parentId up to the root - a component assigned to a child group (e.g. a Garden Bed) rolls
+// up to its top-level ancestor (the Garden) for Dashboard tile purposes, rather than only counting
+// toward direct assignments.
+function topLevelAncestorId(areaById: Record<string, Area>, area: Area): string | undefined {
+  let current: Area | undefined = area
+  const seen = new Set<string>()
+  while (current?.parentId) {
+    const currentId = current.id as string
+    if (seen.has(currentId)) break
+    seen.add(currentId)
+    const parent = areaById[current.parentId]
+    if (!parent) break
+    current = parent
+  }
+  return current?.id
+}
+
 export default function Dashboard() {
   const coopId = currentCoop()
   const router = useRouter()
@@ -76,9 +93,18 @@ export default function Dashboard() {
     return map
   }, [components])
 
+  const areaById = useMemo(() => {
+    const map: Record<string, Area> = {}
+    areas.forEach((a) => {
+      map[a.id as string] = a
+    })
+    return map
+  }, [areas])
+
   const { groups, ungrouped } = useMemo(() => {
     // Dashboard tiles are top-level groups only - a group with a parentId is a child and gets
-    // its own tile on the parent's Edit page instead, not here.
+    // its own tile on the parent's Edit page instead, not here. Components roll up to their
+    // top-level ancestor's tile regardless of how deep they're actually assigned.
     const byAreaId: Record<string, Group> = {}
     areas
       .filter((a) => !a.parentId)
@@ -90,37 +116,46 @@ export default function Dashboard() {
 
     coopData.forEach((d) => {
       const componentAreas = componentsById[d.componentId]?.areas ?? []
-      // A component whose only area assignments are child groups has no top-level tile to
-      // attach to - falls back to Ungrouped rather than silently disappearing from the Dashboard.
-      const topLevelAreas = componentAreas.filter((a) => byAreaId[a.id as string])
-      if (topLevelAreas.length === 0) {
+      const rootIds = new Set(
+        componentAreas
+          .map((a) => topLevelAncestorId(areaById, a))
+          .filter((id): id is string => !!id && !!byAreaId[id])
+      )
+
+      // A component with no area assignment (or one that somehow resolves to nothing, e.g. a
+      // dangling parentId) falls back to Ungrouped rather than silently disappearing.
+      if (rootIds.size === 0) {
         ungrouped.push(d)
         return
       }
-      topLevelAreas.forEach((a) => {
-        byAreaId[a.id as string].members.push(d)
+
+      rootIds.forEach((id) => {
+        byAreaId[id].members.push(d)
       })
     })
 
     return { groups: Object.values(byAreaId), ungrouped }
-  }, [coopData, componentsById, areas])
+  }, [coopData, componentsById, areas, areaById])
 
   const componentsByAreaId = useMemo(() => {
     // Parallel to the `groups` memo above, but over every Component (not just chartable ones) -
     // type-specific cards need raw Component/port data (e.g. valve zone state) that ComponentData
-    // doesn't carry.
+    // doesn't carry. Same descendant rollup as `groups`.
     const topLevelIds = new Set(areas.filter((a) => !a.parentId).map((a) => a.id as string))
     const map: Record<string, Component[]> = {}
     components.forEach((c) => {
-      ;(c.areas ?? []).forEach((a) => {
-        const id = a.id as string
-        if (!topLevelIds.has(id)) return
+      const rootIds = new Set(
+        (c.areas ?? [])
+          .map((a) => topLevelAncestorId(areaById, a))
+          .filter((id): id is string => !!id && topLevelIds.has(id))
+      )
+      rootIds.forEach((id) => {
         if (!map[id]) map[id] = []
         map[id].push(c)
       })
     })
     return map
-  }, [components, areas])
+  }, [components, areas, areaById])
 
   const filteredGroups = useMemo(() => {
     const q = normalize(query)

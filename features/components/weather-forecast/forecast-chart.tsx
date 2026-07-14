@@ -10,12 +10,14 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
+    ReferenceLine,
     ResponsiveContainer,
 } from "recharts"
 import { AxisDomain } from "recharts/types/util/types"
 import {
     __primary_600,
     __accent_400,
+    __neutral_400,
     __font_family,
 } from "../../../globals"
 
@@ -34,13 +36,31 @@ const formatTick = (value: string | number | Date) => {
         .replace(" ", " · ")
 }
 
-function temperatureDomain(data: { [key: string]: any }[]): AxisDomain {
-    const values = data.map((row) => Number(row.TEMPERATURE)).filter((v) => !Number.isNaN(v))
+function temperatureValues(data: { [key: string]: any }[]): number[] {
+    return data.map((row) => Number(row.TEMPERATURE)).filter((v) => !Number.isNaN(v))
+}
+
+// Preview (dashboard tile) is too narrow for a wide fixed range to read well, so it keeps floating
+// with the visible days' min/max - unlike ET0, a line's shape is still readable even as the axis
+// rescales day to day.
+function previewTemperatureDomain(data: { [key: string]: any }[]): [number, number] {
+    const values = temperatureValues(data)
     if (values.length === 0) return [0, 100]
 
     const min = Math.min(...values)
     const max = Math.max(...values)
     return [Math.floor(min - 5), Math.ceil(max + 5)]
+}
+
+// Detailed (full history) view has room for a fixed reference range: [0, 110]°F normally, widening
+// via min/max ±5 only on days that actually go outside it, rather than clipping.
+function detailedTemperatureDomain(data: { [key: string]: any }[]): [number, number] {
+    const values = temperatureValues(data)
+    if (values.length === 0) return [0, 110]
+
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    return [Math.min(0, Math.floor(min - 5)), Math.max(110, Math.ceil(max + 5))]
 }
 
 export interface ForecastChartProps {
@@ -59,6 +79,7 @@ export default function ForecastChart(props: ForecastChartProps) {
 
     const data = props.data
     const detailed = !!props.detailed
+    const tempDomain = detailed ? detailedTemperatureDomain(data) : previewTemperatureDomain(data)
 
     return (
         <ResponsiveContainer width="100%" height="100%">
@@ -81,10 +102,14 @@ export default function ForecastChart(props: ForecastChartProps) {
                     dot={false}
                 />
 
+                {detailed && tempDomain[0] < 0 && (
+                    <ReferenceLine yAxisId="temp" y={0} stroke={__neutral_400} strokeDasharray="3 3" />
+                )}
+
                 <YAxis
                     yAxisId="temp"
                     hide={!detailed}
-                    domain={temperatureDomain(data)}
+                    domain={tempDomain}
                     tickFormatter={(v) => `${Math.round(v)}°`}
                     stroke={__primary_600}
                     fontSize={11}
