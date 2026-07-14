@@ -49,7 +49,7 @@ function GenericAreaDetailContent(props: AreaDetailContentProps) {
 
     return (
         <Grid container spacing={2} sx={{ width: "100%" }}>
-            {props.members.map((d) => (
+            {props.members.map((d: ComponentData) => (
                 <Grid key={d.componentId} size={{ xs: 12, md: 6, lg: 4 }}>
                     <ChartCard
                         name={d.componentName}
@@ -104,6 +104,14 @@ export default function AreaDetail() {
         return coopData.filter((d) => !!CHART_CONFIG[d.componentType] && memberIds.has(d.componentId))
     }, [coopData, memberIds])
 
+    const memberComponents = useMemo(() => {
+        return components.filter((c) => memberIds.has(c.id))
+    }, [components, memberIds])
+
+    const childAreas = useMemo(() => {
+        return areas.filter((a) => a.parentId === areaId)
+    }, [areas, areaId])
+
     const DetailContent = area ? AREA_DETAIL_CONTENT_REGISTRY[area.type] ?? GenericAreaDetailContent : undefined
     const typeMeta = area ? AREA_TYPE_META[area.type] : undefined
 
@@ -143,7 +151,13 @@ export default function AreaDetail() {
                     </Stack>
 
                     {area && DetailContent && (
-                        <DetailContent coopId={coopId} area={area} members={memberCharts} />
+                        <DetailContent
+                            coopId={coopId}
+                            area={area}
+                            members={memberCharts}
+                            memberComponents={memberComponents}
+                            childAreas={childAreas}
+                        />
                     )}
                 </Stack>
             )}

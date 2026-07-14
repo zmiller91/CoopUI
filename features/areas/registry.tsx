@@ -4,6 +4,7 @@ import { ComponentData } from "../../client/data"
 import { Component } from "../../client/component"
 import GardenGroupCard from "./garden/garden-group-card"
 import ChickenCoopGroupCard from "./chicken-coop/chicken-coop-group-card"
+import GardenDetailContent from "./garden/garden-detail-content"
 
 export interface AreaCardProps {
     area: Area;
@@ -19,6 +20,8 @@ export interface AreaDetailContentProps {
     coopId: string;
     area: Area;
     members: ComponentData[];              // this area's chartable members' current data, for charts
+    memberComponents: Component[];         // every Component directly in this area (ports, config, etc.)
+    childAreas: Area[];                    // this area's direct children
 }
 
 // GARDEN_BED and OTHER have no custom card yet - they fall back to the generic GroupCard.
@@ -27,4 +30,6 @@ export const AREA_CARD_REGISTRY: Record<string, ComponentType<AreaCardProps>> = 
     CHICKEN_COOP: ChickenCoopGroupCard,
 }
 
-export const AREA_DETAIL_CONTENT_REGISTRY: Record<string, ComponentType<AreaDetailContentProps>> = {}
+export const AREA_DETAIL_CONTENT_REGISTRY: Record<string, ComponentType<AreaDetailContentProps>> = {
+    GARDEN: GardenDetailContent,
+}

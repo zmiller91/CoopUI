@@ -39,6 +39,12 @@ class AreaClient {
             (response) => success(response.data))
 
     }
+
+    getActivity(coopId: string, areaId: string, success:(response: AreaActivityResponse) => void) {
+        authClient.get("/areas/" + coopId + "/" + areaId + "/activity",
+            (response) => success(response.data))
+
+    }
 }
 
 export interface ListAreaResponse {
@@ -71,6 +77,20 @@ export interface Area {
     name: string;
     type: string;
     parentId?: string | null;
+}
+
+export interface AreaActivityResponse {
+    entries: ActivityEntry[]
+}
+
+export interface ActivityEntry {
+    componentId: string;
+    componentName: string;
+    portIndex: number;
+    actionKey: string;
+    source: string | null;
+    status: string;
+    createdAt: number;
 }
 
 export default new AreaClient();
