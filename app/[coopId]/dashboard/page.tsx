@@ -7,7 +7,7 @@ import componentClient, { Component } from "../../../client/component"
 import areaClient, { Area } from "../../../client/area"
 import { currentCoop } from "../coop-context"
 import { AppContent } from "../../../components/app-content"
-import GroupCard, { GroupTileLayout } from "../../../components/dashboard/group-card"
+import { GroupTileLayout } from "../../../components/dashboard/group-card"
 import { AREA_CARD_REGISTRY } from "../../../features/areas/registry"
 import AddAreaDialog from "../../../features/areas/add-area-dialog"
 import FloatingActionButton from "../../../components/fab"
@@ -276,7 +276,7 @@ export default function Dashboard() {
                 ) : (
                     <Grid container spacing={2} sx={{ width: "100%" }}>
                       {filteredGroups.map((g) => {
-                        const CardComponent = AREA_CARD_REGISTRY[g.area.type] ?? GroupCard
+                        const CardComponent = AREA_CARD_REGISTRY.get(g.area.type)
                         return (
                             <Grid key={g.area.id} size={{ xs: 12, md: 6, lg: 4 }}>
                               <CardComponent

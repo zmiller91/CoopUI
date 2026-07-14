@@ -58,3 +58,24 @@ export function HeroStat(props: HeroStatProps) {
         </Box>
     )
 }
+
+export interface PreviewStatProps {
+    value: string;
+    unit?: string;
+    // Same color mapping as HeroStat, so a compact preview-line stat and a card's hero stat always agree.
+    color?: "primary" | "accent";
+}
+
+// Compact single-line variant of HeroStat, for list/preview rows where the big centered block doesn't fit.
+export function PreviewStat(props: PreviewStatProps) {
+    return (
+        <Typography
+            variant="body2"
+            fontWeight={700}
+            component="span"
+            sx={{ color: HERO_COLOR_VAR[props.color ?? "primary"], whiteSpace: "nowrap" }}
+        >
+            {props.value}{props.unit}
+        </Typography>
+    )
+}
