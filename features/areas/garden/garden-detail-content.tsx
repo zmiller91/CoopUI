@@ -13,27 +13,13 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import ChartCard from "../../../components/dashboard/chart-card"
 import { AREA_TYPE_META } from "../../../components/dashboard/group-card"
 import { AreaDetailContentProps } from "../registry"
-import { DataDimension } from "../../../utils/chart-config"
-import { mmToInches } from "../units"
+import { CHART_CONFIG } from "../../../utils/chart-config"
 import areaClient, { ActivityEntry } from "../../../client/area"
 import { ActivityLog } from "../activity-log"
 import { ComponentData } from "../../../client/data"
 
 const ACTIVITY_LIMIT = 10
 const ACTIVITY_WINDOW_MS = 24 * 60 * 60 * 1000
-
-const TEMPERATURE_DIMENSION: DataDimension = {
-    key: "TEMPERATURE",
-    name: "TEMPERATURE",
-    label: "°F",
-}
-
-const TRANSPIRATION_DIMENSION: DataDimension = {
-    key: "EVAPOTRANSPIRATION",
-    name: "EVAPOTRANSPIRATION",
-    label: "in",
-    formatter: mmToInches,
-}
 
 function mostRecent(d: ComponentData): Record<string, any> | undefined {
     let idx = -1
@@ -92,8 +78,8 @@ export default function GardenDetailContent(props: AreaDetailContentProps) {
                     name={forecastMember.componentName}
                     type={forecastMember.componentTypeDescription}
                     data={forecastMember}
-                    dimension1={TEMPERATURE_DIMENSION}
-                    dimension2={TRANSPIRATION_DIMENSION}
+                    dimension1={CHART_CONFIG.WEATHER_FORECAST.dimension1}
+                    dimension2={CHART_CONFIG.WEATHER_FORECAST.dimension2}
                     href={`/${props.coopId}/dashboard/${forecastMember.componentId}`}
                 />
             )}

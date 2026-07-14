@@ -42,14 +42,15 @@ export const CHART_CONFIG: Record<string, ChartConfig> = {
     },
     WEATHER_FORECAST: {
         dimension1: {
-            key: "RAIN_PROBABILITY_24H",
-            name: "RAIN_PROBABILITY_24H",
-            label: "%",
-        },
-        dimension2: {
             key: "TEMPERATURE",
             name: "TEMPERATURE",
             label: "°F",
+        },
+        dimension2: {
+            key: "EVAPOTRANSPIRATION",
+            name: "EVAPOTRANSPIRATION",
+            label: "in",
+            formatter: (mm) => Math.round((mm / 25.4) * 100) / 100,
         },
     },
 };
