@@ -13,11 +13,11 @@ import Avatar from "@mui/material/Avatar";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
 import componentClient, { ComponentPort } from "../../../client/component";
 import { VALVE_ZONE_OPTIONS } from "../../../utils/valve";
 import SnackBar from "../../../components/snack-bar";
 import PortDetailDialog from "./port-detail-dialog";
+import ValveStateChip from "./valve-state-chip";
 
 export interface ValveZoneControlsProps {
     componentId: string;
@@ -108,18 +108,7 @@ export default function ValveZoneControls({ componentId, ports, onPortsChange }:
                                         sx={{ m: 0, minWidth: 0 }}
                                     />
 
-                                    <Chip
-                                        label={state === "ON" ? "On" : "Off"}
-                                        size="small"
-                                        variant={state === "ON" ? "filled" : "outlined"}
-                                        sx={{
-                                            flexShrink: 0,
-                                            fontWeight: 700,
-                                            ...(state === "ON"
-                                                ? { bgcolor: "success.main", color: "success.contrastText" }
-                                                : { borderColor: "divider", color: "text.secondary" }),
-                                        }}
-                                    />
+                                    <ValveStateChip on={state === "ON"} />
                                 </Stack>
 
                                 <Stack direction="row" spacing={1} flexShrink={0} sx={{ width: { xs: "100%", sm: "auto" } }}>
