@@ -10,6 +10,8 @@ import { usePageTitle } from "../../../../../components/app-bar"
 import { AREA_TYPE_META } from "../../../../../components/dashboard/group-card"
 import AddAreaDialog from "../../../../../features/areas/add-area-dialog"
 import { getChildAreaTypeOptions } from "../../../../../features/areas/child-area-types"
+import { AREA_EDIT_SECTION_REGISTRY } from "../../../../../features/areas/registry"
+import { parsePortKey } from "../../../../../features/areas/garden-bed/garden-bed-irrigation-section"
 import TextInput from "../../../../../components/form/text-input"
 import SelectInput, { SelectOption } from "../../../../../components/form/select"
 import ConfirmDialog from "../../../../../components/dialog/confirm"
@@ -53,6 +55,8 @@ export default function AreaEdit() {
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [originalIds, setOriginalIds] = useState<string[]>([])
     const [pickerValue, setPickerValue] = useState("")
+    const [selectedPortKeys, setSelectedPortKeys] = useState<string[]>([])
+    const [originalPortKeys, setOriginalPortKeys] = useState<string[] | null>(null)
     const [isSaving, setIsSaving] = useState(false)
     const [openDelete, setOpenDelete] = useState(false)
     const [addChildOpen, setAddChildOpen] = useState(false)
@@ -83,6 +87,13 @@ export default function AreaEdit() {
         setSelectedIds(currentMemberIds)
         setOriginalIds(currentMemberIds)
     }, [hasComponentsLoaded, components, areaId])
+
+    // GardenBedIrrigationSection reports its currently-persisted selection the first time it renders (via
+    // this handler) - capture that as the diff baseline, same role originalIds plays for device Members.
+    function onPortKeysChange(keys: string[]) {
+        setSelectedPortKeys(keys)
+        setOriginalPortKeys((prev) => prev ?? keys)
+    }
 
     const componentsById = useMemo(() => {
         const map: Record<string, Component> = {}
@@ -143,6 +154,36 @@ export default function AreaEdit() {
         if (!area) return
         setIsSaving(true)
 
+        function finish() {
+            setIsSaving(false)
+            router.push(`/${coopId}/areas/${areaId}`)
+        }
+
+        function savePorts() {
+            const originals = originalPortKeys ?? []
+            const addedPorts = selectedPortKeys.filter((k) => !originals.includes(k))
+            const removedPorts = originals.filter((k) => !selectedPortKeys.includes(k))
+            const changedPorts = [...addedPorts, ...removedPorts]
+
+            if (changedPorts.length === 0) {
+                finish()
+                return
+            }
+
+            const portAssignments = changedPorts.map((key) => {
+                const { componentId, portIndex } = parsePortKey(key)
+                const component = componentsById[componentId]
+                const currentAreaIds = (component?.ports.find((p) => p.index === portIndex)?.areas ?? []).map((a) => a.id as string)
+                const nowSelected = selectedPortKeys.includes(key)
+                const areaIds = nowSelected
+                    ? Array.from(new Set([...currentAreaIds, areaId]))
+                    : currentAreaIds.filter((id) => id !== areaId)
+                return { componentId, portIndex, areaIds }
+            })
+
+            areaClient.setPortAreasBulk(coopId, { assignments: portAssignments }, () => finish())
+        }
+
         areaClient.update(
             coopId,
             { area: { id: area.id, name: name.trim(), type: area.type, parentId: area.parentId } },
@@ -152,8 +193,7 @@ export default function AreaEdit() {
                 const changed = [...added, ...removed]
 
                 if (changed.length === 0) {
-                    setIsSaving(false)
-                    router.push(`/${coopId}/areas/${areaId}`)
+                    savePorts()
                     return
                 }
 
@@ -167,15 +207,13 @@ export default function AreaEdit() {
                     return { componentId, areaIds }
                 })
 
-                areaClient.setComponentAreasBulk(coopId, { assignments }, () => {
-                    setIsSaving(false)
-                    router.push(`/${coopId}/areas/${areaId}`)
-                })
+                areaClient.setComponentAreasBulk(coopId, { assignments }, () => savePorts())
             }
         )
     }
 
     const typeMeta = area ? AREA_TYPE_META[area.type] : undefined
+    const EditSection = area ? AREA_EDIT_SECTION_REGISTRY.get(area.type) : undefined
 
     return (
         <AppContent hasLoaded={hasLoaded}>
@@ -265,6 +303,16 @@ export default function AreaEdit() {
                                 )}
                             </Box>
                         </SectionPaper>
+
+                        {area && EditSection && (
+                            <EditSection
+                                area={area}
+                                areas={areas}
+                                components={components}
+                                selectedPortKeys={selectedPortKeys}
+                                onPortKeysChange={onPortKeysChange}
+                            />
+                        )}
 
                         {childTypeOptions.length > 0 && (
                             <SectionPaper>

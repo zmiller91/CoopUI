@@ -40,6 +40,13 @@ class AreaClient {
 
     }
 
+    setPortAreasBulk(coopId: string, request: BulkSetPortAreasRequest, success:(response: BulkSetPortAreasResponse) => void) {
+        authClient.put("/areas/" + coopId + "/components/ports/bulk",
+            request,
+            (response) => success(response.data))
+
+    }
+
     setComponentAreasBulk(coopId: string, request: BulkSetAreasRequest, success:(response: BulkSetAreasResponse) => void) {
         authClient.put("/areas/" + coopId + "/components/bulk",
             request,
@@ -92,6 +99,23 @@ export interface BulkAreaAssignmentResult {
 }
 export interface BulkSetAreasResponse {
     results: BulkAreaAssignmentResult[]
+}
+
+export interface PortAreaAssignment {
+    componentId: string;
+    portIndex: number;
+    areaIds: string[];
+}
+export interface BulkSetPortAreasRequest {
+    assignments: PortAreaAssignment[]
+}
+export interface BulkPortAreaAssignmentResult {
+    componentId: string;
+    portIndex: number;
+    areas: Area[];
+}
+export interface BulkSetPortAreasResponse {
+    results: BulkPortAreaAssignmentResult[]
 }
 
 export interface Area {
