@@ -11,48 +11,21 @@ import CloseIcon from "@mui/icons-material/Close"
 import SectionPaper from "../../../components/section-paper"
 import SelectInput, { SelectOption } from "../../../components/form/select"
 import { AreaEditSectionProps } from "../registry"
-
-export function portKey(componentId: string, portIndex: number): string {
-    return `${componentId}:${portIndex}`
-}
-
-export function parsePortKey(key: string): { componentId: string; portIndex: number } {
-    const [componentId, indexStr] = key.split(":")
-    return { componentId, portIndex: Number(indexStr) }
-}
+import { ancestorIds, availableValves as findAvailableValves, associatedPortKeys, portKey, parsePortKey } from "./garden-bed-irrigation"
 
 export default function GardenBedIrrigationSection(props: AreaEditSectionProps) {
     const [selectedPortKeys, setSelectedPortKeys] = useState<string[]>([])
     const [portPickerValue, setPortPickerValue] = useState("")
 
-    // This area plus every ancestor up the parent chain - a valve counts as "available" for port
-    // association if it's assigned (as a whole device) to any area in this chain, not just this one.
-    const ancestorIds = useMemo(() => {
-        const areasById = new Map(props.areas.map((a) => [a.id, a]))
-        const ids: string[] = []
-        let current: typeof props.area | undefined = props.area
-        while (current) {
-            if (current.id) ids.push(current.id)
-            current = current.parentId ? areasById.get(current.parentId) : undefined
-        }
-        return ids
-    }, [props.area, props.areas])
-
     const availableValves = useMemo(() => {
-        return props.components.filter(
-            (c) => c.type === "VALVE" && (c.areas ?? []).some((a) => ancestorIds.includes(a.id as string))
-        )
-    }, [props.components, ancestorIds])
+        return findAvailableValves(props.components, ancestorIds(props.area, props.areas))
+    }, [props.components, props.area, props.areas])
 
     // Derives the currently-persisted selection from the freshly loaded data and reports it up as the
     // section's initial state - onPortKeysChange doubles as both "notify of a change" and "here's what's
     // already saved," so the edit page can capture the latter as its diff baseline.
     useEffect(() => {
-        const currentPortKeys = availableValves.flatMap((v) =>
-            (v.ports ?? [])
-                .filter((p) => (p.areas ?? []).some((a) => a.id === props.area.id))
-                .map((p) => portKey(v.id, p.index))
-        )
+        const currentPortKeys = associatedPortKeys(props.area.id as string, availableValves)
         setSelectedPortKeys(currentPortKeys)
         props.onPortKeysChange(currentPortKeys)
         // eslint-disable-next-line react-hooks/exhaustive-deps

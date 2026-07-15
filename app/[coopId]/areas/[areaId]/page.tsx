@@ -116,6 +116,7 @@ export default function AreaDetail() {
                         <DetailContent
                             coopId={coopId}
                             area={area}
+                            areas={areas}
                             members={memberCharts}
                             memberComponents={memberComponents}
                             childAreas={childAreas}
