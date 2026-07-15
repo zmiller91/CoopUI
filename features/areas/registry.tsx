@@ -11,6 +11,7 @@ import GenericAreaPreviewLine from "./generic-area-preview-line"
 import GardenBedPreviewLine from "./garden-bed/garden-bed-preview-line"
 import NoAreaEditSection from "./no-area-edit-section"
 import GardenBedIrrigationSection from "./garden-bed/garden-bed-irrigation-section"
+import GardenBedDetailContent from "./garden-bed/garden-bed-detail-content"
 
 export interface AreaCardProps {
     area: Area;
@@ -25,6 +26,7 @@ export interface AreaCardProps {
 export interface AreaDetailContentProps {
     coopId: string;
     area: Area;
+    areas: Area[];                         // every Area in the coop, for type-specific ancestor/relationship lookups
     members: ComponentData[];              // this area's chartable members' current data, for charts
     memberComponents: Component[];         // every Component directly in this area (ports, config, etc.)
     childAreas: Area[];                    // this area's direct children
@@ -64,6 +66,7 @@ export const AREA_CARD_REGISTRY = new AreaCardRegistry()
 class AreaDetailContentRegistry {
     private readonly components: Record<string, ComponentType<AreaDetailContentProps>> = {
         GARDEN: GardenDetailContent,
+        GARDEN_BED: GardenBedDetailContent,
     }
 
     get(type: string): ComponentType<AreaDetailContentProps> {
