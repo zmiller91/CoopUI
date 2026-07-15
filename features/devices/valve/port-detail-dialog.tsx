@@ -15,6 +15,7 @@ import { useTheme } from "@mui/material/styles";
 import TextInput from "../../../components/form/text-input";
 import componentClient, { ComponentConfig, ComponentPort, PortLogEntry } from "../../../client/component";
 import { formatEventTime } from "../../../utils/date";
+import { defaultZoneName } from "../../../utils/valve";
 
 export interface PortDetailDialogProps {
     open: boolean;
@@ -23,10 +24,6 @@ export interface PortDetailDialogProps {
     ports: ComponentPort[];
     onClose: () => void;
     onSaved: (port: ComponentPort) => void;
-}
-
-function fallbackName(index: number) {
-    return `Zone ${index + 1}`;
 }
 
 function describeEntry(entry: PortLogEntry): string {
@@ -58,7 +55,7 @@ export default function PortDetailDialog({ open, componentId, portIndex, ports, 
     useEffect(() => {
         if (!open || portIndex === null) return;
         const port = ports.find((p) => p.index === portIndex);
-        setName(port?.name || fallbackName(portIndex));
+        setName(port?.name || defaultZoneName(portIndex));
         setConfig(port?.config ?? []);
         setLog([]);
         componentClient.portLog(componentId, portIndex, setLog);
@@ -91,9 +88,9 @@ export default function PortDetailDialog({ open, componentId, portIndex, ports, 
     return (
         <Dialog fullScreen={fullScreen} open={open} onClose={onClose} aria-labelledby="port-detail-title">
             <DialogTitle id="port-detail-title">
-                {name || fallbackName(portIndex)}
+                {name || defaultZoneName(portIndex)}
                 <Typography variant="body2" color="text.secondary">
-                    Zone {portIndex + 1}
+                    {defaultZoneName(portIndex)}
                 </Typography>
             </DialogTitle>
 

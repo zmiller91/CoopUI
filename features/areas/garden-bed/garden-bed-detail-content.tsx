@@ -14,7 +14,9 @@ import AddIcon from "@mui/icons-material/Add"
 import SectionPaper from "../../../components/section-paper"
 import GenericAreaDetailContent from "../generic-area-detail-content"
 import { AreaDetailContentProps } from "../registry"
-import { ancestorIds, availableValves, associatedPortKeys, parsePortKey } from "./garden-bed-irrigation"
+import { ancestorIds } from "../area-lineage"
+import { availableValves, associatedPortKeys, parsePortKey } from "../../devices/valve/valve-areas"
+import { defaultZoneName } from "../../../utils/valve"
 
 export default function GardenBedDetailContent(props: AreaDetailContentProps) {
     const router = useRouter()
@@ -33,7 +35,7 @@ export default function GardenBedDetailContent(props: AreaDetailContentProps) {
             key,
             componentId,
             valveName: valve?.name ?? "Unknown device",
-            portName: port?.name ?? `Zone ${portIndex + 1}`,
+            portName: port?.name ?? defaultZoneName(portIndex),
         }
     })
 

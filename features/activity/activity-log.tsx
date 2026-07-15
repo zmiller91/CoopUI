@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography"
 import { ActivityEntry } from "../../client/area"
 import { Component } from "../../client/component"
 import { formatEventTime } from "../../utils/date"
+import { defaultZoneName } from "../../utils/valve"
 
 export interface ActivityLogProps {
     entries: ActivityEntry[];
@@ -32,7 +33,7 @@ function describeEntry(entry: ActivityEntry): string {
 function portName(entry: ActivityEntry, memberComponents: Component[]): string {
     const component = memberComponents.find((c) => c.id === entry.componentId)
     const port = component?.ports.find((p) => p.index === entry.portIndex)
-    return port?.name || `Zone ${entry.portIndex + 1}`
+    return port?.name || defaultZoneName(entry.portIndex)
 }
 
 export function ActivityLog(props: ActivityLogProps) {

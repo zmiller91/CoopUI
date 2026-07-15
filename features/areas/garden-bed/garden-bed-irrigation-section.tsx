@@ -11,7 +11,9 @@ import CloseIcon from "@mui/icons-material/Close"
 import SectionPaper from "../../../components/section-paper"
 import SelectInput, { SelectOption } from "../../../components/form/select"
 import { AreaEditSectionProps } from "../registry"
-import { ancestorIds, availableValves as findAvailableValves, associatedPortKeys, portKey, parsePortKey } from "./garden-bed-irrigation"
+import { ancestorIds } from "../area-lineage"
+import { availableValves as findAvailableValves, associatedPortKeys, portKey, parsePortKey } from "../../devices/valve/valve-areas"
+import { defaultZoneName } from "../../../utils/valve"
 
 export default function GardenBedIrrigationSection(props: AreaEditSectionProps) {
     const [selectedPortKeys, setSelectedPortKeys] = useState<string[]>([])
@@ -44,7 +46,7 @@ export default function GardenBedIrrigationSection(props: AreaEditSectionProps) 
             const { componentId, portIndex } = parsePortKey(key)
             const valve = availableValves.find((v) => v.id === componentId)
             const port = valve?.ports.find((p) => p.index === portIndex)
-            return { key, valveName: valve?.name ?? "Unknown device", portName: port?.name ?? `Zone ${portIndex + 1}` }
+            return { key, valveName: valve?.name ?? "Unknown device", portName: port?.name ?? defaultZoneName(portIndex) }
         })
     }, [selectedPortKeys, availableValves])
 
