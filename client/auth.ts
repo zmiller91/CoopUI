@@ -24,8 +24,8 @@ class AuthClient {
         axios.delete(this.domain + path, this.config()).then(success).catch(() => error && error())
     }
 
-    post(path:string, data: any, success: (response:any) => void) {
-        axios.post(this.domain + path, data, this.config()).then(success)
+    post(path:string, data: any, success: (response:any) => void, error?: () => void) {
+        axios.post(this.domain + path, data, this.config()).then(success).catch(() => error && error())
     }
 
     put(path: string, data: any, success: (response:any) => void ){

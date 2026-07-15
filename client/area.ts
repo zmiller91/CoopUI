@@ -59,6 +59,14 @@ class AreaClient {
             (response) => success(response.data))
 
     }
+
+    export(coopId: string, areaId: string, request: ExportAreaRequest, success: () => void, error?: () => void) {
+        authClient.post("/areas/" + coopId + "/" + areaId + "/export",
+            request,
+            () => success(),
+            error)
+
+    }
 }
 
 export interface ListAreaResponse {
@@ -137,6 +145,11 @@ export interface ActivityEntry {
     source: string | null;
     status: string;
     createdAt: number;
+}
+
+export interface ExportAreaRequest {
+    contactId: string;
+    days?: number;
 }
 
 export default new AreaClient();

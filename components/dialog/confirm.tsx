@@ -20,6 +20,7 @@ export interface ConfirmDialogProps {
     confirmLabel?: string,
     confirmIcon?: ReactNode,
     confirmColor?: 'error' | 'primary',
+    confirmDisabled?: boolean,
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
@@ -54,6 +55,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
                     color={props.confirmColor ?? 'primary'}
                     startIcon={props.confirmIcon ?? <CheckCircleOutline />}
                     onClick={props.onConfirm}
+                    disabled={props.confirmDisabled}
                 >
                     {props.confirmLabel ?? 'Confirm'}
                 </Button>
