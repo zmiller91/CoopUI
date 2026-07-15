@@ -11,6 +11,7 @@ import ListItemButton from "@mui/material/ListItemButton"
 import ListItemText from "@mui/material/ListItemText"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import AddIcon from "@mui/icons-material/Add"
+import FileDownloadIcon from "@mui/icons-material/FileDownload"
 import SectionPaper from "../../../components/section-paper"
 import GenericAreaDetailContent from "../generic-area-detail-content"
 import { AreaDetailContentProps } from "../registry"
@@ -20,6 +21,7 @@ import { defaultZoneName } from "../../../utils/valve"
 import ValveStateChip from "../../devices/valve/valve-state-chip"
 import areaClient, { ActivityEntry } from "../../../client/area"
 import { ActivityLog } from "../../activity/activity-log"
+import ExportDataDialog from "./export-dialog"
 
 const ACTIVITY_LIMIT = 20
 const ACTIVITY_WINDOW_MS = 5 * 24 * 60 * 60 * 1000
@@ -29,6 +31,7 @@ export default function GardenBedDetailContent(props: AreaDetailContentProps) {
 
     const [activity, setActivity] = useState<ActivityEntry[]>([])
     const [hasActivityLoaded, setHasActivityLoaded] = useState(false)
+    const [exportOpen, setExportOpen] = useState(false)
 
     useEffect(() => {
         if (!props.area.id) return
@@ -42,10 +45,34 @@ export default function GardenBedDetailContent(props: AreaDetailContentProps) {
         })
     }, [props.coopId, props.area.id])
 
+    const exportSection = (
+        <>
+            <Button
+                variant="contained"
+                fullWidth
+                startIcon={<FileDownloadIcon />}
+                onClick={() => setExportOpen(true)}
+            >
+                Export Data
+            </Button>
+            <ExportDataDialog
+                open={exportOpen}
+                coopId={props.coopId}
+                areaId={props.area.id as string}
+                onClose={() => setExportOpen(false)}
+            />
+        </>
+    )
+
     const valves = availableValves(props.allComponents, ancestorIds(props.area, props.areas))
 
     if (valves.length === 0) {
-        return <GenericAreaDetailContent {...props} />
+        return (
+            <Stack spacing={2}>
+                <GenericAreaDetailContent {...props} />
+                {exportSection}
+            </Stack>
+        )
     }
 
     const links = associatedPortKeys(props.area.id as string, valves).map((key) => {
@@ -112,6 +139,8 @@ export default function GardenBedDetailContent(props: AreaDetailContentProps) {
                     )}
                 </SectionPaper>
             )}
+
+            {exportSection}
         </Stack>
     )
 }
