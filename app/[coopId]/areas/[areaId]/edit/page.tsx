@@ -10,6 +10,8 @@ import { usePageTitle } from "../../../../../components/app-bar"
 import { AREA_TYPE_META } from "../../../../../components/dashboard/group-card"
 import AddAreaDialog from "../../../../../features/areas/add-area-dialog"
 import { getChildAreaTypeOptions } from "../../../../../features/areas/child-area-types"
+import { AREA_EDIT_SECTION_REGISTRY } from "../../../../../features/areas/registry"
+import { parsePortKey } from "../../../../../features/areas/garden-bed/garden-bed-irrigation-section"
 import TextInput from "../../../../../components/form/text-input"
 import SelectInput, { SelectOption } from "../../../../../components/form/select"
 import ConfirmDialog from "../../../../../components/dialog/confirm"
@@ -54,8 +56,7 @@ export default function AreaEdit() {
     const [originalIds, setOriginalIds] = useState<string[]>([])
     const [pickerValue, setPickerValue] = useState("")
     const [selectedPortKeys, setSelectedPortKeys] = useState<string[]>([])
-    const [originalPortKeys, setOriginalPortKeys] = useState<string[]>([])
-    const [portPickerValue, setPortPickerValue] = useState("")
+    const [originalPortKeys, setOriginalPortKeys] = useState<string[] | null>(null)
     const [isSaving, setIsSaving] = useState(false)
     const [openDelete, setOpenDelete] = useState(false)
     const [addChildOpen, setAddChildOpen] = useState(false)
@@ -87,39 +88,12 @@ export default function AreaEdit() {
         setOriginalIds(currentMemberIds)
     }, [hasComponentsLoaded, components, areaId])
 
-    // This area plus every ancestor up the parent chain - a valve counts as "available" for port
-    // association if it's assigned (as a whole device) to any area in this chain, not just this one.
-    const ancestorIds = useMemo(() => {
-        const areasById = new Map(areas.map((a) => [a.id, a]))
-        const ids: string[] = []
-        let current = area
-        while (current) {
-            if (current.id) ids.push(current.id)
-            current = current.parentId ? areasById.get(current.parentId) : undefined
-        }
-        return ids
-    }, [area, areas])
-
-    const availableValves = useMemo(() => {
-        return components.filter(
-            (c) => c.type === "VALVE" && (c.areas ?? []).some((a) => ancestorIds.includes(a.id as string))
-        )
-    }, [components, ancestorIds])
-
-    function portKey(componentId: string, portIndex: number) {
-        return `${componentId}:${portIndex}`
+    // GardenBedIrrigationSection reports its currently-persisted selection the first time it renders (via
+    // this handler) - capture that as the diff baseline, same role originalIds plays for device Members.
+    function onPortKeysChange(keys: string[]) {
+        setSelectedPortKeys(keys)
+        setOriginalPortKeys((prev) => prev ?? keys)
     }
-
-    useEffect(() => {
-        if (!hasComponentsLoaded) return
-        const currentPortKeys = availableValves.flatMap((v) =>
-            (v.ports ?? [])
-                .filter((p) => (p.areas ?? []).some((a) => a.id === areaId))
-                .map((p) => portKey(v.id, p.index))
-        )
-        setSelectedPortKeys(currentPortKeys)
-        setOriginalPortKeys(currentPortKeys)
-    }, [hasComponentsLoaded, availableValves, areaId])
 
     const componentsById = useMemo(() => {
         const map: Record<string, Component> = {}
@@ -147,33 +121,6 @@ export default function AreaEdit() {
 
     function removeMember(id: string) {
         setSelectedIds((prev) => prev.filter((x) => x !== id))
-    }
-
-    const portPickerOptions = useMemo<SelectOption[]>(() => {
-        return availableValves.flatMap((v) =>
-            (v.ports ?? [])
-                .filter((p) => !selectedPortKeys.includes(portKey(v.id, p.index)))
-                .map((p) => ({ label: `${v.name} — ${p.name}`, value: portKey(v.id, p.index) }))
-        )
-    }, [availableValves, selectedPortKeys])
-
-    const selectedPorts = useMemo(() => {
-        return selectedPortKeys.map((key) => {
-            const [componentId, indexStr] = key.split(":")
-            const valve = availableValves.find((v) => v.id === componentId)
-            const port = valve?.ports.find((p) => p.index === Number(indexStr))
-            return { key, valveName: valve?.name ?? "Unknown device", portName: port?.name ?? `Zone ${Number(indexStr) + 1}` }
-        })
-    }, [selectedPortKeys, availableValves])
-
-    function onPortPick(value: string) {
-        if (!value) return
-        setSelectedPortKeys((prev) => [...prev, value])
-        setPortPickerValue("")
-    }
-
-    function removePort(key: string) {
-        setSelectedPortKeys((prev) => prev.filter((k) => k !== key))
     }
 
     const childGroups = useMemo(() => {
@@ -212,25 +159,29 @@ export default function AreaEdit() {
             router.push(`/${coopId}/areas/${areaId}`)
         }
 
-        // Port area-membership isn't covered by the bulk component endpoint (that only replaces a whole
-        // component's areas, not one port's), so changed ports are saved one at a time.
-        function savePorts(remaining: string[]) {
-            if (remaining.length === 0) {
+        function savePorts() {
+            const originals = originalPortKeys ?? []
+            const addedPorts = selectedPortKeys.filter((k) => !originals.includes(k))
+            const removedPorts = originals.filter((k) => !selectedPortKeys.includes(k))
+            const changedPorts = [...addedPorts, ...removedPorts]
+
+            if (changedPorts.length === 0) {
                 finish()
                 return
             }
 
-            const [key, ...rest] = remaining
-            const [componentId, indexStr] = key.split(":")
-            const portIndex = Number(indexStr)
-            const valve = availableValves.find((v) => v.id === componentId)
-            const currentAreaIds = (valve?.ports.find((p) => p.index === portIndex)?.areas ?? []).map((a) => a.id as string)
-            const nowSelected = selectedPortKeys.includes(key)
-            const areaIds = nowSelected
-                ? Array.from(new Set([...currentAreaIds, areaId]))
-                : currentAreaIds.filter((id) => id !== areaId)
+            const portAssignments = changedPorts.map((key) => {
+                const { componentId, portIndex } = parsePortKey(key)
+                const component = componentsById[componentId]
+                const currentAreaIds = (component?.ports.find((p) => p.index === portIndex)?.areas ?? []).map((a) => a.id as string)
+                const nowSelected = selectedPortKeys.includes(key)
+                const areaIds = nowSelected
+                    ? Array.from(new Set([...currentAreaIds, areaId]))
+                    : currentAreaIds.filter((id) => id !== areaId)
+                return { componentId, portIndex, areaIds }
+            })
 
-            areaClient.setPortAreas(coopId, componentId, portIndex, { areaIds }, () => savePorts(rest))
+            areaClient.setPortAreasBulk(coopId, { assignments: portAssignments }, () => finish())
         }
 
         areaClient.update(
@@ -241,12 +192,8 @@ export default function AreaEdit() {
                 const removed = originalIds.filter((id) => !selectedIds.includes(id))
                 const changed = [...added, ...removed]
 
-                const addedPorts = selectedPortKeys.filter((k) => !originalPortKeys.includes(k))
-                const removedPorts = originalPortKeys.filter((k) => !selectedPortKeys.includes(k))
-                const changedPorts = [...addedPorts, ...removedPorts]
-
                 if (changed.length === 0) {
-                    savePorts(changedPorts)
+                    savePorts()
                     return
                 }
 
@@ -260,12 +207,13 @@ export default function AreaEdit() {
                     return { componentId, areaIds }
                 })
 
-                areaClient.setComponentAreasBulk(coopId, { assignments }, () => savePorts(changedPorts))
+                areaClient.setComponentAreasBulk(coopId, { assignments }, () => savePorts())
             }
         )
     }
 
     const typeMeta = area ? AREA_TYPE_META[area.type] : undefined
+    const EditSection = area ? AREA_EDIT_SECTION_REGISTRY.get(area.type) : undefined
 
     return (
         <AppContent hasLoaded={hasLoaded}>
@@ -356,52 +304,14 @@ export default function AreaEdit() {
                             </Box>
                         </SectionPaper>
 
-                        {area?.type === "GARDEN_BED" && availableValves.length > 0 && (
-                            <SectionPaper>
-                                <Typography variant="subtitle1" fontWeight={700}>
-                                    Irrigation
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-                                    Associate this garden bed with a zone on one of its irrigation controllers.
-                                </Typography>
-
-                                <SelectInput
-                                    id="add-port"
-                                    title="Add a zone"
-                                    placeholder="Select a zone..."
-                                    value={portPickerValue}
-                                    onChange={onPortPick}
-                                    options={portPickerOptions}
-                                />
-
-                                <Box sx={{ mt: 1.5 }}>
-                                    {selectedPorts.length === 0 ? (
-                                        <Typography variant="body2" color="text.secondary">
-                                            No zones associated yet.
-                                        </Typography>
-                                    ) : (
-                                        <List disablePadding>
-                                            {selectedPorts.map((p) => (
-                                                <ListItem
-                                                    key={p.key}
-                                                    disableGutters
-                                                    secondaryAction={
-                                                        <IconButton
-                                                            edge="end"
-                                                            aria-label="Remove"
-                                                            onClick={() => removePort(p.key)}
-                                                        >
-                                                            <CloseIcon fontSize="small" />
-                                                        </IconButton>
-                                                    }
-                                                >
-                                                    <ListItemText primary={p.portName} secondary={p.valveName} />
-                                                </ListItem>
-                                            ))}
-                                        </List>
-                                    )}
-                                </Box>
-                            </SectionPaper>
+                        {area && EditSection && (
+                            <EditSection
+                                area={area}
+                                areas={areas}
+                                components={components}
+                                selectedPortKeys={selectedPortKeys}
+                                onPortKeysChange={onPortKeysChange}
+                            />
                         )}
 
                         {childTypeOptions.length > 0 && (
