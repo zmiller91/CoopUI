@@ -1,6 +1,6 @@
 'use client'
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
@@ -17,9 +17,30 @@ import { AreaDetailContentProps } from "../registry"
 import { ancestorIds } from "../area-lineage"
 import { availableValves, associatedPortKeys, parsePortKey } from "../../devices/valve/valve-areas"
 import { defaultZoneName } from "../../../utils/valve"
+import ValveStateChip from "../../devices/valve/valve-state-chip"
+import areaClient, { ActivityEntry } from "../../../client/area"
+import { ActivityLog } from "../../activity/activity-log"
+
+const ACTIVITY_LIMIT = 20
+const ACTIVITY_WINDOW_MS = 5 * 24 * 60 * 60 * 1000
 
 export default function GardenBedDetailContent(props: AreaDetailContentProps) {
     const router = useRouter()
+
+    const [activity, setActivity] = useState<ActivityEntry[]>([])
+    const [hasActivityLoaded, setHasActivityLoaded] = useState(false)
+
+    useEffect(() => {
+        if (!props.area.id) return
+        areaClient.getActivity(props.coopId, props.area.id, (r) => {
+            const cutoff = Date.now() - ACTIVITY_WINDOW_MS
+            const recent = (r.entries ?? [])
+                .filter((e) => e.createdAt >= cutoff)
+                .slice(0, ACTIVITY_LIMIT)
+            setActivity(recent)
+            setHasActivityLoaded(true)
+        })
+    }, [props.coopId, props.area.id])
 
     const valves = availableValves(props.allComponents, ancestorIds(props.area, props.areas))
 
@@ -36,6 +57,7 @@ export default function GardenBedDetailContent(props: AreaDetailContentProps) {
             componentId,
             valveName: valve?.name ?? "Unknown device",
             portName: port?.name ?? defaultZoneName(portIndex),
+            on: port?.state === "ON",
         }
     })
 
@@ -68,13 +90,28 @@ export default function GardenBedDetailContent(props: AreaDetailContentProps) {
                             <ListItem key={link.key} disableGutters disablePadding>
                                 <ListItemButton onClick={() => router.push(`/${props.coopId}/components/${link.componentId}`)}>
                                     <ListItemText primary={link.portName} secondary={link.valveName} />
-                                    <ChevronRightIcon fontSize="small" color="action" />
+                                    <Stack direction="row" spacing={1} alignItems="center">
+                                        <ValveStateChip on={link.on} />
+                                        <ChevronRightIcon fontSize="small" color="action" />
+                                    </Stack>
                                 </ListItemButton>
                             </ListItem>
                         ))}
                     </List>
                 )}
             </SectionPaper>
+
+            {links.length > 0 && (
+                <SectionPaper>
+                    <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1.5 }}>
+                        Valve Activity
+                    </Typography>
+
+                    {hasActivityLoaded && (
+                        <ActivityLog entries={activity} memberComponents={valves} />
+                    )}
+                </SectionPaper>
+            )}
         </Stack>
     )
 }
